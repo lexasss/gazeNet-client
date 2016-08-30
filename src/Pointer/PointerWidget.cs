@@ -21,7 +21,7 @@ namespace GazeNetClient
             InitializeComponent();
 
             this.BackColor = Color.White;
-            this.TransparencyKey = Color.White; 
+            this.TransparencyKey = Color.White;
         }
 
         public void setImage(Bitmap aBitmap)

@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace GazeNetClient.WebSocket
 {
     public class GazeEvent
     {
-        public int x { get; set; }
-        public int y { get; set; }
+        public float x { get; set; }
+        public float y { get; set; }
+        public PointF Location { get { return new PointF(x, y); } }
+
         public GazeEvent() { }
-        public GazeEvent(int aX, int aY)
+        public GazeEvent(PointF aPoint)
+        {
+            x = aPoint.X;
+            y = aPoint.Y;
+        }
+
+    public GazeEvent(float aX, float aY)
         {
             x = aX;
             y = aY;
@@ -21,8 +25,9 @@ namespace GazeNetClient.WebSocket
     {
         public string from { get; set; }
         public GazeEvent payload { get; set; }
+
         public GazeEventReceived() { }
-        public GazeEventReceived(string aFrom, int aX, int aY)
+        public GazeEventReceived(string aFrom, float aX, float aY)
         {
             from = aFrom;
             payload = new GazeEvent(aX, aY);
@@ -33,7 +38,8 @@ namespace GazeNetClient.WebSocket
         public string source { get; set; }
         public GazeEvent payload { get; set; }
 
-        public GazeEventSent(string aSource, int aX, int aY)
+        public GazeEventSent() { }
+        public GazeEventSent(string aSource, float aX, float aY)
         {
             source = aSource;
             payload = new GazeEvent(aX, aY);

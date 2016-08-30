@@ -47,8 +47,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="websocket-sharp.clone, Version=1.0.2.39869, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\websocket-sharp.clone.3.0.0\lib\net45\websocket-sharp.clone.dll</HintPath>
+    <Reference Include="websocket-sharp, Version=1.0.2.59611, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -56,6 +56,9 @@
     <Compile Include="AutoStarter.cs" />
     <Compile Include="Libs\HiResTimestamp.cs" />
     <Compile Include="Menu.cs" />
+    <Compile Include="Pointer\Collection.cs" />
+    <Compile Include="Pointer\Settings.cs" />
+    <Compile Include="Pointer\Style.cs" />
     <Compile Include="Processor\TwoLevelLowPassFilter.cs" />
     <Compile Include="GazeNetClient.cs" />
     <Compile Include="Processor\GazeParser.cs" />
@@ -65,11 +68,11 @@
     <Compile Include="Options.Designer.cs">
       <DependentUpon>Options.cs</DependentUpon>
     </Compile>
-    <Compile Include="Pointer.cs" />
-    <Compile Include="PointerWidget.cs">
+    <Compile Include="Pointer\Pointer.cs" />
+    <Compile Include="Pointer\PointerWidget.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PointerWidget.Designer.cs">
+    <Compile Include="Pointer\PointerWidget.Designer.cs">
       <DependentUpon>PointerWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="Processor\GazePoint.cs" />
@@ -87,7 +90,7 @@
     <EmbeddedResource Include="Options.resx">
       <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PointerWidget.resx">
+    <EmbeddedResource Include="Pointer\PointerWidget.resx">
       <DependentUpon>PointerWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -116,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="img\pointerSimple.png" />
     <None Include="img\pointerSpotDark.png" />
     <None Include="img\pointerSpotLight.png" />
     <None Include="img\pointerFrameRoundedDashed.png" />

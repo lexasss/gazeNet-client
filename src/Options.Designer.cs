@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Options));
             this.label1 = new System.Windows.Forms.Label();
             this.cmbPointerAppearance = new System.Windows.Forms.ComboBox();
@@ -41,7 +42,9 @@
             this.trbPointerSize = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.nudServerPort = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
             this.Port = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.txbServerHost = new System.Windows.Forms.TextBox();
@@ -56,12 +59,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.nudFilterTLow = new System.Windows.Forms.NumericUpDown();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.chkPointerAutoShowOnTrackingStart = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
             this.nudPointerNoDataVisibilityDuration = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
+            this.imlIcons = new System.Windows.Forms.ImageList(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -201,7 +204,9 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.lblStatus);
             this.tabPage4.Controls.Add(this.nudServerPort);
+            this.tabPage4.Controls.Add(this.label11);
             this.tabPage4.Controls.Add(this.Port);
             this.tabPage4.Controls.Add(this.label10);
             this.tabPage4.Controls.Add(this.txbServerHost);
@@ -212,6 +217,15 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Connection";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Location = new System.Drawing.Point(72, 60);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(51, 13);
+            this.lblStatus.TabIndex = 3;
+            this.lblStatus.Text = "unknown";
             // 
             // nudServerPort
             // 
@@ -236,6 +250,15 @@
             0,
             0,
             0});
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 60);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(37, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Status";
             // 
             // Port
             // 
@@ -441,7 +464,6 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.chkPointerAutoShowOnTrackingStart);
             this.tabPage3.Controls.Add(this.label9);
             this.tabPage3.Controls.Add(this.nudPointerNoDataVisibilityDuration);
             this.tabPage3.Controls.Add(this.label8);
@@ -455,24 +477,14 @@
             this.tabPage3.Text = "Misc";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // chkPointerAutoShowOnTrackingStart
-            // 
-            this.chkPointerAutoShowOnTrackingStart.AutoSize = true;
-            this.chkPointerAutoShowOnTrackingStart.Location = new System.Drawing.Point(6, 29);
-            this.chkPointerAutoShowOnTrackingStart.Name = "chkPointerAutoShowOnTrackingStart";
-            this.chkPointerAutoShowOnTrackingStart.Size = new System.Drawing.Size(190, 17);
-            this.chkPointerAutoShowOnTrackingStart.TabIndex = 6;
-            this.chkPointerAutoShowOnTrackingStart.Text = "Auto-show pointer on tracking start";
-            this.chkPointerAutoShowOnTrackingStart.UseVisualStyleBackColor = true;
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 80);
+            this.label9.Location = new System.Drawing.Point(6, 57);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(89, 13);
+            this.label9.Size = new System.Drawing.Size(108, 13);
             this.label9.TabIndex = 5;
-            this.label9.Text = "Data-less visibility";
+            this.label9.Text = "Data-less visibility, ms";
             // 
             // nudPointerNoDataVisibilityDuration
             // 
@@ -482,7 +494,7 @@
             0,
             0,
             0});
-            this.nudPointerNoDataVisibilityDuration.Location = new System.Drawing.Point(123, 78);
+            this.nudPointerNoDataVisibilityDuration.Location = new System.Drawing.Point(140, 55);
             this.nudPointerNoDataVisibilityDuration.Maximum = new decimal(new int[] {
             3000,
             0,
@@ -494,7 +506,7 @@
             0,
             0});
             this.nudPointerNoDataVisibilityDuration.Name = "nudPointerNoDataVisibilityDuration";
-            this.nudPointerNoDataVisibilityDuration.Size = new System.Drawing.Size(81, 20);
+            this.nudPointerNoDataVisibilityDuration.Size = new System.Drawing.Size(64, 20);
             this.nudPointerNoDataVisibilityDuration.TabIndex = 4;
             this.nudPointerNoDataVisibilityDuration.Value = new decimal(new int[] {
             300,
@@ -505,11 +517,11 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 54);
+            this.label8.Location = new System.Drawing.Point(6, 31);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(109, 13);
+            this.label8.Size = new System.Drawing.Size(128, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Pointer fading interval";
+            this.label8.Text = "Pointer fading interval, ms";
             // 
             // nudPointerFadingInterval
             // 
@@ -519,7 +531,7 @@
             0,
             0,
             0});
-            this.nudPointerFadingInterval.Location = new System.Drawing.Point(123, 52);
+            this.nudPointerFadingInterval.Location = new System.Drawing.Point(140, 29);
             this.nudPointerFadingInterval.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -531,7 +543,7 @@
             0,
             0});
             this.nudPointerFadingInterval.Name = "nudPointerFadingInterval";
-            this.nudPointerFadingInterval.Size = new System.Drawing.Size(81, 20);
+            this.nudPointerFadingInterval.Size = new System.Drawing.Size(64, 20);
             this.nudPointerFadingInterval.TabIndex = 2;
             this.nudPointerFadingInterval.Value = new decimal(new int[] {
             100,
@@ -549,6 +561,13 @@
             this.chkAutoStarterEnabled.Text = "Auto-start tracking on start";
             this.chkAutoStarterEnabled.UseVisualStyleBackColor = true;
             // 
+            // imlIcons
+            // 
+            this.imlIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlIcons.ImageStream")));
+            this.imlIcons.TransparentColor = System.Drawing.Color.Transparent;
+            this.imlIcons.Images.SetKeyName(0, "icon");
+            this.imlIcons.Images.SetKeyName(1, "icon-active");
+            // 
             // Options
             // 
             this.AcceptButton = this.btnOK;
@@ -560,7 +579,6 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Options";
@@ -616,12 +634,14 @@
         private System.Windows.Forms.NumericUpDown nudPointerFadingInterval;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown nudPointerNoDataVisibilityDuration;
-        private System.Windows.Forms.CheckBox chkPointerAutoShowOnTrackingStart;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.NumericUpDown nudServerPort;
         private System.Windows.Forms.Label Port;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txbServerHost;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ImageList imlIcons;
     }
 }
 

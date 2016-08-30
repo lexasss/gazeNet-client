@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 using ETUDriver;
 
 namespace GazeNetClient
@@ -21,7 +22,7 @@ namespace GazeNetClient
 
         private CoETUDriver iETUDriver;
         private Processor.GazeParser iGazeParser;
-        private Pointer iPointer;
+        private Pointer.Collection iPointers = new Pointer.Collection();
         private Menu iMenu;
         private Options iOptions;
         private NotifyIcon iTrayIcon;
@@ -74,10 +75,8 @@ namespace GazeNetClient
             iGazeParser.OnNewGazePoint += GazeParser_OnNewGazePoint;
 
             iWebSocketClient = new WebSocket.Client(WebSocket.Config.Default);
-
-            iPointer = new Pointer();
-            iPointer.OnShow += Pointer_OnShow;
-            iPointer.OnHide += Pointer_OnHide;
+            iWebSocketClient.OnSample += WebSocketClient_OnSample;
+            iWebSocketClient.OnClosed += WebSocketClient_OnClosed;
 
             iMenu = new Menu();
             iMenu.OnShowOptions += showOptions;
@@ -90,12 +89,12 @@ namespace GazeNetClient
             iOptions = new Options();
 
             iTrayIcon = new NotifyIcon();
-            iTrayIcon.Icon = iOptions.Icon;
+            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon"]).GetHicon());
             iTrayIcon.ContextMenuStrip = iMenu.Strip;
             iTrayIcon.Text = "GazeNet client";
             iTrayIcon.Visible = true;
 
-            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(Shortcut_TogglePointer), Keys.Pause));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(toggleVisibility), Keys.Pause));
             Utils.GlobalShortcut.add(new Utils.Shortcut("Tracking", new Action(Shortcut_TrackingNext), Keys.PrintScreen, Keys.Control));
             Utils.GlobalShortcut.init();
 
@@ -111,7 +110,7 @@ namespace GazeNetClient
         private void showOptions()
         {
             UpdateMenu(true);
-            iOptions.load(iPointer, iGazeParser.Filter, AutoStarter);
+            iOptions.load(iPointers, iGazeParser.Filter, AutoStarter, iWebSocketClient);
             bool acceptChanges = iOptions.ShowDialog() == DialogResult.OK;
             iOptions.save(acceptChanges);
 
@@ -120,10 +119,7 @@ namespace GazeNetClient
 
         public void toggleVisibility()
         {
-            if (iPointer.Visible)
-                iPointer.hide();
-            else
-                iPointer.show();
+            iPointers.Visible = !iPointers.Visible;
         }
 
         public void showETUDOptions()
@@ -144,7 +140,7 @@ namespace GazeNetClient
         {
             if (iETUDriver.Active == 0)
             {
-                iPointer.VisilityFollowsDataAvailability = true;
+                Pointer.Collection.VisilityFollowsDataAvailability = true;
                 iGazeParser.start();
                 iETUDriver.startTracking();
             }
@@ -152,7 +148,7 @@ namespace GazeNetClient
             {
                 iETUDriver.stopTracking();
                 iGazeParser.stop();
-                iPointer.VisilityFollowsDataAvailability = false;
+                Pointer.Collection.VisilityFollowsDataAvailability = false;
             }
         }
 
@@ -168,13 +164,11 @@ namespace GazeNetClient
             if (aDisposing)
             {
                 // Free any other managed objects here.
-                iPointer.Dispose();
                 iGazeParser.Dispose();
+                iPointers.Dispose();
 
                 if (iWebSocketClient != null)
-                {
                     iWebSocketClient.Dispose();
-                }
 
                 Utils.Storage<AutoStarter>.save(AutoStarter);
                 Utils.GlobalShortcut.close();
@@ -190,7 +184,7 @@ namespace GazeNetClient
         {
             Menu.State trackerState = new Menu.State();
             trackerState.IsShowingOptions = aIsShowingDialog;
-            trackerState.IsVisible = iPointer.Visible;
+            trackerState.IsVisible = iPointers.Visible;
             trackerState.HasDevices = iETUDriver.DeviceCount > 0;
             trackerState.IsConnected = iETUDriver.Ready != 0;
             trackerState.IsCalibrated = iETUDriver.Calibrated != 0;
@@ -215,17 +209,13 @@ namespace GazeNetClient
 
         private void ETUDriver_OnRecordingStart()
         {
-            if (AutoStarter.ShowPointer)
-                iPointer.show();
-
+            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon-active"]).GetHicon());
             UpdateMenu(false);
         }
 
         private void ETUDriver_OnRecordingStop()
         {
-            if (AutoStarter.ShowPointer)
-                iPointer.hide();
-
+            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon"]).GetHicon());
             UpdateMenu(false);
 
             if (iExitAfterTrackingStopped)
@@ -239,14 +229,8 @@ namespace GazeNetClient
             if (aEventID == EiETUDGazeEvent.geSample)
             {
                 SiETUDSample smp = iETUDriver.LastSample;
-
                 PointF gazePoint = new PointF(smp.X[0], smp.Y[0]);
                 iGazeParser.feed(smp.Time, gazePoint);
-
-                if (iWebSocketClient.Connected)
-                {
-                    iWebSocketClient.Send(new WebSocket.GazeEvent((int)gazePoint.X, (int)gazePoint.Y));
-                }
             }
         }
 
@@ -267,25 +251,19 @@ namespace GazeNetClient
             }
         }
 
+        private void WebSocketClient_OnSample(object aSender, WebSocket.GazeEventReceived aArgs)
+        {
+            iPointers.feed(aArgs);
+        }
+
+        private void WebSocketClient_OnClosed(object sender, EventArgs e)
+        {
+            // do nothing
+        }
+
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazeParser.NewGazePointArgs aArgs)
         {
-            iPointer.moveTo(aArgs.Location);
-        }
-
-        private void Pointer_OnHide(object aSender, EventArgs aArgs)
-        {
-        }
-
-        private void Pointer_OnShow(object aSender, EventArgs aArgs)
-        {
-        }
-
-        private void Shortcut_TogglePointer()
-        {
-            if (iPointer.Visible)
-                iPointer.hide();
-            else
-                iPointer.show();
+            iWebSocketClient.send(new WebSocket.GazeEvent(aArgs.Location));
         }
 
         private void Shortcut_TrackingNext()
