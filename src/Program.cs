@@ -13,7 +13,7 @@ namespace GazeNetClient
 
             GazeNetClient gazeNetClient = new GazeNetClient();
 
-            if (gazeNetClient.AutoStarter.Enabled)
+            if (gazeNetClient.AutoStarter != null && gazeNetClient.AutoStarter.Enabled)
             {
                 gazeNetClient.AutoStarter.run(gazeNetClient);
             }

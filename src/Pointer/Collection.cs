@@ -135,7 +135,7 @@ namespace GazeNetClient.Pointer
             }
         }
 
-        private void MovePointer(string aID, PointF aLocation)
+        public void MovePointer(string aID, PointF aLocation)
         {
             Pointer pointer;
             if (iPointers.ContainsKey(aID))

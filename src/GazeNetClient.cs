@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
 using ETUDriver;
 
 namespace GazeNetClient
@@ -20,14 +22,15 @@ namespace GazeNetClient
 
         #region Internal members
 
-        private CoETUDriver iETUDriver;
-        private Processor.GazeParser iGazeParser;
+        private CoETUDriver iETUDriver = null;
+        private Processor.GazeParser iGazeParser = null;
         private Pointer.Collection iPointers = new Pointer.Collection();
-        private Menu iMenu;
-        private Options iOptions;
-        private NotifyIcon iTrayIcon;
+        private Menu iMenu = null;
+        private Options iOptions = null;
+        private NotifyIcon iTrayIcon = null;
 
         private WebSocket.Client iWebSocketClient = null;
+        private SynchronizationContext iUIContext;
 
         private bool iExitAfterTrackingStopped = false;
         private bool iDisposed = false;
@@ -87,6 +90,12 @@ namespace GazeNetClient
             iMenu.OnExit += Menu_Exit;
 
             iOptions = new Options();
+
+            iUIContext = System.Windows.Forms.WindowsFormsSynchronizationContext.Current;
+            if (iUIContext == null)
+            {
+                Console.WriteLine(" --- no context --- ");
+            }
 
             iTrayIcon = new NotifyIcon();
             iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon"]).GetHicon());
@@ -185,10 +194,10 @@ namespace GazeNetClient
             Menu.State trackerState = new Menu.State();
             trackerState.IsShowingOptions = aIsShowingDialog;
             trackerState.IsVisible = iPointers.Visible;
-            trackerState.HasDevices = iETUDriver.DeviceCount > 0;
-            trackerState.IsConnected = iETUDriver.Ready != 0;
-            trackerState.IsCalibrated = iETUDriver.Calibrated != 0;
-            trackerState.IsTracking = iETUDriver.Active != 0;
+            trackerState.HasDevices = iETUDriver != null && iETUDriver.DeviceCount > 0;
+            trackerState.IsConnected = iETUDriver != null && iETUDriver.Ready != 0;
+            trackerState.IsCalibrated = iETUDriver != null && iETUDriver.Calibrated != 0;
+            trackerState.IsTracking = iETUDriver != null && iETUDriver.Active != 0;
             iMenu.update(trackerState);
         }
 
@@ -240,7 +249,7 @@ namespace GazeNetClient
 
         private void Menu_Exit()
         {
-            if (iETUDriver.Active != 0)
+            if (iETUDriver != null && iETUDriver.Active != 0)
             {
                 iExitAfterTrackingStopped = true;
                 iETUDriver.stopTracking();
@@ -253,7 +262,10 @@ namespace GazeNetClient
 
         private void WebSocketClient_OnSample(object aSender, WebSocket.GazeEventReceived aArgs)
         {
-            iPointers.feed(aArgs);
+            //iPointers.feed(aArgs);
+            iUIContext.Send(new SendOrPostCallback((target) => {
+                iPointers.MovePointer(aArgs.from, aArgs.payload.Location);
+            }), null);
         }
 
         private void WebSocketClient_OnClosed(object sender, EventArgs e)

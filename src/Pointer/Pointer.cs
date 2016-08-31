@@ -117,7 +117,10 @@ namespace GazeNetClient.Pointer
 
             if (iWidget.Visible)
             {
-                iWidget.Location = new Point((int)(aLocation.X - iWidget.Width / 2), (int)(aLocation.Y - iWidget.Height / 2));
+                iWidget.Invoke(new Action(() =>
+                {
+                    iWidget.Location = new Point((int)(aLocation.X - iWidget.Width / 2), (int)(aLocation.Y - iWidget.Height / 2));
+                }));
             }
         }
 
