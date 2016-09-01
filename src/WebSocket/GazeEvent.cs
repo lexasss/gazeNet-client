@@ -35,18 +35,18 @@ namespace GazeNetClient.WebSocket
     }
     public class GazeEventSent
     {
-        public string source { get; set; }
+        public string topic { get; set; }
         public GazeEvent payload { get; set; }
 
         public GazeEventSent() { }
-        public GazeEventSent(string aSource, float aX, float aY)
+        public GazeEventSent(string aTopic, float aX, float aY)
         {
-            source = aSource;
+            topic = aTopic;
             payload = new GazeEvent(aX, aY);
         }
-        public GazeEventSent(string aSource, GazeEvent aPayload)
+        public GazeEventSent(string aTopic, GazeEvent aPayload)
         {
-            source = aSource;
+            topic = aTopic;
             payload = aPayload;
         }
     }

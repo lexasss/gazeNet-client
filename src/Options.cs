@@ -22,6 +22,7 @@ namespace GazeNetClient
         public Options()
         {
             InitializeComponent();
+
             Icon = Icon.FromHandle(new Bitmap(Icons["icon"]).GetHicon());
             foreach (Pointer.Style pointerStyle in Enum.GetValues(typeof(Pointer.Style)))
             {
@@ -36,9 +37,16 @@ namespace GazeNetClient
             iAutoStarter = aAutoStarter;
             iWebSocketClient = aWebSocketClient;
 
-            txbServerHost.Text = WebSocket.Client.Host;
-            nudServerPort.Value = WebSocket.Client.Port;
-            lblStatus.Text = iWebSocketClient.Connected ? "online" : "offline";
+
+            if (iWebSocketClient != null)
+            {
+                txbServerHost.Text = iWebSocketClient.Host;
+                nudServerPort.Value = iWebSocketClient.Port;
+                lblStatus.Text = iWebSocketClient.Connected ? "online" : "offline";
+                txbUserName.Text = iWebSocketClient.Config.UserName;
+                txbTopic.Text = iWebSocketClient.Config.Topics;
+                cmbRole.SelectedIndex = (int)iWebSocketClient.Config.Role - 1;
+            }
 
             iPointers.pushSettings();
 
@@ -72,11 +80,18 @@ namespace GazeNetClient
 
                 iAutoStarter.Enabled = chkAutoStarterEnabled.Checked;
 
-                if (WebSocket.Client.Host != txbServerHost.Text || WebSocket.Client.Port != (ushort)nudServerPort.Value)
+                if (iWebSocketClient != null)
                 {
-                    WebSocket.Client.Host = txbServerHost.Text;
-                    WebSocket.Client.Port = (ushort)nudServerPort.Value;
-                    iWebSocketClient.restart();
+                    iWebSocketClient.Host = txbServerHost.Text;
+                    iWebSocketClient.Port = (ushort)nudServerPort.Value;
+                    iWebSocketClient.Config.UserName = txbUserName.Text;
+                    iWebSocketClient.Config.Topics = txbTopic.Text;
+                    iWebSocketClient.Config.Role = (WebSocket.ClientRole)(cmbRole.SelectedIndex + 1);
+
+                    if (iWebSocketClient.NeedsRestart)
+                    {
+                        iWebSocketClient.restart();
+                    }
                 }
             }
         }

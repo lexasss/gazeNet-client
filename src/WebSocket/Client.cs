@@ -1,28 +1,84 @@
 ﻿using System;
 using System.Web.Script.Serialization;
-using System.Threading.Tasks;
 
 namespace GazeNetClient.WebSocket
 {
+    [Serializable]
     public class Client : IDisposable
     {
-        public static string Host { get; set; } = "localhost";
-        public static ushort Port { get; set; } = 8080;
+        #region Internal members
 
         private WebSocketSharp.WebSocket iWS = null;
         private JavaScriptSerializer iJSON = new JavaScriptSerializer();
         private bool iDisposed = false;
-        private Config iConfig;
+        private bool iNeedsRestart = false;
 
+        private string iHost = "localhost";
+        private ushort iPort = 8080;
+        private Config iConfig = new Config();
+
+        #endregion
+
+        #region events
+
+        public event EventHandler OnConnected = delegate { };
         public event EventHandler OnClosed = delegate { };
         public event EventHandler<GazeEventReceived> OnSample = delegate { };
 
-        public bool Connected { get { return iWS.ReadyState != WebSocketSharp.WebSocketState.Closed; } }
+        #endregion
 
-        public Client(Config aConfig)
+        #region Properties
+
+        public bool Connected { get { return iWS != null ? iWS.ReadyState != WebSocketSharp.WebSocketState.Closed : false; } }
+
+        public bool NeedsRestart { get { return (iNeedsRestart || iConfig.NeedsRestart) && Connected; } }
+
+        public string Host
         {
-            iConfig = aConfig;
-            Start();
+            get { return iHost; }
+            set
+            {
+                if (value != iHost)
+                {
+                    iNeedsRestart = true;
+                    iHost = value;
+                }
+            }
+        }
+
+        public ushort Port
+        {
+            get { return iPort; }
+            set
+            {
+                if (value != iPort)
+                {
+                    iNeedsRestart = true;
+                    iPort = value;
+                }
+            }
+        }
+
+        public Config Config
+        {
+            get { return iConfig; }
+            set
+            {
+                if (value != iConfig)
+                {
+                    iNeedsRestart = true;
+                    iConfig = value;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public Client()
+        {
+//            Start();
         }
 
         public void Dispose()
@@ -31,42 +87,18 @@ namespace GazeNetClient.WebSocket
             GC.SuppressFinalize(this);
         }
 
-        public void restart()
+        public void start()
         {
-            Stop();
-            Start();
-        }
-
-        public void send(GazeEvent aGazeEvent)
-        {
-            if (iWS != null)
-            {
-                string text = iJSON.Serialize(new GazeEventSent(iConfig.Sources, aGazeEvent));
-                iWS.Send(text);
-            }
-        }
-
-        protected virtual void Dispose(bool aDisposing)
-        {
-            if (iDisposed)
+            if (Connected)
                 return;
 
-            if (aDisposing)
+            iWS = new WebSocketSharp.WebSocket(String.Format("ws://{0}:{1}", Host, Port));
+
+            iWS.OnOpen += (sender, e) =>
             {
-                // Free any other managed objects here.
-                Stop();
-            }
-
-            // Free any unmanaged objects here.
-
-            iDisposed = true;
-        }
-
-        private void Start()
-        {
-            iWS = new WebSocketSharp.WebSocket(String.Format("ws://{0}:{1}", Client.Host, Client.Port));
-
-            iWS.OnOpen += (sender, e) => iWS.Send(iConfig.ToString());
+                OnConnected(this, new EventArgs());
+                iWS.Send(Config.ToString());
+            };
 
             iWS.OnMessage += (sender, e) =>
             {
@@ -82,9 +114,12 @@ namespace GazeNetClient.WebSocket
             iWS.OnClose += (sender, e) => OnClosed(this, new EventArgs());
 
             iWS.Connect();
+
+            iNeedsRestart = false;
+            iConfig.NeedsRestart = false;
         }
 
-        private void Stop()
+        public void stop()
         {
             if (iWS != null)
             {
@@ -92,5 +127,42 @@ namespace GazeNetClient.WebSocket
                 iWS = null;
             }
         }
+
+        public void restart()
+        {
+            stop();
+            start();
+        }
+
+        public void send(GazeEvent aGazeEvent)
+        {
+            if (iWS != null)
+            {
+                string text = iJSON.Serialize(new GazeEventSent(Config.Topics, aGazeEvent));
+                iWS.Send(text);
+            }
+        }
+
+        #endregion
+
+        #region Internal methods
+
+        protected virtual void Dispose(bool aDisposing)
+        {
+            if (iDisposed)
+                return;
+
+            if (aDisposing)
+            {
+                // Free any other managed objects here.
+                stop();
+            }
+
+            // Free any unmanaged objects here.
+
+            iDisposed = true;
+        }
+
+        #endregion
     }
 }

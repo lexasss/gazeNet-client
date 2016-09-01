@@ -1,29 +1,73 @@
 ﻿using System;
 using System.Web.Script.Serialization;
+using System.Xml.Serialization;
 
 namespace GazeNetClient.WebSocket
 {
     public enum ClientRole
     {
         None = 0,
-        Listener = 1,
+        Observer = 1,
         Source = 2,
-        SourceAndListener = 3
+        Both = 3
     }
 
+    [Serializable]
     public class Config
     {
+        private const string DEFAULT_TOPIC = "default";
+
         private JavaScriptSerializer iJSON = new JavaScriptSerializer();
 
-        public string Sources { get; set; } = "";
-        public ClientRole Role { get; set; } = ClientRole.Source;
+        private string iTopics = DEFAULT_TOPIC;
+        public string iUserName = "";
+        public ClientRole iRole = ClientRole.Both;
 
-        public static readonly Config Default = new Config("default", ClientRole.SourceAndListener);
+        [XmlIgnore]
+        public bool NeedsRestart { get; set; } = false;
 
-        public Config(string aSources, ClientRole aRole)
+        public string Topics
         {
-            Sources = aSources;
-            Role = aRole;
+            get { return iTopics; }
+            set
+            {
+                string newTopic = !String.IsNullOrEmpty(value) ? value : DEFAULT_TOPIC;
+                if (iTopics != newTopic)
+                {
+                    NeedsRestart = true;
+                    iTopics = newTopic;
+                }
+            }
+        }
+
+        public string UserName
+        {
+            get { return iUserName; }
+            set
+            {
+                if (value != iUserName)
+                {
+                    NeedsRestart = true;
+                    iUserName = value;
+                }
+            }
+        }
+
+        public ClientRole Role
+        {
+            get { return iRole; }
+            set
+            {
+                if (value != iRole)
+                {
+                    NeedsRestart = true;
+                    iRole = value;
+                }
+            }
+        }
+
+        public Config()
+        {
         }
 
         public override string ToString()
@@ -32,7 +76,8 @@ namespace GazeNetClient.WebSocket
                 config = new
                 {
                     role = (int)Role,
-                    sources = Sources
+                    topics = Topics,
+                    name = UserName
                 }
             });
         }

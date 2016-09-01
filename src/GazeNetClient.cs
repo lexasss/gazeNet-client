@@ -77,15 +77,17 @@ namespace GazeNetClient
             iGazeParser = new Processor.GazeParser();
             iGazeParser.OnNewGazePoint += GazeParser_OnNewGazePoint;
 
-            iWebSocketClient = new WebSocket.Client(WebSocket.Config.Default);
-            iWebSocketClient.OnSample += WebSocketClient_OnSample;
+            iWebSocketClient = Utils.Storage<WebSocket.Client>.load();
+            iWebSocketClient.OnConnected += WebSocketClient_OnConnected;
             iWebSocketClient.OnClosed += WebSocketClient_OnClosed;
+            iWebSocketClient.OnSample += WebSocketClient_OnSample;
 
             iMenu = new Menu();
             iMenu.OnShowOptions += showOptions;
-            iMenu.OnToggleVisibility += toggleVisibility;
+            iMenu.OnServerConnect += connect;
+            iMenu.OnTogglePointerVisibility += toggleVisibility;
             iMenu.OnShowETUDOptions += showETUDOptions;
-            iMenu.OnCalibrate += calibrate;
+            iMenu.OnCalibrateTracker += calibrate;
             iMenu.OnToggleTracking += toggleTracking;
             iMenu.OnExit += Menu_Exit;
 
@@ -126,9 +128,21 @@ namespace GazeNetClient
             UpdateMenu(false);
         }
 
+        public void connect()
+        {
+            if (iWebSocketClient == null)
+                return;
+
+            if (iWebSocketClient.Connected)
+                iWebSocketClient.stop();
+            else
+                iWebSocketClient.start();
+        }
+
         public void toggleVisibility()
         {
             iPointers.Visible = !iPointers.Visible;
+            UpdateMenu(false);
         }
 
         public void showETUDOptions()
@@ -149,6 +163,9 @@ namespace GazeNetClient
         {
             if (iETUDriver.Active == 0)
             {
+                if (iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
+                    iWebSocketClient.start();
+
                 Pointer.Collection.VisilityFollowsDataAvailability = true;
                 iGazeParser.start();
                 iETUDriver.startTracking();
@@ -158,6 +175,9 @@ namespace GazeNetClient
                 iETUDriver.stopTracking();
                 iGazeParser.stop();
                 Pointer.Collection.VisilityFollowsDataAvailability = false;
+
+                if (iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
+                    iWebSocketClient.stop();
             }
         }
 
@@ -177,7 +197,10 @@ namespace GazeNetClient
                 iPointers.Dispose();
 
                 if (iWebSocketClient != null)
+                {
+                    Utils.Storage<WebSocket.Client>.save(iWebSocketClient);
                     iWebSocketClient.Dispose();
+                }
 
                 Utils.Storage<AutoStarter>.save(AutoStarter);
                 Utils.GlobalShortcut.close();
@@ -193,11 +216,13 @@ namespace GazeNetClient
         {
             Menu.State trackerState = new Menu.State();
             trackerState.IsShowingOptions = aIsShowingDialog;
-            trackerState.IsVisible = iPointers.Visible;
-            trackerState.HasDevices = iETUDriver != null && iETUDriver.DeviceCount > 0;
-            trackerState.IsConnected = iETUDriver != null && iETUDriver.Ready != 0;
-            trackerState.IsCalibrated = iETUDriver != null && iETUDriver.Calibrated != 0;
-            trackerState.IsTracking = iETUDriver != null && iETUDriver.Active != 0;
+            trackerState.IsEyeTrackingRequired = iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0;
+            trackerState.IsServerConnected = iWebSocketClient != null && iWebSocketClient.Connected;
+            trackerState.IsPointerVisible = iPointers.Visible;
+            trackerState.HasTrackingDevices = iETUDriver != null && iETUDriver.DeviceCount > 0;
+            trackerState.IsTrackerConnected = iETUDriver != null && iETUDriver.Ready != 0;
+            trackerState.IsTrackerCalibrated = iETUDriver != null && iETUDriver.Calibrated != 0;
+            trackerState.IsTrackingGaze = iETUDriver != null && iETUDriver.Active != 0;
             iMenu.update(trackerState);
         }
 
@@ -264,13 +289,18 @@ namespace GazeNetClient
         {
             //iPointers.feed(aArgs);
             iUIContext.Send(new SendOrPostCallback((target) => {
-                iPointers.MovePointer(aArgs.from, aArgs.payload.Location);
+                iPointers.movePointer(aArgs.from, aArgs.payload.Location);
             }), null);
+        }
+
+        private void WebSocketClient_OnConnected(object sender, EventArgs e)
+        {
+            UpdateMenu(false);
         }
 
         private void WebSocketClient_OnClosed(object sender, EventArgs e)
         {
-            // do nothing
+            UpdateMenu(false);
         }
 
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazeParser.NewGazePointArgs aArgs)

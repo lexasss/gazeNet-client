@@ -41,14 +41,17 @@
             this.label4 = new System.Windows.Forms.Label();
             this.trbPointerSize = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tbpConnect = new System.Windows.Forms.TabPage();
             this.lblStatus = new System.Windows.Forms.Label();
             this.nudServerPort = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
             this.Port = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.txbTopic = new System.Windows.Forms.TextBox();
+            this.txbUserName = new System.Windows.Forms.TextBox();
             this.txbServerHost = new System.Windows.Forms.TextBox();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tbpPointer = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label7 = new System.Windows.Forms.Label();
             this.nudFilterFixationThreshold = new System.Windows.Forms.NumericUpDown();
@@ -65,12 +68,14 @@
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
             this.imlIcons = new System.Windows.Forms.ImageList(this.components);
+            this.cmbRole = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
-            this.tabPage4.SuspendLayout();
+            this.tbpConnect.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudServerPort)).BeginInit();
-            this.tabPage1.SuspendLayout();
+            this.tbpPointer.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudFilterFixationThreshold)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudFilterWindowSize)).BeginInit();
@@ -98,18 +103,19 @@
             this.cmbPointerAppearance.Location = new System.Drawing.Point(75, 6);
             this.cmbPointerAppearance.Name = "cmbPointerAppearance";
             this.cmbPointerAppearance.Size = new System.Drawing.Size(90, 21);
-            this.cmbPointerAppearance.TabIndex = 1;
+            this.cmbPointerAppearance.TabIndex = 0;
             this.cmbPointerAppearance.SelectedIndexChanged += new System.EventHandler(this.cmbAppearance_SelectedIndexChanged);
             // 
             // trbPointerOpacity
             // 
             this.trbPointerOpacity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.trbPointerOpacity.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.trbPointerOpacity.Location = new System.Drawing.Point(75, 33);
             this.trbPointerOpacity.Maximum = 9;
             this.trbPointerOpacity.Minimum = 1;
             this.trbPointerOpacity.Name = "trbPointerOpacity";
             this.trbPointerOpacity.Size = new System.Drawing.Size(90, 45);
-            this.trbPointerOpacity.TabIndex = 2;
+            this.trbPointerOpacity.TabIndex = 1;
             this.trbPointerOpacity.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.trbPointerOpacity.Value = 9;
             this.trbPointerOpacity.ValueChanged += new System.EventHandler(this.trbOpacity_ValueChanged);
@@ -177,12 +183,13 @@
             // trbPointerSize
             // 
             this.trbPointerSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.trbPointerSize.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.trbPointerSize.Location = new System.Drawing.Point(75, 84);
             this.trbPointerSize.Maximum = 30;
             this.trbPointerSize.Minimum = 3;
             this.trbPointerSize.Name = "trbPointerSize";
             this.trbPointerSize.Size = new System.Drawing.Size(90, 45);
-            this.trbPointerSize.TabIndex = 7;
+            this.trbPointerSize.TabIndex = 2;
             this.trbPointerSize.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.trbPointerSize.Value = 9;
             this.trbPointerSize.ValueChanged += new System.EventHandler(this.trbSize_ValueChanged);
@@ -192,8 +199,8 @@
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tbpConnect);
+            this.tabControl1.Controls.Add(this.tbpPointer);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
@@ -202,26 +209,31 @@
             this.tabControl1.Size = new System.Drawing.Size(218, 166);
             this.tabControl1.TabIndex = 10;
             // 
-            // tabPage4
+            // tbpConnect
             // 
-            this.tabPage4.Controls.Add(this.lblStatus);
-            this.tabPage4.Controls.Add(this.nudServerPort);
-            this.tabPage4.Controls.Add(this.label11);
-            this.tabPage4.Controls.Add(this.Port);
-            this.tabPage4.Controls.Add(this.label10);
-            this.tabPage4.Controls.Add(this.txbServerHost);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(210, 140);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Connection";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.tbpConnect.Controls.Add(this.cmbRole);
+            this.tbpConnect.Controls.Add(this.lblStatus);
+            this.tbpConnect.Controls.Add(this.nudServerPort);
+            this.tbpConnect.Controls.Add(this.Port);
+            this.tbpConnect.Controls.Add(this.label11);
+            this.tbpConnect.Controls.Add(this.label13);
+            this.tbpConnect.Controls.Add(this.label12);
+            this.tbpConnect.Controls.Add(this.label10);
+            this.tbpConnect.Controls.Add(this.txbTopic);
+            this.tbpConnect.Controls.Add(this.txbUserName);
+            this.tbpConnect.Controls.Add(this.txbServerHost);
+            this.tbpConnect.Location = new System.Drawing.Point(4, 22);
+            this.tbpConnect.Name = "tbpConnect";
+            this.tbpConnect.Padding = new System.Windows.Forms.Padding(3);
+            this.tbpConnect.Size = new System.Drawing.Size(210, 140);
+            this.tbpConnect.TabIndex = 3;
+            this.tbpConnect.Text = "Connection";
+            this.tbpConnect.UseVisualStyleBackColor = true;
             // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(72, 60);
+            this.lblStatus.Location = new System.Drawing.Point(142, 35);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(51, 13);
             this.lblStatus.TabIndex = 3;
@@ -243,22 +255,13 @@
             0,
             0});
             this.nudServerPort.Name = "nudServerPort";
-            this.nudServerPort.Size = new System.Drawing.Size(132, 20);
-            this.nudServerPort.TabIndex = 2;
+            this.nudServerPort.Size = new System.Drawing.Size(64, 20);
+            this.nudServerPort.TabIndex = 1;
             this.nudServerPort.Value = new decimal(new int[] {
             80,
             0,
             0,
             0});
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 60);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(37, 13);
-            this.label11.TabIndex = 1;
-            this.label11.Text = "Status";
             // 
             // Port
             // 
@@ -269,6 +272,24 @@
             this.Port.TabIndex = 1;
             this.Port.Text = "Port";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 88);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(34, 13);
+            this.label13.TabIndex = 1;
+            this.label13.Text = "Topic";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 62);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(29, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "User";
+            // 
             // label10
             // 
             this.label10.AutoSize = true;
@@ -277,6 +298,24 @@
             this.label10.Size = new System.Drawing.Size(38, 13);
             this.label10.TabIndex = 1;
             this.label10.Text = "Server";
+            // 
+            // txbTopic
+            // 
+            this.txbTopic.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txbTopic.Location = new System.Drawing.Point(72, 85);
+            this.txbTopic.Name = "txbTopic";
+            this.txbTopic.Size = new System.Drawing.Size(132, 20);
+            this.txbTopic.TabIndex = 3;
+            // 
+            // txbUserName
+            // 
+            this.txbUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txbUserName.Location = new System.Drawing.Point(72, 59);
+            this.txbUserName.Name = "txbUserName";
+            this.txbUserName.Size = new System.Drawing.Size(132, 20);
+            this.txbUserName.TabIndex = 2;
             // 
             // txbServerHost
             // 
@@ -288,23 +327,23 @@
             this.txbServerHost.TabIndex = 0;
             this.txbServerHost.Text = "localhost";
             // 
-            // tabPage1
+            // tbpPointer
             // 
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.lblSize);
-            this.tabPage1.Controls.Add(this.cmbPointerAppearance);
-            this.tabPage1.Controls.Add(this.label4);
-            this.tabPage1.Controls.Add(this.trbPointerOpacity);
-            this.tabPage1.Controls.Add(this.trbPointerSize);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.lblOpacity);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(210, 140);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Pointer";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tbpPointer.Controls.Add(this.label1);
+            this.tbpPointer.Controls.Add(this.lblSize);
+            this.tbpPointer.Controls.Add(this.cmbPointerAppearance);
+            this.tbpPointer.Controls.Add(this.label4);
+            this.tbpPointer.Controls.Add(this.trbPointerOpacity);
+            this.tbpPointer.Controls.Add(this.trbPointerSize);
+            this.tbpPointer.Controls.Add(this.label2);
+            this.tbpPointer.Controls.Add(this.lblOpacity);
+            this.tbpPointer.Location = new System.Drawing.Point(4, 22);
+            this.tbpPointer.Name = "tbpPointer";
+            this.tbpPointer.Padding = new System.Windows.Forms.Padding(3);
+            this.tbpPointer.Size = new System.Drawing.Size(210, 140);
+            this.tbpPointer.TabIndex = 0;
+            this.tbpPointer.Text = "Pointer";
+            this.tbpPointer.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
@@ -568,6 +607,28 @@
             this.imlIcons.Images.SetKeyName(0, "icon");
             this.imlIcons.Images.SetKeyName(1, "icon-active");
             // 
+            // cmbRole
+            // 
+            this.cmbRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRole.FormattingEnabled = true;
+            this.cmbRole.Items.AddRange(new object[] {
+            "observer",
+            "source",
+            "both"});
+            this.cmbRole.Location = new System.Drawing.Point(72, 111);
+            this.cmbRole.Name = "cmbRole";
+            this.cmbRole.Size = new System.Drawing.Size(132, 21);
+            this.cmbRole.TabIndex = 4;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 114);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Role";
+            // 
             // Options
             // 
             this.AcceptButton = this.btnOK;
@@ -586,11 +647,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).EndInit();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
+            this.tbpConnect.ResumeLayout(false);
+            this.tbpConnect.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudServerPort)).EndInit();
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.tbpPointer.ResumeLayout(false);
+            this.tbpPointer.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudFilterFixationThreshold)).EndInit();
@@ -618,7 +679,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TrackBar trbPointerSize;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tbpPointer;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown nudFilterTHigh;
@@ -634,14 +695,19 @@
         private System.Windows.Forms.NumericUpDown nudPointerFadingInterval;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown nudPointerNoDataVisibilityDuration;
-        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tbpConnect;
         private System.Windows.Forms.NumericUpDown nudServerPort;
         private System.Windows.Forms.Label Port;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txbServerHost;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ImageList imlIcons;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox txbTopic;
+        private System.Windows.Forms.TextBox txbUserName;
+        private System.Windows.Forms.ComboBox cmbRole;
+        private System.Windows.Forms.Label label11;
     }
 }
 

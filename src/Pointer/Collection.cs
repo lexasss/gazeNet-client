@@ -15,8 +15,8 @@ namespace GazeNetClient.Pointer
         private Stack<Settings> iSettingsBuffer = new Stack<Settings>();
         private Dictionary<string, Pointer> iPointers = new Dictionary<string, Pointer>();
         private bool iVisible = true;
-        private Timer iExecutor = new Timer();
-        private Stack<WebSocket.GazeEventReceived> iGazeEvents = new Stack<WebSocket.GazeEventReceived>();
+        //private Timer iExecutor = new Timer();
+        //private Stack<WebSocket.GazeEventReceived> iGazeEvents = new Stack<WebSocket.GazeEventReceived>();
 
         private bool iDisposed = false;
 
@@ -41,9 +41,9 @@ namespace GazeNetClient.Pointer
             Settings = Utils.Storage<Settings>.load();
             LoadStyleImages();
 
-            iExecutor.Interval = 40;
-            iExecutor.Tick += Executor_Tick;
-            iExecutor.Start();
+            //iExecutor.Interval = 40;
+            //iExecutor.Tick += Executor_Tick;
+            //iExecutor.Start();
         }
 
         public void Dispose()
@@ -76,13 +76,35 @@ namespace GazeNetClient.Pointer
             }
         }
 
+        public void movePointer(string aID, PointF aLocation)
+        {
+            Pointer pointer;
+            if (iPointers.ContainsKey(aID))
+            {
+                pointer = iPointers[aID];
+            }
+            else
+            {
+                pointer = new Pointer();
+                if (iVisible)
+                    pointer.show();
+                else
+                    pointer.hide();
+
+                iPointers.Add(aID, pointer);
+            }
+
+            pointer.moveTo(aLocation);
+        }
+
+        /*
         public void feed(WebSocket.GazeEventReceived aEvent)
         {
             lock (iGazeEvents)
             {
                 iGazeEvents.Push(aEvent);
             }
-        }
+        }*/
 
         private void LoadStyleImages()
         {
@@ -123,6 +145,7 @@ namespace GazeNetClient.Pointer
             iDisposed = true;
         }
 
+        /*
         private void Executor_Tick(object sender, EventArgs e)
         {
             lock (iGazeEvents)
@@ -133,27 +156,6 @@ namespace GazeNetClient.Pointer
                     MovePointer(evt.from, evt.payload.Location);
                 }
             }
-        }
-
-        public void MovePointer(string aID, PointF aLocation)
-        {
-            Pointer pointer;
-            if (iPointers.ContainsKey(aID))
-            {
-                pointer = iPointers[aID];
-            }
-            else
-            {
-                pointer = new Pointer();
-                if (iVisible)
-                    pointer.show();
-                else
-                    pointer.hide();
-
-                iPointers.Add(aID, pointer);
-            }
-
-            pointer.moveTo(aLocation);
-        }
+        }*/
     }
 }
