@@ -11,7 +11,18 @@ namespace GazeNetClient
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GazeNetClient gazeNetClient = new GazeNetClient();
+            GazeNetClient gazeNetClient;
+
+            try
+            {
+                gazeNetClient = new GazeNetClient();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
+            }
 
             if (gazeNetClient.AutoStarter != null && gazeNetClient.AutoStarter.Enabled)
             {

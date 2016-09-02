@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 using System.Threading;
-using System.Collections.Generic;
 using ETUDriver;
 
 namespace GazeNetClient
@@ -24,7 +22,7 @@ namespace GazeNetClient
 
         private CoETUDriver iETUDriver = null;
         private Processor.GazeParser iGazeParser = null;
-        private Pointer.Collection iPointers = new Pointer.Collection();
+        private Pointer.Collection iPointers = null;
         private Menu iMenu = null;
         private Options iOptions = null;
         private NotifyIcon iTrayIcon = null;
@@ -67,6 +65,8 @@ namespace GazeNetClient
         {
             AutoStarter = Utils.Storage<AutoStarter>.load();
 
+            iPointers = new Pointer.Collection();
+
             iETUDriver = new CoETUDriver();
             iETUDriver.OptionsFile = Utils.Storage.Folder + "etudriver.ini";
             iETUDriver.OnRecordingStart += ETUDriver_OnRecordingStart;
@@ -84,20 +84,13 @@ namespace GazeNetClient
 
             iMenu = new Menu();
             iMenu.OnShowOptions += showOptions;
-            iMenu.OnServerConnect += connect;
+            iMenu.OnToggleServerConnection += toggleConnection;
             iMenu.OnTogglePointerVisibility += toggleVisibility;
             iMenu.OnShowETUDOptions += showETUDOptions;
             iMenu.OnCalibrateTracker += calibrate;
-            iMenu.OnToggleTracking += toggleTracking;
             iMenu.OnExit += Menu_Exit;
 
             iOptions = new Options();
-
-            iUIContext = System.Windows.Forms.WindowsFormsSynchronizationContext.Current;
-            if (iUIContext == null)
-            {
-                Console.WriteLine(" --- no context --- ");
-            }
 
             iTrayIcon = new NotifyIcon();
             iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon"]).GetHicon());
@@ -110,6 +103,12 @@ namespace GazeNetClient
             Utils.GlobalShortcut.init();
 
             UpdateMenu(false);
+
+            iUIContext = WindowsFormsSynchronizationContext.Current;
+            if (iUIContext == null)
+            {
+                throw new Exception("Internal errorCannot: no UI ocntext");
+            }
         }
 
         public void Dispose()
@@ -128,7 +127,7 @@ namespace GazeNetClient
             UpdateMenu(false);
         }
 
-        public void connect()
+        public void toggleConnection()
         {
             if (iWebSocketClient == null)
                 return;
@@ -157,28 +156,6 @@ namespace GazeNetClient
             UpdateMenu(true);
             iETUDriver.calibrate();
             UpdateMenu(false);
-        }
-
-        public void toggleTracking()
-        {
-            if (iETUDriver.Active == 0)
-            {
-                if (iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
-                    iWebSocketClient.start();
-
-                Pointer.Collection.VisilityFollowsDataAvailability = true;
-                iGazeParser.start();
-                iETUDriver.startTracking();
-            }
-            else
-            {
-                iETUDriver.stopTracking();
-                iGazeParser.stop();
-                Pointer.Collection.VisilityFollowsDataAvailability = false;
-
-                if (iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
-                    iWebSocketClient.stop();
-            }
         }
 
         #endregion
@@ -212,18 +189,36 @@ namespace GazeNetClient
             iDisposed = true;
         }
 
-        private void UpdateMenu(bool aIsShowingDialog)
+        private void StartTracking()
+        {
+            //Pointer.Collection.VisilityFollowsDataAvailability = true;
+            iGazeParser.start();
+            iETUDriver.startTracking();
+        }
+
+        private void StopTracking()
+        {
+            iETUDriver.stopTracking();
+            iGazeParser.stop();
+            //Pointer.Collection.VisilityFollowsDataAvailability = false;
+        }
+
+        private void UpdateMenu(bool aIsShowingDialog, bool aConnecting = false)
         {
             Menu.State trackerState = new Menu.State();
-            trackerState.IsShowingOptions = aIsShowingDialog;
-            trackerState.IsEyeTrackingRequired = iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0;
-            trackerState.IsServerConnected = iWebSocketClient != null && iWebSocketClient.Connected;
-            trackerState.IsPointerVisible = iPointers.Visible;
-            trackerState.HasTrackingDevices = iETUDriver != null && iETUDriver.DeviceCount > 0;
-            trackerState.IsTrackerConnected = iETUDriver != null && iETUDriver.Ready != 0;
-            trackerState.IsTrackerCalibrated = iETUDriver != null && iETUDriver.Calibrated != 0;
-            trackerState.IsTrackingGaze = iETUDriver != null && iETUDriver.Active != 0;
-            iMenu.update(trackerState);
+            if (!aConnecting)
+            {
+                trackerState.IsShowingOptions = aIsShowingDialog;
+                trackerState.IsEyeTrackingRequired = iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0;
+                trackerState.IsServerConnected = iWebSocketClient != null && iWebSocketClient.Connected;
+                trackerState.IsPointerVisible = iPointers.Visible;
+                trackerState.HasTrackingDevices = iETUDriver != null && iETUDriver.DeviceCount > 0;
+                trackerState.IsTrackerConnected = iETUDriver != null && iETUDriver.Ready != 0;
+                trackerState.IsTrackerCalibrated = iETUDriver != null && iETUDriver.Calibrated != 0;
+                trackerState.IsTrackingGaze = iETUDriver != null && iETUDriver.Active != 0;
+            }
+
+            iMenu.update(trackerState, aConnecting);
         }
 
         private void Exit()
@@ -295,12 +290,36 @@ namespace GazeNetClient
 
         private void WebSocketClient_OnConnected(object sender, EventArgs e)
         {
-            UpdateMenu(false);
+            iUIContext.Send(new SendOrPostCallback((target) => {
+                if ((iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
+                {
+                    StartTracking();
+                }
+                else
+                {
+                    UpdateMenu(false);
+                }
+            }), null);
         }
 
         private void WebSocketClient_OnClosed(object sender, EventArgs e)
         {
-            UpdateMenu(false);
+            bool showToolTip = iUIContext != SynchronizationContext.Current;
+            iUIContext.Send(new SendOrPostCallback((target) => {
+                if ((iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0 && iETUDriver.Active > 0)
+                {
+                    StopTracking();
+                }
+                else
+                {
+                    UpdateMenu(false);
+                }
+
+                if (showToolTip)
+                {
+                    iTrayIcon.ShowBalloonTip(4000, "GazeNet client", "Disconnected from the server", ToolTipIcon.Warning);
+                }
+            }), null);
         }
 
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazeParser.NewGazePointArgs aArgs)
@@ -310,14 +329,16 @@ namespace GazeNetClient
 
         private void Shortcut_TrackingNext()
         {
-            if (State == TrackingState.Disconnected)
+            bool requiresTracking = (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0;
+
+            if (requiresTracking && State == TrackingState.Disconnected)
                 showETUDOptions();
-            else if (State == TrackingState.Connected)
+            else if (requiresTracking && State == TrackingState.Connected)
                 calibrate();
-            else if (State == TrackingState.Calibrated)
-                toggleTracking();
-            else if (State == TrackingState.Tracking)
-                toggleTracking();
+            else if ((!requiresTracking || State == TrackingState.Calibrated) && !iWebSocketClient.Connected )
+                toggleConnection();
+            else if (iWebSocketClient.Connected)
+                toggleConnection();
         }
 
         #endregion

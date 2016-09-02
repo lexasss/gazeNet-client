@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using System.Web.Script.Serialization;
 
 namespace GazeNetClient.WebSocket
@@ -109,7 +110,11 @@ namespace GazeNetClient.WebSocket
                 OnSample(this, evt);
             };
 
-            iWS.OnError += (sender, e) => Console.WriteLine(e.Message);
+            iWS.OnError += (sender, e) =>
+            {
+                //System.Windows.Forms.MessageBox.Show(e.Message, "GazeNet client", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                Console.WriteLine(e.Message);
+            };
 
             iWS.OnClose += (sender, e) => OnClosed(this, new EventArgs());
 
@@ -117,6 +122,13 @@ namespace GazeNetClient.WebSocket
 
             iNeedsRestart = false;
             iConfig.NeedsRestart = false;
+
+            if (!Connected)
+            {
+               MessageBox.Show(String.Format("Cannot connect to the server ({0}:{1})", Host, Port),
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                iWS = null;
+            }
         }
 
         public void stop()

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("University of Tampere")]
-[assembly: AssemblyProduct("GazeNetClient")]
+[assembly: AssemblyProduct("GazeNet client")]
 [assembly: AssemblyCopyright("Copyright © University of Tampere 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

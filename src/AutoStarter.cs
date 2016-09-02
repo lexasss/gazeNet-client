@@ -50,7 +50,7 @@ namespace GazeNetClient
                 }
                 else if (iGazeNetClient.State == GazeNetClient.TrackingState.Calibrated)
                 {
-                    iDelayedAction = new Utils.DelayedAction(iGazeNetClient.toggleTracking, 500);
+                    iDelayedAction = new Utils.DelayedAction(iGazeNetClient.toggleConnection, 500);
                 }
             }
         }

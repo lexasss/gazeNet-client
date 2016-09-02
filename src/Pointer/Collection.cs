@@ -15,8 +15,6 @@ namespace GazeNetClient.Pointer
         private Stack<Settings> iSettingsBuffer = new Stack<Settings>();
         private Dictionary<string, Pointer> iPointers = new Dictionary<string, Pointer>();
         private bool iVisible = true;
-        //private Timer iExecutor = new Timer();
-        //private Stack<WebSocket.GazeEventReceived> iGazeEvents = new Stack<WebSocket.GazeEventReceived>();
 
         private bool iDisposed = false;
 
@@ -40,10 +38,6 @@ namespace GazeNetClient.Pointer
         {
             Settings = Utils.Storage<Settings>.load();
             LoadStyleImages();
-
-            //iExecutor.Interval = 40;
-            //iExecutor.Tick += Executor_Tick;
-            //iExecutor.Start();
         }
 
         public void Dispose()
@@ -97,15 +91,6 @@ namespace GazeNetClient.Pointer
             pointer.moveTo(aLocation);
         }
 
-        /*
-        public void feed(WebSocket.GazeEventReceived aEvent)
-        {
-            lock (iGazeEvents)
-            {
-                iGazeEvents.Push(aEvent);
-            }
-        }*/
-
         private void LoadStyleImages()
         {
             if (StyleImages != null)
@@ -144,18 +129,5 @@ namespace GazeNetClient.Pointer
 
             iDisposed = true;
         }
-
-        /*
-        private void Executor_Tick(object sender, EventArgs e)
-        {
-            lock (iGazeEvents)
-            {
-                while (iGazeEvents.Count > 0)
-                {
-                    WebSocket.GazeEventReceived evt = iGazeEvents.Pop();
-                    MovePointer(evt.from, evt.payload.Location);
-                }
-            }
-        }*/
     }
 }

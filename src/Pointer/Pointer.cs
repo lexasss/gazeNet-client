@@ -36,10 +36,6 @@ namespace GazeNetClient.Pointer
                 {
                     iWidget.setImage(Collection.StyleImages[value]);
                 }
-                else
-                {
-                    throw new ArgumentException("Pointer.Appearance");
-                }
             }
         }
 
