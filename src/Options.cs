@@ -23,7 +23,7 @@ namespace GazeNetClient
         {
             InitializeComponent();
 
-            Icon = Icon.FromHandle(new Bitmap(Icons["icon"]).GetHicon());
+            Icon = Icon.FromHandle(new Bitmap(Icons["initial"]).GetHicon());
             foreach (Pointer.Style pointerStyle in Enum.GetValues(typeof(Pointer.Style)))
             {
                 cmbPointerAppearance.Items.Add(pointerStyle);

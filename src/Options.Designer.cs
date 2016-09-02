@@ -42,9 +42,11 @@
             this.trbPointerSize = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpConnect = new System.Windows.Forms.TabPage();
+            this.cmbRole = new System.Windows.Forms.ComboBox();
             this.lblStatus = new System.Windows.Forms.Label();
             this.nudServerPort = new System.Windows.Forms.NumericUpDown();
             this.Port = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -68,8 +70,6 @@
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
             this.imlIcons = new System.Windows.Forms.ImageList(this.components);
-            this.cmbRole = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -230,6 +230,19 @@
             this.tbpConnect.Text = "Connection";
             this.tbpConnect.UseVisualStyleBackColor = true;
             // 
+            // cmbRole
+            // 
+            this.cmbRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRole.FormattingEnabled = true;
+            this.cmbRole.Items.AddRange(new object[] {
+            "observer",
+            "source",
+            "both"});
+            this.cmbRole.Location = new System.Drawing.Point(72, 111);
+            this.cmbRole.Name = "cmbRole";
+            this.cmbRole.Size = new System.Drawing.Size(132, 21);
+            this.cmbRole.TabIndex = 4;
+            // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
@@ -271,6 +284,15 @@
             this.Port.Size = new System.Drawing.Size(26, 13);
             this.Port.TabIndex = 1;
             this.Port.Text = "Port";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 114);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Role";
             // 
             // label13
             // 
@@ -604,30 +626,9 @@
             // 
             this.imlIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlIcons.ImageStream")));
             this.imlIcons.TransparentColor = System.Drawing.Color.Transparent;
-            this.imlIcons.Images.SetKeyName(0, "icon");
-            this.imlIcons.Images.SetKeyName(1, "icon-active");
-            // 
-            // cmbRole
-            // 
-            this.cmbRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRole.FormattingEnabled = true;
-            this.cmbRole.Items.AddRange(new object[] {
-            "observer",
-            "source",
-            "both"});
-            this.cmbRole.Location = new System.Drawing.Point(72, 111);
-            this.cmbRole.Name = "cmbRole";
-            this.cmbRole.Size = new System.Drawing.Size(132, 21);
-            this.cmbRole.TabIndex = 4;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 114);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(29, 13);
-            this.label11.TabIndex = 1;
-            this.label11.Text = "Role";
+            this.imlIcons.Images.SetKeyName(0, "initial");
+            this.imlIcons.Images.SetKeyName(1, "connected");
+            this.imlIcons.Images.SetKeyName(2, "connected-as-observer");
             // 
             // Options
             // 

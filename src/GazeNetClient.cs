@@ -93,7 +93,7 @@ namespace GazeNetClient
             iOptions = new Options();
 
             iTrayIcon = new NotifyIcon();
-            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon"]).GetHicon());
+            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["initial"]).GetHicon());
             iTrayIcon.ContextMenuStrip = iMenu.Strip;
             iTrayIcon.Text = "GazeNet client";
             iTrayIcon.Visible = true;
@@ -219,6 +219,16 @@ namespace GazeNetClient
             }
 
             iMenu.update(trackerState, aConnecting);
+
+            if (iWebSocketClient != null)
+            {
+                string iconName = !iWebSocketClient.Connected ? "initial" : "connected";
+                if (iWebSocketClient.Connected && iWebSocketClient.Config.Role == WebSocket.ClientRole.Observer)
+                {
+                    iconName += "-as-observer";
+                }
+                iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons[iconName]).GetHicon());
+            }
         }
 
         private void Exit()
@@ -238,13 +248,11 @@ namespace GazeNetClient
 
         private void ETUDriver_OnRecordingStart()
         {
-            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon-active"]).GetHicon());
             UpdateMenu(false);
         }
 
         private void ETUDriver_OnRecordingStop()
         {
-            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["icon"]).GetHicon());
             UpdateMenu(false);
 
             if (iExitAfterTrackingStopped)
