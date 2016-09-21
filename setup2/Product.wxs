@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="GazeNet client" Language="1033" Version="1.0.0.0" Manufacturer="University of Tampere" UpgradeCode="c0f7085a-250c-4f00-b212-c44c6074f5ef">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Manufacturer="Oleg Spakov" Description="GazeNet Client" />
+    <Property Id="ARPCONTACT" Value="Oleg Spakov" />
+    <Property Id="ARPPRODUCTICON">_A39E593CE5D0</Property>
+    <Icon Id="_A39E593CE5D0" SourceFile="..\src\icon.ico" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+    <Feature Id="ProductFeature" Title="GazeNetClient" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="GazeNetClient.Binaries" />
+      <ComponentRef Id="comp_dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" />
+      <ComponentRef Id="comp_CAAD8807_73C1_4E5F_8969_0A7BF451A8B1" />
+    </Feature>
+  </Product>
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="dir_1F1E9D66_511F_4C84_97F8_E8F0471EA9B3" Name="University of Tampere">
+          <Directory Id="INSTALLFOLDER" Name="GazeNetClient">
+            <Directory Id="GazeNetClient.Binaries" />
+          </Directory>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" Name="University of Tampere">
+          <Component Id="comp_dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" Guid="A0A4D606-0C83-4B56-8C00-7684B9DCBA04">
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]\Installer" Name="comp_dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" Type="string" Value="New Folder #1 directory" KeyPath="yes" />
+            <RemoveFolder Id="id_7C271589_6856_4CCA_BA6B_5616EDFDC59A" On="uninstall" Directory="dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" />
+          </Component>
+          <Component Id="comp_CAAD8807_73C1_4E5F_8969_0A7BF451A8B1" Guid="F827382B-8A28-437E-B298-2BCAF4963FC0" Permanent="no" SharedDllRefCount="no" Transitive="no">
+            <Shortcut Id="_2A6D999E_4AFA_46FE_A6C7_843F1A05605A" Directory="dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" Name="GazeNet client" Show="normal" Target="[INSTALLFOLDER]GazeNetClient.exe" WorkingDirectory="dir_C0E5D1A5_E455_4405_8CAF_F21DB86077FA" />
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]\Installer" Name="comp_CAAD8807_73C1_4E5F_8969_0A7BF451A8B1" Type="string" Value="GazeNetClient directory" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+      <!-- <Component Id="ProductComponent"> -->
+      <!-- TODO: Insert files, registry keys, and other resources here. -->
+      <!-- </Component> -->
+      <Component Id="comp_CE251D36_1464_4883_922A_FFFF8990E1CB" Guid="AB1BBBF3-31B2-4746-8254-62B430D07ED6" Permanent="no" SharedDllRefCount="no" Transitive="no">
+        <File Id="_AED2310F_1A3B_4621_AE81_6AD3AB2F96BF" DiskId="1" Hidden="no" ReadOnly="no" TrueType="no" System="no" Vital="yes" Name="websocket-sharp.dll" Source="..\packages\WebSocketSharp.1.0.3-rc11\lib\websocket-sharp.dll" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

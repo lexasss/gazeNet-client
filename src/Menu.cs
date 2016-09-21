@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using Plugin;
 
 namespace GazeNetClient
 {
@@ -108,6 +110,24 @@ namespace GazeNetClient
             tsmiETUDOptions.Visible = aState.IsEyeTrackingRequired;
             tsmiETUDCalibrate.Visible = aState.IsEyeTrackingRequired;
             tssETUDSeparator.Visible = aState.IsEyeTrackingRequired;
+        }
+
+        public void addPlugins(Plugins aPlugins)
+        {
+            foreach (Plugin.Plugin p in aPlugins.Items)
+            {
+                IDictionary<string, EventHandler> items = p.MenuItems;
+                if (items != null && items.Count > 0)
+                {
+                    cmsMenu.Items.Insert(0, new ToolStripSeparator());
+                    foreach (KeyValuePair<string, EventHandler> k in items)
+                    {
+                        ToolStripMenuItem item = new ToolStripMenuItem(k.Key);
+                        item.Click += k.Value;
+                        cmsMenu.Items.Insert(0, item);
+                    }
+                }
+            }
         }
 
         #endregion

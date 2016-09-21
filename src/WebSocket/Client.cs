@@ -20,11 +20,12 @@ namespace GazeNetClient.WebSocket
 
         #endregion
 
-        #region events
+        #region Events
 
         public event EventHandler OnConnected = delegate { };
         public event EventHandler OnClosed = delegate { };
         public event EventHandler<GazeEventReceived> OnSample = delegate { };
+        public event EventHandler<CommandReceived> OnCommand = delegate { };
 
         #endregion
 
@@ -106,13 +107,36 @@ namespace GazeNetClient.WebSocket
                 if (e.IsPing || !e.IsText)
                     return;
 
-                GazeEventReceived evt = iJSON.Deserialize<GazeEventReceived>(e.Data);
-                OnSample(this, evt);
+                dynamic data = iJSON.DeserializeObject(e.Data);
+
+                try
+                {
+                    if (data["payload"] != null)
+                    {
+                        GazeEventReceived evt = iJSON.Deserialize<GazeEventReceived>(e.Data);
+                        OnSample(this, evt);
+                        return;
+                    }
+                }
+                catch (Exception) { }
+
+                try
+                {
+                    if (data["command"] != null)
+                    {
+                        CommandReceived cmd = iJSON.Deserialize<CommandReceived>(e.Data);
+                        OnCommand(this, cmd);
+                        return;
+                    }
+                }
+                catch (Exception) { }
+
+                //GazeEventReceived evt = iJSON.Deserialize<GazeEventReceived>(e.Data);
+                //OnSample(this, evt);
             };
 
             iWS.OnError += (sender, e) =>
             {
-                //System.Windows.Forms.MessageBox.Show(e.Message, "GazeNet client", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 Console.WriteLine(e.Message);
             };
 

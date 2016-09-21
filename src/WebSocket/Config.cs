@@ -20,8 +20,8 @@ namespace GazeNetClient.WebSocket
         private JavaScriptSerializer iJSON = new JavaScriptSerializer();
 
         private string iTopics = DEFAULT_TOPIC;
-        public string iUserName = "";
-        public ClientRole iRole = ClientRole.Both;
+        private string iUserName = "";
+        private ClientRole iRole = ClientRole.Both;
 
         [XmlIgnore]
         public bool NeedsRestart { get; set; } = false;
@@ -66,9 +66,7 @@ namespace GazeNetClient.WebSocket
             }
         }
 
-        public Config()
-        {
-        }
+        public Config() { }
 
         public override string ToString()
         {

@@ -3,6 +3,30 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
 using ETUDriver;
+using Plugin;
+
+// Comment #1
+//
+// A very weird behaviour of ETU-Driver was observed:
+// when ETU-Driver tracking start/stops from the WebSocket,
+// even if its execution is directed to the UI sync context,
+// then fome functionality inside ETU-Driver becomes asynchronous.
+// For example, when Mouse is used for data emultions and 
+// ETUDriver.stopTracking() is called this way, then stop() function 
+// in Mouse.dll stops the timer, deleted some objects and do other stuff, 
+// but timer callback execution is still running in parallel and cause exceptions
+// as a result of de-referencing null pointers.
+// 
+// To overcome the problem, an additional direct ETU-Driver tracking toggling 
+// was executed when using the context menu. The problem remains for the cases 
+// when WebSocket disconnects itself: disconnection triggers ETUDriver tracking
+// toggling, and at this point, as was described, the ETUDriver device module
+// may throw an exception.
+//
+//
+// Comment #2
+//
+// AppDomain.DoCallback does not help to solve the Commet #1 issue
 
 namespace GazeNetClient
 {
@@ -21,6 +45,7 @@ namespace GazeNetClient
         #region Internal members
 
         private CoETUDriver iETUDriver = null;
+        private AppDomain iETUDriverAppDomain = null;
         private Processor.GazeParser iGazeParser = null;
         private Pointer.Collection iPointers = null;
         private Menu iMenu = null;
@@ -32,6 +57,10 @@ namespace GazeNetClient
 
         private bool iExitAfterTrackingStopped = false;
         private bool iDisposed = false;
+        
+        private Plugins iPlugins = new Plugins(new Plugin.Plugin[] {
+            //new OinQs.OinQs()
+        });
 
         #endregion
 
@@ -67,6 +96,14 @@ namespace GazeNetClient
 
             iPointers = new Pointer.Collection();
 
+            foreach (Plugin.Plugin plugin in iPlugins.Items)
+            {
+                plugin.Log += Plugin_Log;
+                plugin.Req += Plugin_Req;
+            }
+
+            iETUDriverAppDomain = AppDomain.CurrentDomain;
+
             iETUDriver = new CoETUDriver();
             iETUDriver.OptionsFile = Utils.Storage.Folder + "etudriver.ini";
             iETUDriver.OnRecordingStart += ETUDriver_OnRecordingStart;
@@ -83,6 +120,7 @@ namespace GazeNetClient
             iWebSocketClient.OnSample += WebSocketClient_OnSample;
 
             iMenu = new Menu();
+            iMenu.addPlugins(iPlugins);
             iMenu.OnShowOptions += showOptions;
             iMenu.OnToggleServerConnection += toggleConnection;
             iMenu.OnTogglePointerVisibility += toggleVisibility;
@@ -111,6 +149,23 @@ namespace GazeNetClient
             }
         }
 
+        private void Plugin_Req(object aSender, Request aArgs)
+        {
+            switch (aArgs)
+            {
+                case Request.Stop:
+                    toggleConnection();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void Plugin_Log(object aSender, string aArgs)
+        {
+            Console.WriteLine(aArgs);
+        }
+
         public void Dispose()
         {
             Dispose(true);
@@ -132,10 +187,20 @@ namespace GazeNetClient
             if (iWebSocketClient == null)
                 return;
 
-            if (iWebSocketClient.Connected)
-                iWebSocketClient.stop();
-            else
+            // see Comment #1
+            if ((iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
+            {
+                if (iETUDriver.Active == 0)
+                    StartTracking();
+                else
+                    StopTracking();
+            }
+            // end see */
+
+            if (!iWebSocketClient.Connected)
                 iWebSocketClient.start();
+            else
+                iWebSocketClient.stop();
         }
 
         public void toggleVisibility()
@@ -192,14 +257,24 @@ namespace GazeNetClient
         private void StartTracking()
         {
             //Pointer.Collection.VisilityFollowsDataAvailability = true;
-            iGazeParser.start();
-            iETUDriver.startTracking();
+            if (State != TrackingState.Tracking)
+            {
+                //iETUDriverAppDomain.DoCallBack(new CrossAppDomainDelegate(() => { // see Comment #2
+                iGazeParser.start();
+                iETUDriver.startTracking();
+                //}));
+            }
         }
 
         private void StopTracking()
         {
-            iETUDriver.stopTracking();
-            iGazeParser.stop();
+            if (State == TrackingState.Tracking)
+            {
+                //iETUDriverAppDomain.DoCallBack( new CrossAppDomainDelegate( () => { // see Comment #2
+                iETUDriver.stopTracking();
+                iGazeParser.stop();
+                //}));
+            }
             //Pointer.Collection.VisilityFollowsDataAvailability = false;
         }
 
@@ -249,11 +324,14 @@ namespace GazeNetClient
         private void ETUDriver_OnRecordingStart()
         {
             UpdateMenu(false);
+            iPlugins.start();
         }
 
         private void ETUDriver_OnRecordingStop()
         {
             UpdateMenu(false);
+
+            iPlugins.finilize();
 
             if (iExitAfterTrackingStopped)
             {
@@ -303,7 +381,7 @@ namespace GazeNetClient
                 {
                     StartTracking();
                 }
-                else
+                //else  // see Comment #1
                 {
                     UpdateMenu(false);
                 }
@@ -314,11 +392,11 @@ namespace GazeNetClient
         {
             bool showToolTip = iUIContext != SynchronizationContext.Current;
             iUIContext.Send(new SendOrPostCallback((target) => {
-                if ((iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0 && iETUDriver.Active > 0)
+                if ((iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
                 {
                     StopTracking();
                 }
-                else
+                //else  // see Comment #1
                 {
                     UpdateMenu(false);
                 }
@@ -333,6 +411,7 @@ namespace GazeNetClient
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazeParser.NewGazePointArgs aArgs)
         {
             iWebSocketClient.send(new WebSocket.GazeEvent(aArgs.Location));
+            iPlugins.feed(aArgs.Location.X, aArgs.Location.Y);
         }
 
         private void Shortcut_TrackingNext()
