@@ -8,11 +8,11 @@ namespace GazeNetClient.Utils
         private Timer iTimer = new Timer();
         private Action iAction;
 
-        public DelayedAction(Action aAction, int aDelay)
+        public DelayedAction(int aDelay, Action aAction)
         {
             iAction = aAction;
-            iTimer.Interval = aDelay;
 
+            iTimer.Interval = aDelay;
             iTimer.Tick += Timer_Tick;
             iTimer.Start();
         }
