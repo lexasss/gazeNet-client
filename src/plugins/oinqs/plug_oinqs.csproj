@@ -52,6 +52,8 @@
     <Compile Include="Display.Designer.cs">
       <DependentUpon>Display.cs</DependentUpon>
     </Compile>
+    <Compile Include="Instruction.cs" />
+    <Compile Include="LayoutItem.cs" />
     <Compile Include="Letter.cs">
       <SubType>UserControl</SubType>
     </Compile>

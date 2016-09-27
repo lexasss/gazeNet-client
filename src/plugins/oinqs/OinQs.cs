@@ -23,13 +23,6 @@ namespace GazeNetClient.Plugins.OinQs
     {
         public const string NAME = "oinqs";
 
-        private class LetterNetDesc
-        {
-            public string text { get; set; }
-            public int x { get; set; }
-            public int y { get; set; }
-        }
-
         private Display iDisplay = new Display();
         JavaScriptSerializer iJSON = new JavaScriptSerializer();
 
@@ -45,6 +38,7 @@ namespace GazeNetClient.Plugins.OinQs
 
             iDisplay.OnFound += Display_OnFound;
             iDisplay.OnStopped += Display_OnStopped;
+            iDisplay.OnRequestExit += Display_OnRequestExit;
         }
 
         public void feed(float aX, float aY)
@@ -59,8 +53,7 @@ namespace GazeNetClient.Plugins.OinQs
 
         public void start()
         {
-            iDisplay.Controls.Clear();
-            iDisplay.Enabled = false;
+            iDisplay.clear();
             iDisplay.Show();
         }
 
@@ -68,46 +61,49 @@ namespace GazeNetClient.Plugins.OinQs
         {
             if (aCommand == Command.ADD)
             {
-                LetterNetDesc letterDesc = iJSON.Deserialize<LetterNetDesc>(aValue);
-                CreateAndAddLetter(letterDesc);
+                LayoutItem item = iJSON.Deserialize<LayoutItem>(aValue);
+                CreateAndAddLetter(item);
             }
             else if (aCommand == Command.ADD_RANGE)
             {
-                LetterNetDesc[] letterDescs = iJSON.Deserialize<LetterNetDesc[]>(aValue);
-                foreach (LetterNetDesc letterDesc in letterDescs)
-                    CreateAndAddLetter(letterDesc);
+                LayoutItem[] items = iJSON.Deserialize<LayoutItem[]>(aValue);
+                foreach (LayoutItem item in items)
+                    CreateAndAddLetter(item);
+            }
+            else if (aCommand == Command.INSTRUCTION)
+            {
+                Instruction instruction = iJSON.Deserialize<Instruction>(aValue);
+                Console.WriteLine("{0}, {1}", instruction.text, instruction.time);
+                iDisplay.showInstruction(instruction);
             }
             else if (aCommand == Command.DISPLAY)
             {
-                foreach (Control ctrl in iDisplay.Controls)
-                    ctrl.Visible = true;
-                iDisplay.Enabled = true;
+                iDisplay.showItems();
             }
             else if (aCommand == Command.RESULT)
             {
-                if (iDisplay.Enabled)
+                if (iDisplay.IsDisplayingItems)
                 {
                     //SearchResult sr = iJSON.Deserialize<SearchResult>(aValue);
-                    //Console.WriteLine("Someone's result: {0}", sr.found ? "found" : "not found");
+                    //System.Diagnostics.Debug.WriteLine("Someone's result: {0}", sr.found ? "found" : "not found");
                     FinishTrial();
                 }
             }
         }
 
-        private void CreateAndAddLetter(LetterNetDesc aLetterDesc)
+        private void CreateAndAddLetter(LayoutItem aItem)
         {
             Letter letter = new Letter();
-            letter.Text = aLetterDesc.text;
-            letter.X = aLetterDesc.x;
-            letter.Y = aLetterDesc.y;
+            letter.Text = aItem.text;
+            letter.X = aItem.x;
+            letter.Y = aItem.y;
             letter.Visible = false;
-            iDisplay.Controls.Add(letter);
+            iDisplay.addItem(letter);
         }
 
         private void FinishTrial()
         {
-            iDisplay.Enabled = false;
-            iDisplay.Controls.Clear();
+            iDisplay.clear();
         }
 
         private void Display_OnStopped(object aSender, EventArgs aArgs)
@@ -122,6 +118,11 @@ namespace GazeNetClient.Plugins.OinQs
             FinishTrial();
             string payload = iJSON.Serialize(new SearchResult() { found = true });
             Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+        }
+
+        private void Display_OnRequestExit(object aSender, EventArgs aArgs)
+        {
+            Req(this, new Plugin.RequestArgs(Plugin.RequestType.Stop));
         }
     }
 }

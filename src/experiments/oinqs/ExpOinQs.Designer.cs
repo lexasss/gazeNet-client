@@ -37,15 +37,18 @@
             this.label3 = new System.Windows.Forms.Label();
             this.nudTrialCount = new System.Windows.Forms.NumericUpDown();
             this.svdSession = new System.Windows.Forms.SaveFileDialog();
+            this.label4 = new System.Windows.Forms.Label();
+            this.nudOsPerQs = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.nudObjectCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTrialCount)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudOsPerQs)).BeginInit();
             this.SuspendLayout();
             // 
             // btnStart
             // 
             this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.Location = new System.Drawing.Point(12, 111);
+            this.btnStart.Location = new System.Drawing.Point(12, 134);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(166, 23);
             this.btnStart.TabIndex = 0;
@@ -83,6 +86,8 @@
             // 
             // nudObjectCount
             // 
+            this.nudObjectCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.nudObjectCount.Location = new System.Drawing.Point(86, 39);
             this.nudObjectCount.Maximum = new decimal(new int[] {
             1000,
@@ -115,6 +120,8 @@
             // 
             // nudTrialCount
             // 
+            this.nudTrialCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.nudTrialCount.Location = new System.Drawing.Point(86, 65);
             this.nudTrialCount.Minimum = new decimal(new int[] {
             1,
@@ -134,12 +141,44 @@
             // svdSession
             // 
             this.svdSession.DefaultExt = "txt";
+            this.svdSession.Filter = "Text files|*.txt";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 93);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(42, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "O/Q  %";
+            // 
+            // nudOsPerQs
+            // 
+            this.nudOsPerQs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.nudOsPerQs.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.nudOsPerQs.Location = new System.Drawing.Point(86, 91);
+            this.nudOsPerQs.Name = "nudOsPerQs";
+            this.nudOsPerQs.Size = new System.Drawing.Size(92, 20);
+            this.nudOsPerQs.TabIndex = 3;
+            this.nudOsPerQs.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.nudOsPerQs.ValueChanged += new System.EventHandler(this.nudOsPerQs_ValueChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(190, 146);
+            this.ClientSize = new System.Drawing.Size(190, 169);
+            this.Controls.Add(this.nudOsPerQs);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.nudTrialCount);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.nudObjectCount);
@@ -155,6 +194,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.nudObjectCount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTrialCount)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudOsPerQs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -170,6 +210,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown nudTrialCount;
         private System.Windows.Forms.SaveFileDialog svdSession;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown nudOsPerQs;
     }
 }
 

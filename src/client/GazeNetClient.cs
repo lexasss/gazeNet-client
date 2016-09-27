@@ -58,7 +58,7 @@ namespace GazeNetClient
         private bool iExitAfterTrackingStopped = false;
         private bool iDisposed = false;
         
-        private Plugin.Plugins iPlugins = new Plugin.Plugins(new Plugin.IPlugin[] {
+        private Plugin.Plugins iPlugins = new Plugin.Plugins(new IPlugin[] {
             new Plugins.OinQs.OinQs()
         });
 
@@ -397,7 +397,9 @@ namespace GazeNetClient
             iUIContext.Send(new SendOrPostCallback((target) => {
                 IPlugin plugin = iPlugins[aArgs.payload.target];
                 if (plugin != null)
+                {
                     plugin.command(aArgs.payload.command, aArgs.payload.value);
+                }
             }), null);
         }
 
@@ -423,7 +425,7 @@ namespace GazeNetClient
 
         private void Plugin_Log(object aSender, string aArgs)
         {
-            Console.WriteLine(aArgs);
+            System.Diagnostics.Debug.WriteLine(aArgs);
         }
 
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazeParser.NewGazePointArgs aArgs)

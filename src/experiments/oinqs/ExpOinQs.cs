@@ -14,7 +14,7 @@ namespace GazeNetClient.Experiment.OinQs
         private SynchronizationContext iUIContext;
 
         private System.Windows.Forms.Timer iReplyTimeout = new System.Windows.Forms.Timer();
-        private Logger iLogger = new Logger();
+        private Session iSession;
 
         public MainForm()
         {
@@ -35,6 +35,7 @@ namespace GazeNetClient.Experiment.OinQs
             txbTopic.Text = iWebSocketClient.Config.Topics;
             nudObjectCount.Value = iConfig.ObjectCount;
             nudTrialCount.Value = iConfig.TrialCount;
+            nudOsPerQs.Value = iConfig.OsPerQs;
 
             iUIContext = WindowsFormsSynchronizationContext.Current;
             if (iUIContext == null)
@@ -45,27 +46,45 @@ namespace GazeNetClient.Experiment.OinQs
 
         private void StartTrial()
         {
-            LayoutItem[] items = RandomLayout.create(Screen.PrimaryScreen.Bounds.Size, iConfig.ObjectCount);
+            Plugins.OinQs.LayoutItem[] items = iSession.createTrial();
             string payload = iJSON.Serialize(items);
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.ADD_RANGE, payload));
 
-            new Utils.DelayedAction(1000, () =>
+            Utils.DelayedAction.Execute(1500, () =>
             {
-                iLogger.startTrial();
+                string instruction = string.Format("Search for \"{0}\". Press ENTER when found, or SPACE if is not displayed", Plugins.OinQs.LayoutItemText.Target);
+                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 3000));
+                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+            });
+
+            Utils.DelayedAction.Execute(5000, () =>
+            {
+                iSession.startTrial();
                 iReplyTimeout.Start();
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.DISPLAY, ""));
             });
         }
 
-        private void Finish()
+        private void FinishTrial(string aParticipant, TrialResult aResult)
         {
+            bool sessionFinished = iSession.finishTrial(aParticipant, aResult);
+            if (sessionFinished)
+            {
+                string payload = iJSON.Serialize(new Plugins.OinQs.Instruction("Thank you!", 2000));
+                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+                iWebSocketClient.stop();
+            }
+            else
+            {
+                StartTrial();
+            }
         }
 
         private void WebSocketClient_OnConnected(object aSender, EventArgs aArgs)
         {
             iUIContext.Send(new SendOrPostCallback((target) => {
                 btnStart.Enabled = false;
-                new Utils.DelayedAction(1000, () => { StartTrial(); });
+                Utils.DelayedAction.Execute(1000, () => { StartTrial(); });
             }), null);
         }
 
@@ -80,7 +99,7 @@ namespace GazeNetClient.Experiment.OinQs
                 }
                 if (svdSession.ShowDialog() == DialogResult.OK)
                 {
-                    iLogger.save(svdSession.FileName);
+                    iSession.save(svdSession.FileName);
                 }
             }), null);
         }
@@ -92,17 +111,7 @@ namespace GazeNetClient.Experiment.OinQs
                 {
                     iReplyTimeout.Stop();
                     Plugins.OinQs.SearchResult result = iJSON.Deserialize<Plugins.OinQs.SearchResult>(aArgs.payload.value);
-
-                    Console.WriteLine("FROM: {0}, VAL: {1}", aArgs.from, result.found);
-
-                    if (iLogger.finishTrial(aArgs.from, result.found ? TrialResult.Found : TrialResult.NotFound))
-                    {
-                        iWebSocketClient.stop();
-                    }
-                    else
-                    {
-                        StartTrial();
-                    }
+                    FinishTrial(aArgs.from, result.found ? TrialResult.Found : TrialResult.NotFound);
                 }
             }), null);
         }
@@ -110,17 +119,8 @@ namespace GazeNetClient.Experiment.OinQs
         private void ReplyTimeout_Tick(object sender, EventArgs e)
         {
             iReplyTimeout.Stop();
-
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.RESULT, ""));
-
-            if (iLogger.finishTrial("", TrialResult.Timeout))
-            {
-                iWebSocketClient.stop();
-            }
-            else
-            {
-                StartTrial();
-            }
+            FinishTrial("", TrialResult.Timeout);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -129,9 +129,9 @@ namespace GazeNetClient.Experiment.OinQs
             {
                 if (iWebSocketClient.Connected)
                 {
-                    if (MessageBox.Show("Data will be lost if you exit the experiment before it is finished. Do you want to exit now?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    e.Cancel = MessageBox.Show("Data will be lost if you exit the experiment before it is finished. Do you want to exit now?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No;
+                    if (e.Cancel)
                     {
-                        e.Cancel = true;
                         return;
                     }
                     else
@@ -150,7 +150,7 @@ namespace GazeNetClient.Experiment.OinQs
 
         private void btnStart_Click(object aSender, EventArgs aArgs)
         {
-            iLogger.initialize((int)nudTrialCount.Value);
+            iSession = new Session(iConfig);
             iWebSocketClient.start();
         }
 
@@ -167,6 +167,11 @@ namespace GazeNetClient.Experiment.OinQs
         private void nudTrialCount_ValueChanged(object sender, EventArgs e)
         {
             iConfig.TrialCount = (int)nudTrialCount.Value;
+        }
+
+        private void nudOsPerQs_ValueChanged(object sender, EventArgs e)
+        {
+            iConfig.OsPerQs = (int)nudOsPerQs.Value;
         }
     }
 }

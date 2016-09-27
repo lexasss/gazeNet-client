@@ -58,9 +58,8 @@
     <Compile Include="ExpOinQs.Designer.cs">
       <DependentUpon>ExpOinQs.cs</DependentUpon>
     </Compile>
-    <Compile Include="Logging.cs" />
+    <Compile Include="Session.cs" />
     <Compile Include="RandomLayout.cs" />
-    <Compile Include="LayoutItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ExpOinQs.resx">

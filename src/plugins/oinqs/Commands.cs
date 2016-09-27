@@ -4,6 +4,7 @@
     {
         public const string ADD = "add";
         public const string ADD_RANGE = "add_range";
+        public const string INSTRUCTION = "instruction";
         public const string DISPLAY = "display";
         public const string RESULT = "result";
     }

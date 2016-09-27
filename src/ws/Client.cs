@@ -123,7 +123,7 @@ namespace GazeNetClient.WebSocket
 
             iWS.OnError += (sender, e) =>
             {
-                Console.WriteLine(e.Message);
+                System.Diagnostics.Debug.WriteLine(e.Message);
             };
 
             iWS.OnClose += (sender, e) => OnClosed(this, new EventArgs());
