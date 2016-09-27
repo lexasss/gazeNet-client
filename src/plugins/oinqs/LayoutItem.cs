@@ -17,7 +17,7 @@ namespace GazeNetClient.Plugins.OinQs
         public int y { get; set; }
 
         [ScriptIgnore]
-        public bool IsTarget { get { return text == LayoutItemText.Target; } }
+        public bool IsTarget { get { return text.StartsWith(LayoutItemText.Target); } }
 
         public LayoutItem() { }
         public LayoutItem(string aText, int aX, int aY)

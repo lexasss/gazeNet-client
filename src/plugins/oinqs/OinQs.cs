@@ -62,13 +62,13 @@ namespace GazeNetClient.Plugins.OinQs
             if (aCommand == Command.ADD)
             {
                 LayoutItem item = iJSON.Deserialize<LayoutItem>(aValue);
-                CreateAndAddLetter(item);
+                CreateAndAddStimuli(item);
             }
             else if (aCommand == Command.ADD_RANGE)
             {
                 LayoutItem[] items = iJSON.Deserialize<LayoutItem[]>(aValue);
                 foreach (LayoutItem item in items)
-                    CreateAndAddLetter(item);
+                    CreateAndAddStimuli(item);
             }
             else if (aCommand == Command.INSTRUCTION)
             {
@@ -91,14 +91,14 @@ namespace GazeNetClient.Plugins.OinQs
             }
         }
 
-        private void CreateAndAddLetter(LayoutItem aItem)
+        private void CreateAndAddStimuli(LayoutItem aItem)
         {
-            Letter letter = new Letter();
-            letter.Text = aItem.text;
-            letter.X = aItem.x;
-            letter.Y = aItem.y;
-            letter.Visible = false;
-            iDisplay.addItem(letter);
+            Stimuli stimuli = new Stimuli();
+            stimuli.Image = aItem.text;
+            stimuli.X = aItem.x;
+            stimuli.Y = aItem.y;
+            stimuli.Visible = false;
+            iDisplay.addItem(stimuli);
         }
 
         private void FinishTrial()

@@ -6,10 +6,11 @@ namespace GazeNetClient.Experiment.OinQs
 {
     public static class RandomLayout
     {
-        private const int MIN_DIST_TO_CENTER = 200;
-        private const int MIN_DIST_TO_ITEM = 100;
+        private const int MARGIN_CENTER = 73;   // 2 deg
+        private const int MARGIN_BORDER = 36;   // 1 deg
+        private const int MARGIN_OTHERS = 73;   // 2 deg
 
-        public static Plugins.OinQs.LayoutItem[] create(Size aFieldSize, int aCount, bool aTargetPresence)
+        public static Plugins.OinQs.LayoutItem[] create(Size aFieldSize, int aCount, TrialConditions aTrialCondition)
         {
             List<Plugins.OinQs.LayoutItem> result = new List<Plugins.OinQs.LayoutItem>();
             Random rand = new Random();
@@ -22,27 +23,43 @@ namespace GazeNetClient.Experiment.OinQs
                 {
                     x = rand.Next(aFieldSize.Width);
                     y = rand.Next(aFieldSize.Height);
-                    isValid = validate(x, y, aFieldSize.Width / 2, aFieldSize.Height / 2);
+
+                    isValid = validate(x, y, aFieldSize.Width / 2, aFieldSize.Height / 2, MARGIN_CENTER) &&
+                        validate(x, 0, MARGIN_BORDER) && 
+                        validate(y, 0, MARGIN_BORDER) &&
+                        validate(x, aFieldSize.Width, MARGIN_BORDER) &&
+                        validate(y, aFieldSize.Height, MARGIN_BORDER);
                     if (!isValid)
                         continue;
+
                     foreach (Plugins.OinQs.LayoutItem item in result)
                     {
-                        isValid = validate(x, y, item.x, item.y);
+                        isValid = validate(x, y, item.x, item.y, MARGIN_OTHERS);
                         if (!isValid)
                             break;
                     }
                 } while (!isValid);
 
-                string text = (i == 0 && aTargetPresence) ? Plugins.OinQs.LayoutItemText.Target : Plugins.OinQs.LayoutItemText.Distractor;
+                string letter = (i == 0 && aTrialCondition.TargetPresence) ? Plugins.OinQs.LayoutItemText.Target : Plugins.OinQs.LayoutItemText.Distractor;
+                int orientation = aTrialCondition.Orientation;
+                if (letter == Plugins.OinQs.LayoutItemText.Target && orientation > 90)
+                    orientation -= 180;
+
+                string text = string.Format("{0}{1}", letter, orientation);
                 result.Add(new Plugins.OinQs.LayoutItem(text, x, y));
             }
 
             return result.ToArray();
         }
 
-        private static bool validate(int aLeft, int aTop, int aAnotherX, int aAnotherY)
+        private static bool validate(int aX1, int aY1, int aX2, int aY2, int aThreshold)
         {
-            return Math.Sqrt(Math.Pow(aLeft - aAnotherX, 2) + Math.Pow(aTop - aAnotherY / 2, 2)) > MIN_DIST_TO_ITEM;
+            return Math.Sqrt(Math.Pow(aX1 - aX2, 2) + Math.Pow(aY1 - aY2, 2)) > aThreshold;
+        }
+
+        private static bool validate(int aValue1, int aValue2, int aThreshold)
+        {
+            return Math.Abs(aValue1 - aValue2) > aThreshold;
         }
     }
 }

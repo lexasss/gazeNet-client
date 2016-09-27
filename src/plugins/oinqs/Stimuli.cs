@@ -2,12 +2,12 @@
 
 namespace GazeNetClient.Plugins.OinQs
 {
-    public partial class Letter : UserControl
+    public partial class Stimuli : UserControl
     {
-        public override string Text
+        public string Image
         {
-            get { return lblText.Text; }
-            set { lblText.Text = value; }
+            get { return lblText.ImageKey; }
+            set { lblText.ImageKey = value; }
         }
 
         public int X
@@ -21,7 +21,7 @@ namespace GazeNetClient.Plugins.OinQs
             set { Top = value - Height / 2; }
         }
 
-        public Letter()
+        public Stimuli()
         {
             InitializeComponent();
         }

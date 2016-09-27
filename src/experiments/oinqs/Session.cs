@@ -6,6 +6,18 @@ using System.Text;
 
 namespace GazeNetClient.Experiment.OinQs
 {
+    public class TrialConditions
+    {
+        public bool TargetPresence { get; private set; }
+        public int Orientation { get; private set; }
+
+        public TrialConditions(bool aTargetPresence, int aOrientation)
+        {
+            TargetPresence = aTargetPresence;
+            Orientation = aOrientation;
+        }
+    }
+
     public enum TrialResult
     {
         Timeout = -1,
@@ -19,6 +31,7 @@ namespace GazeNetClient.Experiment.OinQs
 
         public int ObjectCounts { get; private set; }
         public bool TargetPresence { get; private set; }
+        public int Orientation { get; private set; }
         public string Sender { get; private set; }
         public TrialResult Result { get; private set; }
         public int Time { get; private set; }
@@ -38,6 +51,7 @@ namespace GazeNetClient.Experiment.OinQs
                 return new StringBuilder().
                     Append("Objects").Append("\t").
                     Append("Target").Append("\t").
+                    Append("Orientation").Append("\t").
                     Append("Sender").Append("\t").
                     Append("Result").Append("\t").
                     Append("Time").
@@ -45,12 +59,13 @@ namespace GazeNetClient.Experiment.OinQs
             }
         }
 
-        public Log(Plugins.OinQs.LayoutItem[] aItems, string aSender, TrialResult aResult, int aTime)
+        public Log(Plugins.OinQs.LayoutItem[] aItems, int aOrientation, string aSender, TrialResult aResult, int aTime)
         {
             iItems = aItems;
 
             ObjectCounts = aItems.Length;
             TargetPresence = HasTarget();
+            Orientation = aOrientation;
             Sender = aSender;
             Result = aResult;
             Time = aTime;
@@ -61,6 +76,7 @@ namespace GazeNetClient.Experiment.OinQs
             return new StringBuilder().
                 Append(iItems.Length).Append("\t").
                 Append(TargetPresence ? 1 : 0).Append("\t").
+                Append(Orientation).Append("\t").
                 Append(Sender).Append("\t").
                 Append((int)Result).Append("\t").
                 Append(Time).
@@ -86,7 +102,7 @@ namespace GazeNetClient.Experiment.OinQs
     {
         private Config iConfig;
 
-        private List<bool> iTargetPresences;
+        private List<TrialConditions> iTrialConditions;
         private Plugins.OinQs.LayoutItem[] iCurrentItems;
         private int iTrialIndex = -1;
 
@@ -96,7 +112,7 @@ namespace GazeNetClient.Experiment.OinQs
         public Session(Config aConfig)
         {
             iConfig = aConfig;
-            AssignTargetPresences();
+            AssignStimuliTypes();
         }
 
         public Plugins.OinQs.LayoutItem[] createTrial()
@@ -104,7 +120,7 @@ namespace GazeNetClient.Experiment.OinQs
             iTrialIndex++;
 
             Size size = iConfig.UseWholeScreen ? System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size : iConfig.FieldSize;
-            iCurrentItems = RandomLayout.create(size, iConfig.ObjectCount, iTargetPresences[iTrialIndex]);
+            iCurrentItems = RandomLayout.create(size, iConfig.ObjectCount, iTrialConditions[iTrialIndex]);
             return iCurrentItems;
         }
 
@@ -115,7 +131,9 @@ namespace GazeNetClient.Experiment.OinQs
 
         public bool finishTrial(string aSender, TrialResult aResult)
         {
-            Log log = new Log(iCurrentItems, aSender, aResult, (int)(DateTime.Now - iTrialStart).TotalMilliseconds);
+            int time = (int)(DateTime.Now - iTrialStart).TotalMilliseconds;
+            int orientation = iTrialConditions[iTrialIndex].Orientation;
+            Log log = new Log(iCurrentItems, orientation, aSender, aResult, time);
             iLogs.Add(log);
 
             return iLogs.Count == iConfig.TrialCount;
@@ -131,14 +149,16 @@ namespace GazeNetClient.Experiment.OinQs
             }
         }
 
-        private void AssignTargetPresences()
+        private void AssignStimuliTypes()
         {
-            iTargetPresences = new List<bool>(iConfig.TrialCount);
+            iTrialConditions = new List<TrialConditions>(iConfig.TrialCount);
             int trialsWithTargets = iConfig.TrialsWithTarget;
 
             for (int i = 0; i < iConfig.TrialCount; i++)
             {
-                iTargetPresences.Add(i < trialsWithTargets);
+                bool isTargetPresented = i < trialsWithTargets;
+                int orientation = (i % 4) * 90;
+                iTrialConditions.Add(new TrialConditions(isTargetPresented, orientation));
             }
 
             Random rand = new Random();
@@ -146,9 +166,9 @@ namespace GazeNetClient.Experiment.OinQs
             {
                 int a = rand.Next(iConfig.TrialCount);
                 int b = rand.Next(iConfig.TrialCount);
-                bool val = iTargetPresences[a];
-                iTargetPresences[a] = iTargetPresences[b];
-                iTargetPresences[b] = val;
+                TrialConditions val = iTrialConditions[a];
+                iTrialConditions[a] = iTrialConditions[b];
+                iTrialConditions[b] = val;
             }
         }
     }

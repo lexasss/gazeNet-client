@@ -44,20 +44,32 @@ namespace GazeNetClient.Experiment.OinQs
             }
         }
 
+        private void StartSession()
+        {
+            string instruction = string.Format("Search for \"{0}\". Press ENTER when found, or SPACE if is not displayed", Plugins.OinQs.LayoutItemText.Target);
+            string payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 4500));
+            iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+
+            Utils.DelayedAction.Execute(5000, () =>
+            {
+                StartTrial();
+            });
+        }
+
         private void StartTrial()
         {
             Plugins.OinQs.LayoutItem[] items = iSession.createTrial();
             string payload = iJSON.Serialize(items);
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.ADD_RANGE, payload));
 
-            Utils.DelayedAction.Execute(1500, () =>
+            Utils.DelayedAction.Execute(500, () =>
             {
-                string instruction = string.Format("Search for \"{0}\". Press ENTER when found, or SPACE if is not displayed", Plugins.OinQs.LayoutItemText.Target);
-                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 3000));
+                string instruction = "+";
+                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 2000));
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
             });
 
-            Utils.DelayedAction.Execute(5000, () =>
+            Utils.DelayedAction.Execute(3000, () =>
             {
                 iSession.startTrial();
                 iReplyTimeout.Start();
@@ -84,7 +96,7 @@ namespace GazeNetClient.Experiment.OinQs
         {
             iUIContext.Send(new SendOrPostCallback((target) => {
                 btnStart.Enabled = false;
-                Utils.DelayedAction.Execute(1000, () => { StartTrial(); });
+                Utils.DelayedAction.Execute(1000, () => { StartSession(); });
             }), null);
         }
 
