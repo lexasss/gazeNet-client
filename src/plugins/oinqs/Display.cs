@@ -10,9 +10,11 @@ namespace GazeNetClient.Plugins.OinQs
 
         public event EventHandler OnFound = delegate { };
         public event EventHandler OnStopped = delegate { };
+        public event EventHandler OnNext = delegate { };
         public event EventHandler OnRequestExit = delegate { };
 
         public bool IsDisplayingItems { get; set; } = false;
+        public bool Active { get; set; } = false;
 
         public Display()
         {
@@ -28,12 +30,14 @@ namespace GazeNetClient.Plugins.OinQs
 
             iItems.Clear();
             IsDisplayingItems = false;
+            Active = false;
         }
 
         public void addItem(Control aItem)
         {
             iItems.Add(aItem);
             Controls.Add(aItem);
+            Active = true;
         }
 
         public void showItems()
@@ -43,7 +47,8 @@ namespace GazeNetClient.Plugins.OinQs
             foreach (Control ctrl in iItems)
                 ctrl.Visible = true;
 
-            IsDisplayingItems = true;
+            IsDisplayingItems = iItems.Count > 0;
+            Active = iItems.Count > 0;
 
             BringToFront();
             Activate();
@@ -59,6 +64,8 @@ namespace GazeNetClient.Plugins.OinQs
                 tmrInstructionHide.Interval = aInstruction.time;
                 tmrInstructionHide.Start();
             }
+
+            Active = true;
         }
 
         private void Display_KeyDown(object sender, KeyEventArgs e)
@@ -75,7 +82,10 @@ namespace GazeNetClient.Plugins.OinQs
             }
             else if (e.KeyCode == Keys.Space)
             {
-                OnStopped(this, new EventArgs());
+                if (IsDisplayingItems)
+                    OnStopped(this, new EventArgs());
+                else if (!Active)
+                    OnNext(this, new EventArgs());
             }
         }
 
@@ -83,6 +93,7 @@ namespace GazeNetClient.Plugins.OinQs
         {
             tmrInstructionHide.Stop();
             lblInstruction.Hide();
+            Active = iItems.Count > 0;
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Reflection;
-using System.Windows.Forms;
 
 namespace GazeNetClient.Pointer
 {
@@ -79,7 +78,7 @@ namespace GazeNetClient.Pointer
             }
             else
             {
-                pointer = new Pointer();
+                pointer = new Pointer(iPointers.Count);
                 if (iVisible)
                     pointer.show();
                 else

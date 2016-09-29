@@ -38,6 +38,7 @@ namespace GazeNetClient.Plugins.OinQs
 
             iDisplay.OnFound += Display_OnFound;
             iDisplay.OnStopped += Display_OnStopped;
+            iDisplay.OnNext += Display_OnNext;
             iDisplay.OnRequestExit += Display_OnRequestExit;
         }
 
@@ -59,7 +60,12 @@ namespace GazeNetClient.Plugins.OinQs
 
         public void command(string aCommand, string aValue)
         {
-            if (aCommand == Command.ADD)
+            if (aCommand == Command.CONFIG)
+            {
+                Plugin.ExternalConfig extConfig = iJSON.Deserialize<Plugin.ExternalConfig>(aValue);
+                Req(this, new Plugin.SetExternalConfigRequestArgs(extConfig));
+            }
+            else if (aCommand == Command.ADD)
             {
                 LayoutItem item = iJSON.Deserialize<LayoutItem>(aValue);
                 CreateAndAddStimuli(item);
@@ -104,20 +110,32 @@ namespace GazeNetClient.Plugins.OinQs
         private void FinishTrial()
         {
             iDisplay.clear();
+            iDisplay.showInstruction(new Instruction("...", 0));
         }
 
         private void Display_OnStopped(object aSender, EventArgs aArgs)
         {
-            FinishTrial();
-            string payload = iJSON.Serialize(new SearchResult() { found = false });
-            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+            if (iDisplay.IsDisplayingItems)
+            {
+                FinishTrial();
+                string payload = iJSON.Serialize(new SearchResult() { found = false });
+                Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+            }
         }
 
         private void Display_OnFound(object aSender, EventArgs aArgs)
         {
-            FinishTrial();
-            string payload = iJSON.Serialize(new SearchResult() { found = true });
-            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+            if (iDisplay.IsDisplayingItems)
+            {
+                FinishTrial();
+                string payload = iJSON.Serialize(new SearchResult() { found = true });
+                Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+            }
+        }
+
+        private void Display_OnNext(object sender, EventArgs e)
+        {
+            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.NEXT, "")));
         }
 
         private void Display_OnRequestExit(object aSender, EventArgs aArgs)

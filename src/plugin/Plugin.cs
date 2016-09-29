@@ -6,7 +6,8 @@ namespace GazeNetClient.Plugin
     public enum RequestType
     {
         Stop,
-        Send
+        Send,
+        SetConfig
     }
 
     public class RequestArgs : EventArgs

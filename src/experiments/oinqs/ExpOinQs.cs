@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
@@ -29,13 +29,21 @@ namespace GazeNetClient.Experiment.OinQs
             iWebSocketClient.OnClosed += WebSocketClient_OnClosed;
             iWebSocketClient.OnCommand += WebSocketClient_OnCommand;
 
-            iReplyTimeout.Interval = 10000;
+            iReplyTimeout.Interval = 1000 * iConfig.Timeout;
             iReplyTimeout.Tick += ReplyTimeout_Tick;
 
             txbTopic.Text = iWebSocketClient.Config.Topics;
-            nudObjectCount.Value = iConfig.ObjectCount;
-            nudTrialCount.Value = iConfig.TrialCount;
-            nudOsPerQs.Value = iConfig.OsPerQs;
+            chkPointerVisibility.Checked = iConfig.IsPointerVisible;
+            nudRepetitions.Value = iConfig.Repetitions;
+            nudScreenSizeWidth.Value = iConfig.ScreenSize.Width;
+            nudScreenSizeHeight.Value = iConfig.ScreenSize.Height;
+            nudScreenResolutionWidth.Value = iConfig.ScreenResolution.Width;
+            nudScreenResolutionHeight.Value = iConfig.ScreenResolution.Height;
+            nudDistance.Value = iConfig.Distance;
+
+            Utils.Sizing.ScreenSize = iConfig.ScreenSize;
+            Utils.Sizing.ScreenResolution = iConfig.ScreenResolution;
+            Utils.Sizing.ScreenDistance = iConfig.Distance;
 
             iUIContext = WindowsFormsSynchronizationContext.Current;
             if (iUIContext == null)
@@ -46,9 +54,14 @@ namespace GazeNetClient.Experiment.OinQs
 
         private void StartSession()
         {
+            string payload;
+
             string instruction = string.Format("Search for \"{0}\". Press ENTER when found, or SPACE if is not displayed", Plugins.OinQs.LayoutItemText.Target);
-            string payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 4500));
+            payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 0));
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+
+            payload = iJSON.Serialize(new Plugin.ExternalConfig(iConfig.IsPointerVisible));
+            iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.CONFIG, payload));
 
             Utils.DelayedAction.Execute(5000, () =>
             {
@@ -58,14 +71,30 @@ namespace GazeNetClient.Experiment.OinQs
 
         private void StartTrial()
         {
-            Plugins.OinQs.LayoutItem[] items = iSession.createTrial();
-            string payload = iJSON.Serialize(items);
+            string payload;
+            Plugins.OinQs.LayoutItem[] items;
+
+            try
+            {
+                items = iSession.createTrial();
+            }
+            catch (Exception ex)
+            {
+                string instruction = "SETUP FAILURE.\nPlease wait...";
+                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 4000));
+                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+
+                MessageBox.Show(ex.Message, "O-in-Qs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            payload = iJSON.Serialize(items);
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.ADD_RANGE, payload));
 
             Utils.DelayedAction.Execute(500, () =>
             {
                 string instruction = "+";
-                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 2000));
+                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 0));
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
             });
 
@@ -80,17 +109,37 @@ namespace GazeNetClient.Experiment.OinQs
         private void FinishTrial(string aParticipant, TrialResult aResult)
         {
             bool sessionFinished = iSession.finishTrial(aParticipant, aResult);
+
+            ShowFeedback(aResult, sessionFinished);
+
             if (sessionFinished)
             {
-                string payload = iJSON.Serialize(new Plugins.OinQs.Instruction("Thank you!", 2000));
-                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
                 iWebSocketClient.stop();
+            }
+        }
+
+        private void ShowFeedback(TrialResult aResult, bool aIsSessionFinished)
+        {
+            string instruction;
+            if (aResult == TrialResult.Timeout)
+            {
+                instruction = "Timeout.";
+                if (!aIsSessionFinished)
+                    instruction += " Try to be faster.";
             }
             else
             {
-                StartTrial();
+                instruction = iSession.isResultCorrect(aResult) ? "Well done!" : "The target " +
+                    (aResult == TrialResult.Found ? "WASN'T" : "WAS") + " there.";
             }
+
+            instruction += aIsSessionFinished ? "\n\nFinished! Thank you!" : "\n\nPress SPACE to continue.";
+
+            string payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 2000));
+            iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
         }
+
+        #region Event handlers
 
         private void WebSocketClient_OnConnected(object aSender, EventArgs aArgs)
         {
@@ -112,18 +161,32 @@ namespace GazeNetClient.Experiment.OinQs
                 if (svdSession.ShowDialog() == DialogResult.OK)
                 {
                     iSession.save(svdSession.FileName);
+                    iSession = null;
                 }
             }), null);
         }
 
         private void WebSocketClient_OnCommand(object aSender, WebSocket.CommandReceived aArgs)
         {
+            if (aArgs.payload.target != Plugins.OinQs.OinQs.NAME)
+                return;
+
             iUIContext.Send(new SendOrPostCallback((target) => {
-                if (aArgs.payload.target == Plugins.OinQs.OinQs.NAME && aArgs.payload.command == Plugins.OinQs.Command.RESULT)
+                if (aArgs.payload.command == Plugins.OinQs.Command.RESULT)
                 {
+                    if (!iReplyTimeout.Enabled)
+                        return;
+
                     iReplyTimeout.Stop();
                     Plugins.OinQs.SearchResult result = iJSON.Deserialize<Plugins.OinQs.SearchResult>(aArgs.payload.value);
                     FinishTrial(aArgs.from, result.found ? TrialResult.Found : TrialResult.NotFound);
+                }
+                else if (aArgs.payload.command == Plugins.OinQs.Command.NEXT)
+                {
+                    if (iReplyTimeout.Enabled || iSession == null || iSession.Active)
+                        return;
+
+                    StartTrial();
                 }
             }), null);
         }
@@ -135,13 +198,15 @@ namespace GazeNetClient.Experiment.OinQs
             FinishTrial("", TrialResult.Timeout);
         }
 
+        #endregion
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (iWebSocketClient != null)
             {
                 if (iWebSocketClient.Connected)
                 {
-                    e.Cancel = MessageBox.Show("Data will be lost if you exit the experiment before it is finished. Do you want to exit now?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No;
+                    e.Cancel = MessageBox.Show("Data will be lost if you close the application before it is finished. Do you want to exit now?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No;
                     if (e.Cancel)
                     {
                         return;
@@ -171,19 +236,44 @@ namespace GazeNetClient.Experiment.OinQs
             iWebSocketClient.Config.Topics = txbTopic.Text;
         }
 
-        private void nudObjectCount_ValueChanged(object sender, EventArgs e)
+        private void nudRepetitions_ValueChanged(object sender, EventArgs e)
         {
-            iConfig.ObjectCount = (int)nudObjectCount.Value;
+            iConfig.Repetitions = (int)nudRepetitions.Value;
         }
 
-        private void nudTrialCount_ValueChanged(object sender, EventArgs e)
+        private void nudScreenSizeWidth_ValueChanged(object sender, EventArgs e)
         {
-            iConfig.TrialCount = (int)nudTrialCount.Value;
+            iConfig.ScreenSize = new Size((int)nudScreenSizeWidth.Value, iConfig.ScreenSize.Height);
+            Utils.Sizing.ScreenSize = iConfig.ScreenSize;
         }
 
-        private void nudOsPerQs_ValueChanged(object sender, EventArgs e)
+        private void nudScreenSizeHeight_ValueChanged(object sender, EventArgs e)
         {
-            iConfig.OsPerQs = (int)nudOsPerQs.Value;
+            iConfig.ScreenSize = new Size(iConfig.ScreenSize.Width, (int)nudScreenSizeHeight.Value);
+            Utils.Sizing.ScreenSize = iConfig.ScreenSize;
+        }
+
+        private void nudScreenResolutionWidth_ValueChanged(object sender, EventArgs e)
+        {
+            iConfig.ScreenResolution = new Size((int)nudScreenResolutionWidth.Value, iConfig.ScreenResolution.Height);
+            Utils.Sizing.ScreenResolution = iConfig.ScreenResolution;
+        }
+
+        private void nudScreenResolutionHeight_ValueChanged(object sender, EventArgs e)
+        {
+            iConfig.ScreenResolution = new Size(iConfig.ScreenResolution.Width, (int)nudScreenResolutionHeight.Value);
+            Utils.Sizing.ScreenResolution = iConfig.ScreenResolution;
+        }
+
+        private void nudDistance_ValueChanged(object sender, EventArgs e)
+        {
+            iConfig.Distance = (int)nudDistance.Value;
+            Utils.Sizing.ScreenDistance = iConfig.Distance;
+        }
+
+        private void chkPointerVisibility_CheckedChanged(object sender, EventArgs e)
+        {
+            iConfig.IsPointerVisible = chkPointerVisibility.Checked;
         }
     }
 }

@@ -2,125 +2,36 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 
 namespace GazeNetClient.Experiment.OinQs
 {
-    public class TrialConditions
-    {
-        public bool TargetPresence { get; private set; }
-        public int Orientation { get; private set; }
-
-        public TrialConditions(bool aTargetPresence, int aOrientation)
-        {
-            TargetPresence = aTargetPresence;
-            Orientation = aOrientation;
-        }
-    }
-
-    public enum TrialResult
-    {
-        Timeout = -1,
-        NotFound = 0,
-        Found = 1
-    }
-
-    public class Log
-    {
-        private Plugins.OinQs.LayoutItem[] iItems;
-
-        public int ObjectCounts { get; private set; }
-        public bool TargetPresence { get; private set; }
-        public int Orientation { get; private set; }
-        public string Sender { get; private set; }
-        public TrialResult Result { get; private set; }
-        public int Time { get; private set; }
-
-        public static string Header
-        {
-            get
-            {
-                /*
-                StringBuilder sb = new StringBuilder();
-                Type type = typeof(Log);
-                System.Reflection.PropertyInfo[] pis = type.GetProperties();
-                foreach (System.Reflection.PropertyInfo propInfo in pis)
-                    if (propInfo.PropertyType.IsPublic && propInfo.PropertyType.)
-                        sb.Append(propInfo.Name).Append("\t");
-                return sb.ToString();*/
-                return new StringBuilder().
-                    Append("Objects").Append("\t").
-                    Append("Target").Append("\t").
-                    Append("Orientation").Append("\t").
-                    Append("Sender").Append("\t").
-                    Append("Result").Append("\t").
-                    Append("Time").
-                    ToString();
-            }
-        }
-
-        public Log(Plugins.OinQs.LayoutItem[] aItems, int aOrientation, string aSender, TrialResult aResult, int aTime)
-        {
-            iItems = aItems;
-
-            ObjectCounts = aItems.Length;
-            TargetPresence = HasTarget();
-            Orientation = aOrientation;
-            Sender = aSender;
-            Result = aResult;
-            Time = aTime;
-        }
-
-        public override string ToString()
-        {
-            return new StringBuilder().
-                Append(iItems.Length).Append("\t").
-                Append(TargetPresence ? 1 : 0).Append("\t").
-                Append(Orientation).Append("\t").
-                Append(Sender).Append("\t").
-                Append((int)Result).Append("\t").
-                Append(Time).
-                ToString();
-        }
-
-        private bool HasTarget()
-        {
-            bool hasTarget = false;
-            foreach (Plugins.OinQs.LayoutItem item in iItems)
-            {
-                if (item.IsTarget)
-                {
-                    hasTarget = true;
-                    break;
-                }
-            }
-            return hasTarget;
-        }
-    }
-
     public class Session
     {
         private Config iConfig;
 
-        private List<TrialConditions> iTrialConditions;
+        private List<TrialCondition> iTrialConditions;
         private Plugins.OinQs.LayoutItem[] iCurrentItems;
         private int iTrialIndex = -1;
 
-        private List<Log> iLogs = new List<Log>();
+        private List<Trial> iLogs = new List<Trial>();
         private DateTime iTrialStart;
+
+        public bool Active { get; private set; } = false;
 
         public Session(Config aConfig)
         {
             iConfig = aConfig;
-            AssignStimuliTypes();
+            iTrialConditions = CreateTrialConditions();
         }
 
         public Plugins.OinQs.LayoutItem[] createTrial()
         {
             iTrialIndex++;
 
-            Size size = iConfig.UseWholeScreen ? System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size : iConfig.FieldSize;
-            iCurrentItems = RandomLayout.create(size, iConfig.ObjectCount, iTrialConditions[iTrialIndex]);
+            TrialCondition condition = iTrialConditions[iTrialIndex];
+            iCurrentItems = LayoutGenerator.create(iConfig.ScreenResolution, condition);
+
+            Active = true;
             return iCurrentItems;
         }
 
@@ -133,9 +44,10 @@ namespace GazeNetClient.Experiment.OinQs
         {
             int time = (int)(DateTime.Now - iTrialStart).TotalMilliseconds;
             int orientation = iTrialConditions[iTrialIndex].Orientation;
-            Log log = new Log(iCurrentItems, orientation, aSender, aResult, time);
+            Trial log = new Trial(iCurrentItems, orientation, aSender, aResult, time);
             iLogs.Add(log);
 
+            Active = false;
             return iLogs.Count == iConfig.TrialCount;
         }
 
@@ -143,33 +55,53 @@ namespace GazeNetClient.Experiment.OinQs
         {
             using (StreamWriter writer = new StreamWriter(aFileName))
             {
-                writer.WriteLine(Log.Header);
-                foreach (Log log in iLogs)
+                writer.WriteLine(Trial.Header);
+                foreach (Trial log in iLogs)
                     writer.WriteLine(log.ToString());
             }
+
+            iTrialIndex = -1;
         }
 
-        private void AssignStimuliTypes()
+        public bool isResultCorrect(TrialResult aResult)
         {
-            iTrialConditions = new List<TrialConditions>(iConfig.TrialCount);
-            int trialsWithTargets = iConfig.TrialsWithTarget;
+            return iTrialConditions[iTrialIndex].TargetPresence ?
+                aResult == TrialResult.Found :
+                aResult == TrialResult.NotFound;
+        }
 
-            for (int i = 0; i < iConfig.TrialCount; i++)
+        private List<TrialCondition> CreateTrialConditions()
+        {
+            List<TrialCondition> orderedConditions = new List<TrialCondition>();
+
+            for (int ai = 0; ai < Config.TARGET_PRESENCE.Length; ai++)
             {
-                bool isTargetPresented = i < trialsWithTargets;
-                int orientation = (i % 4) * 90;
-                iTrialConditions.Add(new TrialConditions(isTargetPresented, orientation));
+                bool targetPresence = Config.TARGET_PRESENCE[ai];
+                for (int oi = 0; oi < Config.ORIENTATIONS.Length; oi++)
+                {
+                    int orientation = Config.ORIENTATIONS[oi];
+                    for (int gi = 0; gi < Config.GRIDS.Length; gi++)
+                    {
+                        Size grid = Config.GRIDS[gi];
+                        for (int ri = 0; ri < iConfig.Repetitions; ri++)
+                        {
+                            orderedConditions.Add(new TrialCondition(targetPresence, orientation, grid));
+                        }
+                    }
+                }
             }
+
+            List<TrialCondition> randomizedConditions = new List<TrialCondition>();
 
             Random rand = new Random();
-            for (int i = 0; i < 3 * iConfig.TrialCount; i++)
+            while (orderedConditions.Count > 0)
             {
-                int a = rand.Next(iConfig.TrialCount);
-                int b = rand.Next(iConfig.TrialCount);
-                TrialConditions val = iTrialConditions[a];
-                iTrialConditions[a] = iTrialConditions[b];
-                iTrialConditions[b] = val;
+                TrialCondition condition = orderedConditions[rand.Next(orderedConditions.Count)];
+                randomizedConditions.Add(condition);
+                orderedConditions.Remove(condition);
             }
+
+            return randomizedConditions;
         }
     }
 }

@@ -3,7 +3,7 @@
 #define Version "1.0.0"
 #define Publisher "University of Tampere"
 #define PublisherURL "http://www.sis.uta.fi/~csolsp/"
-#define TargetPath "..\bin\Debug"
+#define TargetPath "..\bin\Debug\client"
 
 [Setup]
 AppName={#Name}
@@ -15,7 +15,7 @@ DefaultGroupName={#Publisher}\{#Host}
 LicenseFile=eula.txt
 OutputDir=bin\Debug
 OutputBaseFilename={#Host}_Setup
-SetupIconFile=..\src\icon.ico
+SetupIconFile=..\src\client\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardImageFile=compiler:WizModernImage-IS.bmp
@@ -23,8 +23,7 @@ WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 
 [Files]
 Source: "{#TargetPath}\GazeNetClient.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#TargetPath}\GazeNetClient.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#TargetPath}\websocket-sharp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#TargetPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\websocket-sharp.xml"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]

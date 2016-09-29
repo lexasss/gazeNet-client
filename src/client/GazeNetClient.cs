@@ -124,7 +124,7 @@ namespace GazeNetClient
             iMenu.addPlugins(iPlugins);
             iMenu.OnShowOptions += showOptions;
             iMenu.OnToggleServerConnection += toggleConnection;
-            iMenu.OnTogglePointerVisibility += toggleVisibility;
+            iMenu.OnTogglePointerVisibility += toggleCursorVisibility;
             iMenu.OnShowETUDOptions += showETUDOptions;
             iMenu.OnCalibrateTracker += calibrate;
             iMenu.OnExit += Menu_Exit;
@@ -137,7 +137,7 @@ namespace GazeNetClient
             iTrayIcon.Text = "GazeNet client";
             iTrayIcon.Visible = true;
 
-            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(toggleVisibility), Keys.Pause));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(toggleCursorVisibility), Keys.Pause));
             Utils.GlobalShortcut.add(new Utils.Shortcut("Tracking", new Action(Shortcut_TrackingNext), Keys.PrintScreen, Keys.Control));
             Utils.GlobalShortcut.init();
 
@@ -187,7 +187,7 @@ namespace GazeNetClient
                 iWebSocketClient.stop();
         }
 
-        public void toggleVisibility()
+        public void toggleCursorVisibility()
         {
             iPointers.Visible = !iPointers.Visible;
             UpdateMenu(false);
@@ -350,14 +350,6 @@ namespace GazeNetClient
             }
         }
 
-        private void WebSocketClient_OnSample(object aSender, WebSocket.GazeEventReceived aArgs)
-        {
-            //iPointers.feed(aArgs);
-            iUIContext.Send(new SendOrPostCallback((target) => {
-                iPointers.movePointer(aArgs.from, aArgs.payload.Location);
-            }), null);
-        }
-
         private void WebSocketClient_OnConnected(object sender, EventArgs e)
         {
             iUIContext.Send(new SendOrPostCallback((target) => {
@@ -392,6 +384,14 @@ namespace GazeNetClient
             }), null);
         }
 
+        private void WebSocketClient_OnSample(object aSender, WebSocket.GazeEventReceived aArgs)
+        {
+            //iPointers.feed(aArgs);
+            iUIContext.Send(new SendOrPostCallback((target) => {
+                iPointers.movePointer(aArgs.from, aArgs.payload.Location);
+            }), null);
+        }
+
         private void WebSocketClient_OnCommand(object aSender, WebSocket.CommandReceived aArgs)
         {
             iUIContext.Send(new SendOrPostCallback((target) => {
@@ -412,6 +412,10 @@ namespace GazeNetClient
                     break;
                 case RequestType.Send:
                     SendPluginRequest((aArgs as SendCommandRequestArgs).Command);
+                    break;
+                case RequestType.SetConfig:
+                    if ((aArgs as SetExternalConfigRequestArgs).ExternalConfig.PointerVisisble != iPointers.Visible)
+                        toggleCursorVisibility();
                     break;
                 default:
                     throw new NotImplementedException();

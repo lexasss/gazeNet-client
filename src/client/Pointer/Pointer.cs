@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,6 +12,7 @@ namespace GazeNetClient.Pointer
 
         private PointerWidget iWidget;
         private Style iAppearance;
+        private int iColorIndex;
         private double iOpacity;
         private double iDataAvailability;
 
@@ -34,7 +34,7 @@ namespace GazeNetClient.Pointer
                 iAppearance = value;
                 if (Collection.StyleImages.ContainsKey(value))
                 {
-                    iWidget.setImage(Collection.StyleImages[value]);
+                    iWidget.setImage(Collection.StyleImages[value], iColorIndex);
                 }
             }
         }
@@ -74,8 +74,10 @@ namespace GazeNetClient.Pointer
 
         #region Public methods
 
-        public Pointer()
+        public Pointer(int aColorIndex)
         {
+            iColorIndex = aColorIndex;
+
             iWidget = new PointerWidget();
 
             iDataAvailabilityTimer = new Timer();
