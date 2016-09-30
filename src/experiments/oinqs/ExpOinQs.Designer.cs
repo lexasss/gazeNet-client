@@ -42,9 +42,6 @@
             this.nudDistance = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.nudScreenSizeHeight = new System.Windows.Forms.NumericUpDown();
-            this.nudScreenResolutionHeight = new System.Windows.Forms.NumericUpDown();
-            this.nudScreenResolutionWidth = new System.Windows.Forms.NumericUpDown();
-            this.label8 = new System.Windows.Forms.Label();
             this.nudScreenSizeWidth = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.nudRepetitions)).BeginInit();
@@ -53,8 +50,6 @@
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDistance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeHeight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudScreenResolutionHeight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudScreenResolutionWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeWidth)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,7 +57,7 @@
             // 
             this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.Location = new System.Drawing.Point(12, 266);
+            this.btnStart.Location = new System.Drawing.Point(12, 256);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(232, 23);
             this.btnStart.TabIndex = 0;
@@ -168,14 +163,11 @@
             this.groupBox3.Controls.Add(this.nudDistance);
             this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.nudScreenSizeHeight);
-            this.groupBox3.Controls.Add(this.nudScreenResolutionHeight);
-            this.groupBox3.Controls.Add(this.nudScreenResolutionWidth);
-            this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.nudScreenSizeWidth);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Location = new System.Drawing.Point(12, 152);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(232, 102);
+            this.groupBox3.Size = new System.Drawing.Size(232, 75);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Geometry";
@@ -189,7 +181,7 @@
             0,
             0,
             0});
-            this.nudDistance.Location = new System.Drawing.Point(116, 71);
+            this.nudDistance.Location = new System.Drawing.Point(116, 45);
             this.nudDistance.Maximum = new decimal(new int[] {
             1200,
             0,
@@ -213,7 +205,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 73);
+            this.label7.Location = new System.Drawing.Point(6, 47);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(71, 13);
             this.label7.TabIndex = 1;
@@ -241,71 +233,6 @@
             0,
             0});
             this.nudScreenSizeHeight.ValueChanged += new System.EventHandler(this.nudScreenSizeHeight_ValueChanged);
-            // 
-            // nudScreenResolutionHeight
-            // 
-            this.nudScreenResolutionHeight.Increment = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionHeight.Location = new System.Drawing.Point(171, 45);
-            this.nudScreenResolutionHeight.Maximum = new decimal(new int[] {
-            4096,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionHeight.Minimum = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionHeight.Name = "nudScreenResolutionHeight";
-            this.nudScreenResolutionHeight.Size = new System.Drawing.Size(49, 20);
-            this.nudScreenResolutionHeight.TabIndex = 3;
-            this.nudScreenResolutionHeight.Value = new decimal(new int[] {
-            800,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionHeight.ValueChanged += new System.EventHandler(this.nudScreenResolutionHeight_ValueChanged);
-            // 
-            // nudScreenResolutionWidth
-            // 
-            this.nudScreenResolutionWidth.Increment = new decimal(new int[] {
-            16,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionWidth.Location = new System.Drawing.Point(116, 45);
-            this.nudScreenResolutionWidth.Maximum = new decimal(new int[] {
-            4096,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionWidth.Minimum = new decimal(new int[] {
-            800,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionWidth.Name = "nudScreenResolutionWidth";
-            this.nudScreenResolutionWidth.Size = new System.Drawing.Size(49, 20);
-            this.nudScreenResolutionWidth.TabIndex = 3;
-            this.nudScreenResolutionWidth.Value = new decimal(new int[] {
-            800,
-            0,
-            0,
-            0});
-            this.nudScreenResolutionWidth.ValueChanged += new System.EventHandler(this.nudScreenResolutionWidth_ValueChanged);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 47);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(102, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "Screen resolition, px";
             // 
             // nudScreenSizeWidth
             // 
@@ -343,7 +270,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(256, 301);
+            this.ClientSize = new System.Drawing.Size(256, 291);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -363,8 +290,6 @@
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDistance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeHeight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudScreenResolutionHeight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudScreenResolutionWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeWidth)).EndInit();
             this.ResumeLayout(false);
 
@@ -386,9 +311,6 @@
         private System.Windows.Forms.NumericUpDown nudScreenSizeHeight;
         private System.Windows.Forms.NumericUpDown nudScreenSizeWidth;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown nudScreenResolutionHeight;
-        private System.Windows.Forms.NumericUpDown nudScreenResolutionWidth;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox chkPointerVisibility;
     }
 }

@@ -4,12 +4,6 @@ namespace GazeNetClient.Plugins.OinQs
 {
     public partial class Stimuli : UserControl
     {
-        public string Image
-        {
-            get { return lblText.ImageKey; }
-            set { lblText.ImageKey = value; }
-        }
-
         public int X
         {
             get { return (int)(Left + Width / 2); }
@@ -24,6 +18,11 @@ namespace GazeNetClient.Plugins.OinQs
         public Stimuli()
         {
             InitializeComponent();
+        }
+
+        public void setImage(string aKey)
+        {
+            BackgroundImage = imlQs.Images[aKey];
         }
     }
 }

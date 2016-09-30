@@ -8,6 +8,27 @@ namespace GazeNetClient.Experiment.OinQs
 {
     public partial class MainForm : Form
     {
+        private const string MSG_INTERNAL_ERROR = "Internal error: {0}";
+        private const string MSG_CONNECTION_LOST = "The connection was lost";
+        private const string MSG_DATA_LOSS_WARNING = "Data will be lost if you close the application before it is finished. Do you want to exit now?";
+
+        private const string KEY_FOUND = "ENTER";
+        private const string KEY_NOT_FOUND = "SPACE";
+        private const string KEY_CONTINUE = "SPACE";
+
+        private const string INSTRUCTION_INITIAL = "Search for \"{0}\". Press {1} when found, or {2} if is not displayed.";
+        private const string INSTRUCTION_CONTINUE = "Press {0} to continue.";
+        private const string INSTRUCTION_FEEDBACK_CORRECT = "Well done!";
+        private const string INSTRUCTION_FEEDBACK_INCORRECT = "The target {0} there.";
+        private const string INSTRUCTION_FEEDBACK_TARGET_PRESENCE_YES = "WAS";
+        private const string INSTRUCTION_FEEDBACK_TARGET_PRESENCE_NO = "WASN'T";
+        private const string INSTRUCTION_TIMEOUT = "Timeout.";
+        private const string INSTRUCTION_TIMEOUT_CONTINUATION = " Try to be faster.";
+        private const string INSTRUCTION_FINISHED = "Finished. Thank you!";
+        private const string INSTRUCTION_FOCUS = "+";
+        private const string INSTRUCTION_VERTICAL_SPACE = "\n\n";
+        private const string INSTRUCTION_FAILURE = "SETUP FAILURE.\nPlease wait...";
+
         private Config iConfig;
         private WebSocket.Client iWebSocketClient = null;
         JavaScriptSerializer iJSON = new JavaScriptSerializer();
@@ -21,6 +42,8 @@ namespace GazeNetClient.Experiment.OinQs
             InitializeComponent();
 
             iConfig = Utils.Storage<Config>.load();
+
+            Utils.Sizing.getScale(iConfig.ScreenSize, iConfig.Distance);
 
             iWebSocketClient = Utils.Storage<WebSocket.Client>.load();
             iWebSocketClient.Config.Role = WebSocket.ClientRole.Observer;
@@ -37,18 +60,15 @@ namespace GazeNetClient.Experiment.OinQs
             nudRepetitions.Value = iConfig.Repetitions;
             nudScreenSizeWidth.Value = iConfig.ScreenSize.Width;
             nudScreenSizeHeight.Value = iConfig.ScreenSize.Height;
-            nudScreenResolutionWidth.Value = iConfig.ScreenResolution.Width;
-            nudScreenResolutionHeight.Value = iConfig.ScreenResolution.Height;
             nudDistance.Value = iConfig.Distance;
 
             Utils.Sizing.ScreenSize = iConfig.ScreenSize;
-            Utils.Sizing.ScreenResolution = iConfig.ScreenResolution;
             Utils.Sizing.ScreenDistance = iConfig.Distance;
 
             iUIContext = WindowsFormsSynchronizationContext.Current;
             if (iUIContext == null)
             {
-                throw new Exception("Internal error: no UI ocntext");
+                throw new Exception(string.Format(MSG_INTERNAL_ERROR, "no UI ocntext"));
             }
         }
 
@@ -56,17 +76,25 @@ namespace GazeNetClient.Experiment.OinQs
         {
             string payload;
 
-            string instruction = string.Format("Search for \"{0}\". Press ENTER when found, or SPACE if is not displayed", Plugins.OinQs.LayoutItemText.Target);
+            string instruction = 
+                string.Format(INSTRUCTION_INITIAL, Plugins.OinQs.LayoutItemText.Target, KEY_FOUND, KEY_NOT_FOUND) +
+                INSTRUCTION_VERTICAL_SPACE + 
+                string.Format(INSTRUCTION_CONTINUE, KEY_CONTINUE);
+
             payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 0));
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
 
-            payload = iJSON.Serialize(new Plugin.ExternalConfig(iConfig.IsPointerVisible));
+            payload = iJSON.Serialize(new Plugin.ContainerConfig(
+                iConfig.IsPointerVisible,
+                iConfig.ScreenSize,
+                iConfig.Distance
+            ));
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.CONFIG, payload));
-
+            /*
             Utils.DelayedAction.Execute(5000, () =>
             {
                 StartTrial();
-            });
+            });*/
         }
 
         private void StartTrial()
@@ -80,11 +108,10 @@ namespace GazeNetClient.Experiment.OinQs
             }
             catch (Exception ex)
             {
-                string instruction = "SETUP FAILURE.\nPlease wait...";
-                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 4000));
+                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(INSTRUCTION_FAILURE, 4000));
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
 
-                MessageBox.Show(ex.Message, "O-in-Qs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -93,8 +120,7 @@ namespace GazeNetClient.Experiment.OinQs
 
             Utils.DelayedAction.Execute(500, () =>
             {
-                string instruction = "+";
-                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 0));
+                payload = iJSON.Serialize(new Plugins.OinQs.Instruction(INSTRUCTION_FOCUS, 0));
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
             });
 
@@ -123,20 +149,38 @@ namespace GazeNetClient.Experiment.OinQs
             string instruction;
             if (aResult == TrialResult.Timeout)
             {
-                instruction = "Timeout.";
+                instruction = INSTRUCTION_TIMEOUT;
                 if (!aIsSessionFinished)
-                    instruction += " Try to be faster.";
+                    instruction += INSTRUCTION_TIMEOUT_CONTINUATION;
             }
             else
             {
-                instruction = iSession.isResultCorrect(aResult) ? "Well done!" : "The target " +
-                    (aResult == TrialResult.Found ? "WASN'T" : "WAS") + " there.";
+                instruction = iSession.isResultCorrect(aResult) ? 
+                    INSTRUCTION_FEEDBACK_CORRECT :
+                    string.Format(INSTRUCTION_FEEDBACK_INCORRECT, aResult == TrialResult.Found ?
+                        INSTRUCTION_FEEDBACK_TARGET_PRESENCE_NO :
+                        INSTRUCTION_FEEDBACK_TARGET_PRESENCE_YES);
             }
 
-            instruction += aIsSessionFinished ? "\n\nFinished! Thank you!" : "\n\nPress SPACE to continue.";
+            int displayInterval = 0;
+            if (aIsSessionFinished)
+            {
+                displayInterval = 3000;
+                instruction += INSTRUCTION_VERTICAL_SPACE + INSTRUCTION_FINISHED;
+            }
 
-            string payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 2000));
+            string payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, displayInterval));
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+
+            if (!aIsSessionFinished)
+            {
+                Utils.DelayedAction.Execute(2000, () =>
+                {
+                    instruction = string.Format(INSTRUCTION_CONTINUE, KEY_CONTINUE);
+                    payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 0));
+                    iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+                });
+            }
         }
 
         #region Event handlers
@@ -156,7 +200,7 @@ namespace GazeNetClient.Experiment.OinQs
                 btnStart.Enabled = true;
                 if (isConnectionLost)
                 {
-                    MessageBox.Show("The connection was lost", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MSG_CONNECTION_LOST, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 if (svdSession.ShowDialog() == DialogResult.OK)
                 {
@@ -206,7 +250,7 @@ namespace GazeNetClient.Experiment.OinQs
             {
                 if (iWebSocketClient.Connected)
                 {
-                    e.Cancel = MessageBox.Show("Data will be lost if you close the application before it is finished. Do you want to exit now?", Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No;
+                    e.Cancel = MessageBox.Show(MSG_DATA_LOSS_WARNING, Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No;
                     if (e.Cancel)
                     {
                         return;
@@ -251,18 +295,6 @@ namespace GazeNetClient.Experiment.OinQs
         {
             iConfig.ScreenSize = new Size(iConfig.ScreenSize.Width, (int)nudScreenSizeHeight.Value);
             Utils.Sizing.ScreenSize = iConfig.ScreenSize;
-        }
-
-        private void nudScreenResolutionWidth_ValueChanged(object sender, EventArgs e)
-        {
-            iConfig.ScreenResolution = new Size((int)nudScreenResolutionWidth.Value, iConfig.ScreenResolution.Height);
-            Utils.Sizing.ScreenResolution = iConfig.ScreenResolution;
-        }
-
-        private void nudScreenResolutionHeight_ValueChanged(object sender, EventArgs e)
-        {
-            iConfig.ScreenResolution = new Size(iConfig.ScreenResolution.Width, (int)nudScreenResolutionHeight.Value);
-            Utils.Sizing.ScreenResolution = iConfig.ScreenResolution;
         }
 
         private void nudDistance_ValueChanged(object sender, EventArgs e)

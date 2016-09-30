@@ -16,11 +16,11 @@ namespace GazeNetClient.Experiment.OinQs
 
         private static Random sRand = new Random();
 
-        public static LayoutItem[] create(Size aFieldSize, TrialCondition aTrialCondition)
+        public static LayoutItem[] create(TrialCondition aTrialCondition)
         {
             List<LayoutItem> result = new List<LayoutItem>();
 
-            Size screen = Utils.Sizing.ScreenResolution;
+            Size screen = Utils.Sizing.CALIBRATED_SCREEN_RESOLUTION;
             Size grid = aTrialCondition.Grid;
             int targetIndex = sRand.Next(grid.Width * grid.Height);
 
@@ -41,6 +41,12 @@ namespace GazeNetClient.Experiment.OinQs
                 }
             }
 
+            foreach (LayoutItem item in result)
+            {
+                item.x /= screen.Width;
+                item.y /= screen.Height;
+            }
+
             return result.ToArray();
         }
 
@@ -50,7 +56,7 @@ namespace GazeNetClient.Experiment.OinQs
             int marginBorder = Utils.Sizing.degrees2pixels(MARGIN_BORDER);
             int marginOthers = Utils.Sizing.degrees2pixels(MARGIN_OTHERS);
 
-            Size screen = Utils.Sizing.ScreenResolution;
+            Size screen = Utils.Sizing.CALIBRATED_SCREEN_RESOLUTION;
 
             int x, y;
             bool isValid;
@@ -98,7 +104,7 @@ namespace GazeNetClient.Experiment.OinQs
             return string.Format("{0}{1}", letter, orientation);
         }
 
-        private static bool Validate(int aX1, int aY1, int aX2, int aY2, int aThreshold)
+        private static bool Validate(double aX1, double aY1, double aX2, double aY2, int aThreshold)
         {
             return Math.Sqrt(Math.Pow(aX1 - aX2, 2) + Math.Pow(aY1 - aY2, 2)) > aThreshold;
         }

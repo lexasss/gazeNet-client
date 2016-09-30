@@ -40,13 +40,13 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblText.Font = new System.Drawing.Font("DejaVu Sans Condensed", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblText.ImageKey = "Q0";
-            this.lblText.ImageList = this.imlQs;
+            this.lblText.ImageKey = "(none)";
             this.lblText.Location = new System.Drawing.Point(0, 0);
             this.lblText.Name = "lblText";
             this.lblText.Size = new System.Drawing.Size(34, 34);
             this.lblText.TabIndex = 0;
             this.lblText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblText.Visible = false;
             // 
             // imlQs
             // 
@@ -61,9 +61,10 @@
             // 
             // Stimuli
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Window;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackColor = System.Drawing.Color.White;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Controls.Add(this.lblText);
             this.Name = "Stimuli";
             this.Size = new System.Drawing.Size(34, 34);

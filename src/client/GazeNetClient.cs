@@ -414,8 +414,12 @@ namespace GazeNetClient
                     SendPluginRequest((aArgs as SendCommandRequestArgs).Command);
                     break;
                 case RequestType.SetConfig:
-                    if ((aArgs as SetExternalConfigRequestArgs).ExternalConfig.PointerVisisble != iPointers.Visible)
-                        toggleCursorVisibility();
+                    {
+                        ContainerConfig config = (aArgs as SetContainerConfigRequestArgs).Config;
+                        if (config.PointerVisisble != iPointers.Visible)
+                            toggleCursorVisibility();
+                        iPointers.scale(Utils.Sizing.getScale(config.ScreenSize, config.Distance));
+                    }
                     break;
                 default:
                     throw new NotImplementedException();

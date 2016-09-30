@@ -29,7 +29,7 @@ namespace GazeNetClient.Experiment.OinQs
             iTrialIndex++;
 
             TrialCondition condition = iTrialConditions[iTrialIndex];
-            iCurrentItems = LayoutGenerator.create(iConfig.ScreenResolution, condition);
+            iCurrentItems = LayoutGenerator.create(condition);
 
             Active = true;
             return iCurrentItems;

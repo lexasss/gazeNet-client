@@ -74,6 +74,8 @@ namespace GazeNetClient.WebSocket
             }
         }
 
+        public bool Verbatime { get; set; } = false;
+
         #endregion
 
         #region Public methods
@@ -170,6 +172,7 @@ namespace GazeNetClient.WebSocket
             if (iWS != null)
             {
                 string text = iJSON.Serialize(new CommandSent(Config.Topics, aCommand));
+                System.Diagnostics.Debug.WriteLineIf(Verbatime, text);
                 iWS.Send(text);
             }
         }

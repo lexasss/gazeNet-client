@@ -1,25 +1,27 @@
 ﻿using System;
+using System.Drawing;
 
 namespace GazeNetClient.Pointer
 {
     [Serializable]
     public class Settings
     {
-        public Style Appearance { get; set; }
-        public double Opacity { get; set; }
-        public int Size { get; set; }
-        public long FadingInterval { get; set; }
-        public long NoDataVisibilityInterval { get; set; }
+        public const int DEFAULT_SIZE = 100; // should match sizes of the pointer widget and resource images
 
-        public Settings()
+        public Style Appearance { get; set; } = Style.Simple;
+        public double Opacity { get; set; } = 0.3;
+        public int Size { get; set; } = DEFAULT_SIZE;
+        public long FadingInterval { get; set; } = 300;
+        public long NoDataVisibilityInterval { get; set; } = 1000;
+
+        [System.Xml.Serialization.XmlIgnore]
+        public PointF Scale
         {
-            // All default values must be set here explicitely
-            Appearance = Style.FrameRoundedDashed;
-            Opacity = 0.3;
-            Size = 100;
-            FadingInterval = 300;
-            NoDataVisibilityInterval = 1000;
+            get { return new PointF(Size / DEFAULT_SIZE, Size / DEFAULT_SIZE); }
+            set { Size = (int)(value.Y * DEFAULT_SIZE); }
         }
+
+        public Settings() { }
 
         public Settings(Pointer aPointer)
         {

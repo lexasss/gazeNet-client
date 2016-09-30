@@ -90,6 +90,13 @@ namespace GazeNetClient.Pointer
             pointer.moveTo(aLocation);
         }
 
+        public void scale(PointF aScale)
+        {
+            Settings.Scale = aScale;
+            foreach (Pointer pointer in iPointers.Values)
+                Settings.saveTo(pointer);
+        }
+
         private void LoadStyleImages()
         {
             if (StyleImages != null)

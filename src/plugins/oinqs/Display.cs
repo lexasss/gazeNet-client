@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -9,12 +10,14 @@ namespace GazeNetClient.Plugins.OinQs
         private List<Control> iItems = new List<Control>();
 
         public event EventHandler OnFound = delegate { };
-        public event EventHandler OnStopped = delegate { };
+        public event EventHandler OnNotFound = delegate { };
         public event EventHandler OnNext = delegate { };
         public event EventHandler OnRequestExit = delegate { };
 
-        public bool IsDisplayingItems { get; set; } = false;
-        public bool Active { get; set; } = false;
+        public PointF StimuliScale { get; set; } = new PointF(1f, 1f);
+
+        public bool IsDisplayingItems { get { return iItems.Count > 0 && iItems[0].Visible; } }
+        public bool IsBlank { get { return !(IsDisplayingItems || lblInstruction.Visible); } }
 
         public Display()
         {
@@ -29,15 +32,12 @@ namespace GazeNetClient.Plugins.OinQs
                 Controls.Remove(item);
 
             iItems.Clear();
-            IsDisplayingItems = false;
-            Active = false;
         }
 
         public void addItem(Control aItem)
         {
             iItems.Add(aItem);
             Controls.Add(aItem);
-            Active = true;
         }
 
         public void showItems()
@@ -46,9 +46,6 @@ namespace GazeNetClient.Plugins.OinQs
 
             foreach (Control ctrl in iItems)
                 ctrl.Visible = true;
-
-            IsDisplayingItems = iItems.Count > 0;
-            Active = iItems.Count > 0;
 
             BringToFront();
             Activate();
@@ -64,8 +61,11 @@ namespace GazeNetClient.Plugins.OinQs
                 tmrInstructionHide.Interval = aInstruction.time;
                 tmrInstructionHide.Start();
             }
+        }
 
-            Active = true;
+        private bool DoesInstructionMentionSpaceKey()
+        {
+            return lblInstruction.Text.Contains("SPACE");
         }
 
         private void Display_KeyDown(object sender, KeyEventArgs e)
@@ -73,18 +73,16 @@ namespace GazeNetClient.Plugins.OinQs
             if (!IsDisplayingItems && e.KeyCode == Keys.Escape)
             {
                 OnRequestExit(this, new EventArgs());
-                return;
             }
-
-            if (e.KeyCode == Keys.Enter)
+            else if (IsDisplayingItems && e.KeyCode == Keys.Enter)
             {
                 OnFound(this, new EventArgs());
             }
             else if (e.KeyCode == Keys.Space)
             {
                 if (IsDisplayingItems)
-                    OnStopped(this, new EventArgs());
-                else if (!Active)
+                    OnNotFound(this, new EventArgs());
+                else if (DoesInstructionMentionSpaceKey())
                     OnNext(this, new EventArgs());
             }
         }
@@ -93,7 +91,6 @@ namespace GazeNetClient.Plugins.OinQs
         {
             tmrInstructionHide.Stop();
             lblInstruction.Hide();
-            Active = iItems.Count > 0;
         }
     }
 }

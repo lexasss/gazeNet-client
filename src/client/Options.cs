@@ -52,7 +52,14 @@ namespace GazeNetClient
 
             cmbPointerAppearance.SelectedItem = iPointers.Settings.Appearance;
             trbPointerOpacity.Value = (int)Math.Round(iPointers.Settings.Opacity * 10);
-            trbPointerSize.Value = iPointers.Settings.Size / 10;
+            try
+            {
+                trbPointerSize.Value = iPointers.Settings.Size / 10;
+            }
+            catch (Exception)
+            {
+                trbPointerSize.Value = trbPointerSize.Maximum;
+            }
             nudPointerFadingInterval.Value = iPointers.Settings.FadingInterval;
             nudPointerNoDataVisibilityDuration.Value = iPointers.Settings.NoDataVisibilityInterval;
 

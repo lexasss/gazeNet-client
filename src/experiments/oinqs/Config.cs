@@ -20,7 +20,6 @@ namespace GazeNetClient.Experiment.OinQs
         public int Repetitions { get; set; } = 1;
 
         public Size ScreenSize { get; set; } = new Size(277, 155);
-        public Size ScreenResolution { get; set; } = new Size(1366, 768);
         public int Distance { get; set; } = 418;
 
         public int TrialCount

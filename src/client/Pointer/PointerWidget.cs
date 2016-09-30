@@ -7,7 +7,7 @@ namespace GazeNetClient
 {
     public partial class PointerWidget : Form
     {
-        private const double HUE_STEP = 68.5; // recommended:   64.166, 68, 77, 86.25
+        private const double HUE_STEP = 68.5; // recommended:   64.166, 68.5, 77, 86.25
         private const float DARKNESS = 0.3f;
 
         protected override CreateParams CreateParams
@@ -57,7 +57,6 @@ namespace GazeNetClient
 
         private ColorMatrix GetHueShiftColorMatrix(double aHueRotationDegrees, float aDarkness, bool aPreserveLuminosity = false)
         {
-            Console.WriteLine(aHueRotationDegrees);
             double theta = -aHueRotationDegrees / 180 * Math.PI;
             float cos = (float)Math.Cos(theta);
             float sin = (float)Math.Sin(theta);

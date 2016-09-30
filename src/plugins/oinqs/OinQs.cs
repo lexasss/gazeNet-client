@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
 
@@ -37,7 +38,7 @@ namespace GazeNetClient.Plugins.OinQs
             iDisplay.Visible = false;
 
             iDisplay.OnFound += Display_OnFound;
-            iDisplay.OnStopped += Display_OnStopped;
+            iDisplay.OnNotFound += Display_OnNotFound;
             iDisplay.OnNext += Display_OnNext;
             iDisplay.OnRequestExit += Display_OnRequestExit;
         }
@@ -62,8 +63,10 @@ namespace GazeNetClient.Plugins.OinQs
         {
             if (aCommand == Command.CONFIG)
             {
-                Plugin.ExternalConfig extConfig = iJSON.Deserialize<Plugin.ExternalConfig>(aValue);
-                Req(this, new Plugin.SetExternalConfigRequestArgs(extConfig));
+                Plugin.ContainerConfig containerConfig = iJSON.Deserialize<Plugin.ContainerConfig>(aValue);
+                PointF scale = Utils.Sizing.getScale(containerConfig.ScreenSize, containerConfig.Distance);
+                iDisplay.StimuliScale = scale;
+                Req(this, new Plugin.SetContainerConfigRequestArgs(containerConfig));
             }
             else if (aCommand == Command.ADD)
             {
@@ -79,7 +82,6 @@ namespace GazeNetClient.Plugins.OinQs
             else if (aCommand == Command.INSTRUCTION)
             {
                 Instruction instruction = iJSON.Deserialize<Instruction>(aValue);
-                Console.WriteLine("{0}, {1}", instruction.text, instruction.time);
                 iDisplay.showInstruction(instruction);
             }
             else if (aCommand == Command.DISPLAY)
@@ -99,10 +101,17 @@ namespace GazeNetClient.Plugins.OinQs
 
         private void CreateAndAddStimuli(LayoutItem aItem)
         {
+            Console.WriteLine("{0},{1}    {2}", aItem.x, aItem.y, iDisplay.StimuliScale);
+            Size screenSize = Screen.FromControl(iDisplay).Bounds.Size;
             Stimuli stimuli = new Stimuli();
-            stimuli.Image = aItem.text;
-            stimuli.X = aItem.x;
-            stimuli.Y = aItem.y;
+
+            stimuli.Size = new Size(
+                (int)(stimuli.Size.Width * iDisplay.StimuliScale.Y), // "Y" is not a mistake: scaling must be equal in both dimension, vertical scale suits better
+                (int)(stimuli.Size.Height * iDisplay.StimuliScale.Y)
+            );
+            stimuli.setImage(aItem.text);
+            stimuli.X = (int)(aItem.x * screenSize.Width);
+            stimuli.Y = (int)(aItem.y * screenSize.Height);
             stimuli.Visible = false;
             iDisplay.addItem(stimuli);
         }
@@ -110,27 +119,21 @@ namespace GazeNetClient.Plugins.OinQs
         private void FinishTrial()
         {
             iDisplay.clear();
-            iDisplay.showInstruction(new Instruction("...", 0));
+            iDisplay.showInstruction(new Instruction("...", 0));    // just to prevent keypress handling
         }
 
-        private void Display_OnStopped(object aSender, EventArgs aArgs)
+        private void Display_OnNotFound(object aSender, EventArgs aArgs)
         {
-            if (iDisplay.IsDisplayingItems)
-            {
-                FinishTrial();
-                string payload = iJSON.Serialize(new SearchResult() { found = false });
-                Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
-            }
+            FinishTrial();
+            string payload = iJSON.Serialize(new SearchResult() { found = false });
+            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
         }
 
         private void Display_OnFound(object aSender, EventArgs aArgs)
         {
-            if (iDisplay.IsDisplayingItems)
-            {
-                FinishTrial();
-                string payload = iJSON.Serialize(new SearchResult() { found = true });
-                Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
-            }
+            FinishTrial();
+            string payload = iJSON.Serialize(new SearchResult() { found = true });
+            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
         }
 
         private void Display_OnNext(object sender, EventArgs e)

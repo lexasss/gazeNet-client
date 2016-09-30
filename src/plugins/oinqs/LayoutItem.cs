@@ -13,14 +13,14 @@ namespace GazeNetClient.Plugins.OinQs
     public class LayoutItem
     {
         public string text { get; set; }
-        public int x { get; set; }
-        public int y { get; set; }
+        public double x { get; set; }
+        public double y { get; set; }
 
         [ScriptIgnore]
         public bool IsTarget { get { return text.StartsWith(LayoutItemText.Target); } }
 
         public LayoutItem() { }
-        public LayoutItem(string aText, int aX, int aY)
+        public LayoutItem(string aText, double aX, double aY)
         {
             text = aText;
             x = aX;
