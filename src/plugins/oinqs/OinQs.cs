@@ -6,32 +6,29 @@ using System.Web.Script.Serialization;
 
 namespace GazeNetClient.Plugins.OinQs
 {
-    /*
-    public sealed class NAME
-    {
-        private const string val = "oinqs";
-
-        public static bool operator ==(NAME aVal1, string aVal2) { return aVal1.Equals(aVal2); }
-        public static bool operator !=(NAME aVal1, string aVal2) { return !aVal1.Equals(aVal2); }
-        public static implicit operator string(NAME aRef) { return aRef.ToString(); }
-
-        public override string ToString() { return val; }
-        public override bool Equals(object obj) { return val.Equals(obj); }
-        public override int GetHashCode() { return val.GetHashCode(); }
-    }*/
-
     public class OinQs : Plugin.IPlugin
     {
-        public const string NAME = "oinqs";
+        #region Internal members
 
         private Display iDisplay = new Display();
-        JavaScriptSerializer iJSON = new JavaScriptSerializer();
+        private JavaScriptSerializer iJSON = new JavaScriptSerializer();
+        private GazeLogger iGazeLogger = new GazeLogger();
+
+        #endregion
+
+        #region Publica members
+
+        public const string NAME = "oinqs";
 
         public Dictionary<string, EventHandler> MenuItems { get; } = null;
         public string Name { get; } = NAME;
 
         public event EventHandler<string> Log = delegate { };
         public event EventHandler<Plugin.RequestArgs> Req = delegate { };
+
+        #endregion
+
+        #region Public methods
 
         public OinQs()
         {
@@ -41,11 +38,12 @@ namespace GazeNetClient.Plugins.OinQs
             iDisplay.OnNotFound += Display_OnNotFound;
             iDisplay.OnNext += Display_OnNext;
             iDisplay.OnRequestExit += Display_OnRequestExit;
+            iDisplay.OnRequestSave += Display_OnRequestSave;
         }
 
-        public void feed(float aX, float aY)
+        public void feed(Processor.GazePoint aSample)
         {
-            
+            iGazeLogger.feed(aSample);
         }
 
         public void finilize()
@@ -87,6 +85,7 @@ namespace GazeNetClient.Plugins.OinQs
             else if (aCommand == Command.DISPLAY)
             {
                 iDisplay.showItems();
+                iGazeLogger.startTrial(new Trial.Config(""));
             }
             else if (aCommand == Command.RESULT)
             {
@@ -99,9 +98,12 @@ namespace GazeNetClient.Plugins.OinQs
             }
         }
 
+        #endregion
+
+        #region Internal methods
+
         private void CreateAndAddStimuli(LayoutItem aItem)
         {
-            Console.WriteLine("{0},{1}    {2}", aItem.x, aItem.y, iDisplay.StimuliScale);
             Size screenSize = Screen.FromControl(iDisplay).Bounds.Size;
             Stimuli stimuli = new Stimuli();
 
@@ -120,30 +122,62 @@ namespace GazeNetClient.Plugins.OinQs
         {
             iDisplay.clear();
             iDisplay.showInstruction(new Instruction("...", 0));    // just to prevent keypress handling
+            iGazeLogger.endTrial();
         }
+
+        private void TryToSaveData()
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Text files|*.txt";
+            sfd.DefaultExt = "txt";
+            if (sfd.ShowDialog() == DialogResult.OK)
+                iGazeLogger.save(sfd.FileName);
+        }
+
+        #endregion
+
+        #region Event handlers
 
         private void Display_OnNotFound(object aSender, EventArgs aArgs)
         {
             FinishTrial();
             string payload = iJSON.Serialize(new SearchResult() { found = false });
-            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(NAME, Command.RESULT, payload)));
         }
 
         private void Display_OnFound(object aSender, EventArgs aArgs)
         {
             FinishTrial();
             string payload = iJSON.Serialize(new SearchResult() { found = true });
-            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.RESULT, payload)));
+            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(NAME, Command.RESULT, payload)));
         }
 
         private void Display_OnNext(object sender, EventArgs e)
         {
-            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(Name, Command.NEXT, "")));
+            Req(this, new Plugin.SendCommandRequestArgs(new Plugin.Command(NAME, Command.NEXT, "")));
         }
 
         private void Display_OnRequestExit(object aSender, EventArgs aArgs)
         {
-            Req(this, new Plugin.RequestArgs(Plugin.RequestType.Stop));
+            bool canExit = true;
+            if (iGazeLogger.HasData)
+            {
+                DialogResult answer = MessageBox.Show("Data not saved. Do you wish to save it?", NAME, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if (answer == DialogResult.Cancel)
+                    canExit = false;
+                else if (answer == DialogResult.Yes)
+                    TryToSaveData();
+            }
+
+            if (canExit)
+                Req(this, new Plugin.RequestArgs(Plugin.RequestType.Stop));
         }
+
+        private void Display_OnRequestSave(object aSender, EventArgs aArgs)
+        {
+            TryToSaveData();
+        }
+
+        #endregion
     }
 }

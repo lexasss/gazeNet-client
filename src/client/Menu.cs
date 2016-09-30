@@ -117,7 +117,7 @@ namespace GazeNetClient
             foreach (Plugin.IPlugin p in aPlugins.Items)
             {
                 IDictionary<string, EventHandler> items = p.MenuItems;
-                if (items != null && items.Count > 0)
+                if (items?.Count > 0)
                 {
                     cmsMenu.Items.Insert(0, new ToolStripSeparator());
                     foreach (KeyValuePair<string, EventHandler> k in items)

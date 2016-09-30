@@ -29,7 +29,7 @@ namespace GazeNetClient.Plugin
 
         void start();
         void finilize();
-        void feed(float aX, float aY);
+        void feed(Processor.GazePoint aSample);
         void command(string aCommand, string aValue);
     }
 }

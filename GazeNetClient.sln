@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plug_oinqs", "src\plugins\o
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "exp_oinqs", "src\experiments\oinqs\exp_oinqs.csproj", "{799B4DF0-0F42-4850-B5F7-CCD481C3A04C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gazeproc", "src\gazeproc\gazeproc.csproj", "{C58DF713-6BB7-44E3-B0E2-C52694C85F56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{799B4DF0-0F42-4850-B5F7-CCD481C3A04C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{799B4DF0-0F42-4850-B5F7-CCD481C3A04C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799B4DF0-0F42-4850-B5F7-CCD481C3A04C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C58DF713-6BB7-44E3-B0E2-C52694C85F56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C58DF713-6BB7-44E3-B0E2-C52694C85F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C58DF713-6BB7-44E3-B0E2-C52694C85F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C58DF713-6BB7-44E3-B0E2-C52694C85F56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

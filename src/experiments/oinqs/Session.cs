@@ -61,6 +61,7 @@ namespace GazeNetClient.Experiment.OinQs
             }
 
             iTrialIndex = -1;
+            iLogs.Clear();
         }
 
         public bool isResultCorrect(TrialResult aResult)

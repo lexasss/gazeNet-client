@@ -5,14 +5,16 @@ using System.Windows.Forms;
 
 namespace GazeNetClient.Plugins.OinQs
 {
-    public partial class Display : Form
+    internal partial class Display : Form
     {
         private List<Control> iItems = new List<Control>();
+        private Cursor iEmptyCursor;
 
         public event EventHandler OnFound = delegate { };
         public event EventHandler OnNotFound = delegate { };
         public event EventHandler OnNext = delegate { };
         public event EventHandler OnRequestExit = delegate { };
+        public event EventHandler OnRequestSave = delegate { };
 
         public PointF StimuliScale { get; set; } = new PointF(1f, 1f);
 
@@ -22,6 +24,8 @@ namespace GazeNetClient.Plugins.OinQs
         public Display()
         {
             InitializeComponent();
+
+            iEmptyCursor = new Cursor("EmptyCursor.cur");
         }
 
         public void clear()
@@ -32,6 +36,7 @@ namespace GazeNetClient.Plugins.OinQs
                 Controls.Remove(item);
 
             iItems.Clear();
+            Cursor = Cursors.Default;
         }
 
         public void addItem(Control aItem)
@@ -49,6 +54,8 @@ namespace GazeNetClient.Plugins.OinQs
 
             BringToFront();
             Activate();
+
+            Cursor = iEmptyCursor;
         }
 
         public void showInstruction(Instruction aInstruction)
@@ -61,6 +68,11 @@ namespace GazeNetClient.Plugins.OinQs
                 tmrInstructionHide.Interval = aInstruction.time;
                 tmrInstructionHide.Start();
             }
+            else
+            {
+                BringToFront();
+                Activate();
+            }
         }
 
         private bool DoesInstructionMentionSpaceKey()
@@ -70,20 +82,26 @@ namespace GazeNetClient.Plugins.OinQs
 
         private void Display_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!IsDisplayingItems && e.KeyCode == Keys.Escape)
+            switch (e.KeyCode)
             {
-                OnRequestExit(this, new EventArgs());
-            }
-            else if (IsDisplayingItems && e.KeyCode == Keys.Enter)
-            {
-                OnFound(this, new EventArgs());
-            }
-            else if (e.KeyCode == Keys.Space)
-            {
-                if (IsDisplayingItems)
-                    OnNotFound(this, new EventArgs());
-                else if (DoesInstructionMentionSpaceKey())
-                    OnNext(this, new EventArgs());
+                case Keys.Escape:
+                    if (!IsDisplayingItems)
+                        OnRequestExit(this, new EventArgs());
+                    break;
+                case Keys.Enter:
+                    if (IsDisplayingItems)
+                        OnFound(this, new EventArgs());
+                    break;
+                case Keys.Space:
+                    if (IsDisplayingItems)
+                        OnNotFound(this, new EventArgs());
+                    else if (DoesInstructionMentionSpaceKey())
+                        OnNext(this, new EventArgs());
+                    break;
+                case Keys.S:
+                    if (e.Control && !IsDisplayingItems)
+                        OnRequestSave(this, new EventArgs());
+                    break;
             }
         }
 

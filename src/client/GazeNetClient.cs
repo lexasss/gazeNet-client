@@ -268,13 +268,13 @@ namespace GazeNetClient
             if (!aConnecting)
             {
                 trackerState.IsShowingOptions = aIsShowingDialog;
-                trackerState.IsEyeTrackingRequired = iWebSocketClient != null && (iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0;
-                trackerState.IsServerConnected = iWebSocketClient != null && iWebSocketClient.Connected;
+                trackerState.IsEyeTrackingRequired = iWebSocketClient?.Config.Role.HasFlag(WebSocket.ClientRole.Source) == true;
+                trackerState.IsServerConnected = iWebSocketClient?.Connected == true;
                 trackerState.IsPointerVisible = iPointers.Visible;
-                trackerState.HasTrackingDevices = iETUDriver != null && iETUDriver.DeviceCount > 0;
-                trackerState.IsTrackerConnected = iETUDriver != null && iETUDriver.Ready != 0;
-                trackerState.IsTrackerCalibrated = iETUDriver != null && iETUDriver.Calibrated != 0;
-                trackerState.IsTrackingGaze = iETUDriver != null && iETUDriver.Active != 0;
+                trackerState.HasTrackingDevices = iETUDriver?.DeviceCount > 0;
+                trackerState.IsTrackerConnected = iETUDriver?.Ready != 0;
+                trackerState.IsTrackerCalibrated = iETUDriver?.Calibrated != 0;
+                trackerState.IsTrackingGaze = iETUDriver?.Active != 0;
             }
 
             iMenu.update(trackerState, aConnecting);
@@ -339,7 +339,7 @@ namespace GazeNetClient
 
         private void Menu_Exit()
         {
-            if (iETUDriver != null && iETUDriver.Active != 0)
+            if (iETUDriver?.Active != 0)
             {
                 iExitAfterTrackingStopped = true;
                 iETUDriver.stopTracking();
@@ -396,10 +396,7 @@ namespace GazeNetClient
         {
             iUIContext.Send(new SendOrPostCallback((target) => {
                 IPlugin plugin = iPlugins[aArgs.payload.target];
-                if (plugin != null)
-                {
-                    plugin.command(aArgs.payload.command, aArgs.payload.value);
-                }
+                plugin?.command(aArgs.payload.command, aArgs.payload.value);
             }), null);
         }
 
@@ -436,10 +433,10 @@ namespace GazeNetClient
             System.Diagnostics.Debug.WriteLine(aArgs);
         }
 
-        private void GazeParser_OnNewGazePoint(object aSender, Processor.GazeParser.NewGazePointArgs aArgs)
+        private void GazeParser_OnNewGazePoint(object aSender, Processor.GazePoint aArgs)
         {
             iWebSocketClient.send(new WebSocket.GazeEvent(aArgs.Location));
-            iPlugins.feed(aArgs.Location.X, aArgs.Location.Y);
+            iPlugins.feed(aArgs);
         }
 
         private void Shortcut_TrackingNext()

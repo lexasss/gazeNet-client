@@ -24,10 +24,8 @@ namespace GazeNetClient
                 return;
             }
 
-            if (gazeNetClient.AutoStarter != null && gazeNetClient.AutoStarter.Enabled)
-            {
+            if (gazeNetClient.AutoStarter?.Enabled == true)
                 gazeNetClient.AutoStarter.run(gazeNetClient);
-            }
 
             Application.Run();
 

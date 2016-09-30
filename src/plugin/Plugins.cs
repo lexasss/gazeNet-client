@@ -31,10 +31,10 @@ namespace GazeNetClient.Plugin
             Items = aItems;
         }
 
-        public void feed(float aX, float aY)
+        public void feed(Processor.GazePoint aSample)
         {
             foreach (IPlugin plugin in Items)
-                plugin.feed(aX, aY);
+                plugin.feed(aSample);
         }
 
         public void finilize()
