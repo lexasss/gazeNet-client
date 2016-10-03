@@ -110,6 +110,7 @@ namespace GazeNetClient
         private void cmbAppearance_SelectedIndexChanged(object sender, EventArgs e)
         {
             iPointers.Settings.Appearance = (Pointer.Style)cmbPointerAppearance.SelectedItem;
+            pcbPointer.Image = Pointer.Collection.StyleImages[iPointers.Settings.Appearance];
         }
 
         private void trbOpacity_ValueChanged(object sender, EventArgs e)

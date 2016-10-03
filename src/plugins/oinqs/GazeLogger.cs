@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using GazeNetClient.Processor;
@@ -8,23 +7,6 @@ namespace GazeNetClient.Plugins.OinQs
 {
     internal class Trial
     {
-        public class Config
-        {
-            public string Name { get; private set; }
-
-            public Config(string aName)
-            {
-                Name = aName;
-            }
-
-            public override string ToString()
-            {
-                return new StringBuilder().
-                    Append(Name).
-                    ToString();
-            }
-        }
-
         public static string Header
         {
             get
@@ -37,18 +19,18 @@ namespace GazeNetClient.Plugins.OinQs
             }
         }
 
-        private Config iConfig;
-
+        public TrialConfig Config { get; private set; }
         public List<GazePoint> Samples { get; private set; } = new List<GazePoint>();
 
-        public Trial(Config aConfig)
+        public Trial(TrialConfig aConfig)
         {
-            iConfig = aConfig;
+            Config = aConfig;
         }
 
         public void write(StreamWriter aWriter)
         {
-            aWriter.WriteLine(iConfig);
+            aWriter.WriteLine();
+            aWriter.WriteLine(Config);
             foreach (GazePoint sample in Samples)
                 aWriter.WriteLine(sample);
         }
@@ -60,9 +42,10 @@ namespace GazeNetClient.Plugins.OinQs
         private Trial iCurrentTrial = null;
         private int iTrialIndex = -1;
 
+        public Plugin.ContainerConfig ContainerConfig { get; set; } = new Plugin.ContainerConfig();
         public bool HasData { get { return iTrials.Count > 0; } }
 
-        public void startTrial(Trial.Config aConfig)
+        public void startTrial(TrialConfig aConfig)
         {
             iCurrentTrial = new Trial(aConfig);
             iTrials.Add(iCurrentTrial);

@@ -9,5 +9,6 @@
         public const string DISPLAY = "display";
         public const string RESULT = "result";
         public const string NEXT = "next";
+        public const string FINISHED = "finished";
     }
 }

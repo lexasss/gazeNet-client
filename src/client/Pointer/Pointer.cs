@@ -17,7 +17,7 @@ namespace GazeNetClient.Pointer
         private double iDataAvailability;
 
         private long iLastDataTimestamp = 0;
-        private Libs.HiResTimestamp iHRTimestamp;
+        private Utils.HiResTimestamp iHRTimestamp;
         private Timer iDataAvailabilityTimer;
 
         #endregion
@@ -84,7 +84,7 @@ namespace GazeNetClient.Pointer
             iDataAvailabilityTimer.Interval = 30;
             iDataAvailabilityTimer.Tick += DataAvailabilityTimer_Tick;
 
-            iHRTimestamp = new Libs.HiResTimestamp();
+            iHRTimestamp = new Utils.HiResTimestamp();
 
             Settings settings = Utils.Storage<Settings>.load();
             settings.saveTo(this);

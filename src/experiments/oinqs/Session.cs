@@ -13,10 +13,11 @@ namespace GazeNetClient.Experiment.OinQs
         private Plugins.OinQs.LayoutItem[] iCurrentItems;
         private int iTrialIndex = -1;
 
-        private List<Trial> iLogs = new List<Trial>();
+        private List<Trial> iTrials = new List<Trial>();
         private DateTime iTrialStart;
 
         public bool Active { get; private set; } = false;
+        public TrialCondition TrialCondition { get { return iTrialIndex < 0 ? null : iTrialConditions[iTrialIndex]; } }
 
         public Session(Config aConfig)
         {
@@ -28,8 +29,7 @@ namespace GazeNetClient.Experiment.OinQs
         {
             iTrialIndex++;
 
-            TrialCondition condition = iTrialConditions[iTrialIndex];
-            iCurrentItems = LayoutGenerator.create(condition);
+            iCurrentItems = LayoutGenerator.create(TrialCondition);
 
             Active = true;
             return iCurrentItems;
@@ -44,11 +44,11 @@ namespace GazeNetClient.Experiment.OinQs
         {
             int time = (int)(DateTime.Now - iTrialStart).TotalMilliseconds;
             int orientation = iTrialConditions[iTrialIndex].Orientation;
-            Trial log = new Trial(iCurrentItems, orientation, aSender, aResult, time);
-            iLogs.Add(log);
+            Trial trial = new Trial(iCurrentItems, orientation, aSender, aResult, time);
+            iTrials.Add(trial);
 
             Active = false;
-            return iLogs.Count == iConfig.TrialCount;
+            return iTrials.Count == iConfig.TrialCount;
         }
 
         public void save(string aFileName)
@@ -56,12 +56,12 @@ namespace GazeNetClient.Experiment.OinQs
             using (StreamWriter writer = new StreamWriter(aFileName))
             {
                 writer.WriteLine(Trial.Header);
-                foreach (Trial log in iLogs)
+                foreach (Trial log in iTrials)
                     writer.WriteLine(log.ToString());
             }
 
             iTrialIndex = -1;
-            iLogs.Clear();
+            iTrials.Clear();
         }
 
         public bool isResultCorrect(TrialResult aResult)

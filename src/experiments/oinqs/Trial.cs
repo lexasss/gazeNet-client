@@ -8,12 +8,22 @@ namespace GazeNetClient.Experiment.OinQs
         public bool TargetPresence { get; private set; }
         public int Orientation { get; private set; }
         public Size Grid { get; private set; }
+        public int ObjectCount { get { return Grid.Width * Grid.Height; } }
 
         public TrialCondition(bool aTargetPresence, int aOrientation, Size aGrid)
         {
             TargetPresence = aTargetPresence;
             Orientation = aOrientation;
             Grid = aGrid;
+        }
+
+        public override string ToString()
+        {
+            return new StringBuilder().
+                Append("TargetPresence: ").Append(TargetPresence).Append(", ").
+                Append("Orientation: ").Append(Orientation).Append(", ").
+                Append("ObjectCount: ").Append(ObjectCount).
+                ToString();
         }
     }
 

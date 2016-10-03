@@ -70,6 +70,7 @@
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
             this.imlIcons = new System.Windows.Forms.ImageList(this.components);
+            this.pcbPointer = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -84,6 +85,7 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerNoDataVisibilityDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerFadingInterval)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pcbPointer)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -351,6 +353,7 @@
             // 
             // tbpPointer
             // 
+            this.tbpPointer.Controls.Add(this.pcbPointer);
             this.tbpPointer.Controls.Add(this.label1);
             this.tbpPointer.Controls.Add(this.lblSize);
             this.tbpPointer.Controls.Add(this.cmbPointerAppearance);
@@ -630,6 +633,15 @@
             this.imlIcons.Images.SetKeyName(1, "connected");
             this.imlIcons.Images.SetKeyName(2, "connected-as-observer");
             // 
+            // pcbPointer
+            // 
+            this.pcbPointer.Location = new System.Drawing.Point(171, 6);
+            this.pcbPointer.Name = "pcbPointer";
+            this.pcbPointer.Size = new System.Drawing.Size(33, 21);
+            this.pcbPointer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pcbPointer.TabIndex = 10;
+            this.pcbPointer.TabStop = false;
+            // 
             // Options
             // 
             this.AcceptButton = this.btnOK;
@@ -663,6 +675,7 @@
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerNoDataVisibilityDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerFadingInterval)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pcbPointer)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -709,6 +722,7 @@
         private System.Windows.Forms.TextBox txbUserName;
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.PictureBox pcbPointer;
     }
 }
 

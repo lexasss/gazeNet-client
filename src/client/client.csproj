@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoStarter.cs" />
-    <Compile Include="Libs\HiResTimestamp.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Pointer\Collection.cs" />
     <Compile Include="Pointer\Settings.cs" />
@@ -135,9 +134,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Libs\WebSocket\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\gazeproc\gazeproc.csproj">
       <Project>{c58df713-6bb7-44e3-b0e2-c52694c85f56}</Project>

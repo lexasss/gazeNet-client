@@ -128,7 +128,9 @@ namespace GazeNetClient.Experiment.OinQs
             {
                 iSession.startTrial();
                 iReplyTimeout.Start();
-                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.DISPLAY, ""));
+
+                payload = iJSON.Serialize(new Plugins.OinQs.TrialConfig(iSession.TrialCondition.ToString()));
+                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.DISPLAY, payload));
             });
         }
 
@@ -140,6 +142,7 @@ namespace GazeNetClient.Experiment.OinQs
 
             if (sessionFinished)
             {
+                iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.FINISHED, ""));
                 iWebSocketClient.stop();
             }
         }
@@ -202,11 +205,12 @@ namespace GazeNetClient.Experiment.OinQs
                 {
                     MessageBox.Show(MSG_CONNECTION_LOST, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                if (svdSession.ShowDialog() == DialogResult.OK)
+
+                Utils.Storage.saveData((fileName) =>
                 {
-                    iSession.save(svdSession.FileName);
+                    iSession.save(fileName);
                     iSession = null;
-                }
+                }, (iConfig.IsPointerVisible ? "gz" : "ng") + "_summary");
             }), null);
         }
 

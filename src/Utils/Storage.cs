@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace GazeNetClient.Utils
@@ -24,6 +26,64 @@ namespace GazeNetClient.Utils
 
                 return folder;
             }
+        }
+
+        public static string DataFolder
+        {
+            get
+            {
+                string folder = Folder + "data" + Path.DirectorySeparatorChar;
+
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+
+                return folder;
+            }
+        }
+
+        public static string[] DataFolderFiles
+        {
+            get
+            {
+                List<string> fileNames = new List<string>();
+                foreach (string fileName in Directory.EnumerateFiles(DataFolder))
+                    fileNames.Add(Path.GetFileNameWithoutExtension(fileName));
+
+                return fileNames.ToArray();
+            }
+        }
+
+        public static bool saveData(Action<string> aAction, string aFileName = null, string aDefaultExt = null, string aFilter = null)
+        {
+            if (aAction == null)
+                return false;
+
+            string fileName = aFileName;
+            if (string.IsNullOrEmpty(fileName))
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.DefaultExt = aDefaultExt ?? "txt";
+                sfd.Filter = aFilter ?? "Text files|*." + sfd.DefaultExt;
+                if (sfd.ShowDialog() == DialogResult.OK)
+                    fileName = sfd.FileName;
+            }
+            else if (fileName.IndexOf(':') != 1)
+            {
+                if (fileName.IndexOf('.') > 1)
+                    fileName = DataFolder + fileName;
+                else
+                    fileName = string.Format("{0}p{1}_{2}.{3}", DataFolder, DataFolderFiles.Length + 1,
+                        aFileName, aDefaultExt ?? "txt");
+            }
+
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                Console.WriteLine(fileName);
+                aAction(fileName);
+                return true;
+            }
+
+            return false;
         }
     }
 

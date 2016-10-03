@@ -14,6 +14,8 @@ namespace GazeNetClient.Plugins.OinQs
         private JavaScriptSerializer iJSON = new JavaScriptSerializer();
         private GazeLogger iGazeLogger = new GazeLogger();
 
+        private int iSessionCount = 0;
+
         #endregion
 
         #region Publica members
@@ -62,8 +64,11 @@ namespace GazeNetClient.Plugins.OinQs
             if (aCommand == Command.CONFIG)
             {
                 Plugin.ContainerConfig containerConfig = iJSON.Deserialize<Plugin.ContainerConfig>(aValue);
+
+                iGazeLogger.ContainerConfig = containerConfig;
                 PointF scale = Utils.Sizing.getScale(containerConfig.ScreenSize, containerConfig.Distance);
                 iDisplay.StimuliScale = scale;
+
                 Req(this, new Plugin.SetContainerConfigRequestArgs(containerConfig));
             }
             else if (aCommand == Command.ADD)
@@ -85,7 +90,8 @@ namespace GazeNetClient.Plugins.OinQs
             else if (aCommand == Command.DISPLAY)
             {
                 iDisplay.showItems();
-                iGazeLogger.startTrial(new Trial.Config(""));
+                TrialConfig trialConfig = iJSON.Deserialize<TrialConfig>(aValue);
+                iGazeLogger.startTrial(trialConfig);
             }
             else if (aCommand == Command.RESULT)
             {
@@ -95,6 +101,10 @@ namespace GazeNetClient.Plugins.OinQs
                     //System.Diagnostics.Debug.WriteLine("Someone's result: {0}", sr.found ? "found" : "not found");
                     FinishTrial();
                 }
+            }
+            else if (aCommand == Command.FINISHED)
+            {
+                TryToSaveData();
             }
         }
 
@@ -127,11 +137,11 @@ namespace GazeNetClient.Plugins.OinQs
 
         private void TryToSaveData()
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Text files|*.txt";
-            sfd.DefaultExt = "txt";
-            if (sfd.ShowDialog() == DialogResult.OK)
-                iGazeLogger.save(sfd.FileName);
+            if (!iGazeLogger.HasData)
+                return;
+
+            string fileNameSuffix = (iGazeLogger.ContainerConfig.PointerVisisble ? "gz" : "ng") + "_samples";
+            Utils.Storage.saveData((fileName) => { iGazeLogger.save(fileName); }, fileNameSuffix);
         }
 
         #endregion

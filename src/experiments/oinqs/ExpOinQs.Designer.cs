@@ -34,7 +34,6 @@
             this.txbTopic = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.nudRepetitions = new System.Windows.Forms.NumericUpDown();
-            this.svdSession = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkPointerVisibility = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -112,11 +111,6 @@
             0,
             0});
             this.nudRepetitions.ValueChanged += new System.EventHandler(this.nudRepetitions_ValueChanged);
-            // 
-            // svdSession
-            // 
-            this.svdSession.DefaultExt = "txt";
-            this.svdSession.Filter = "Text files|*.txt";
             // 
             // groupBox1
             // 
@@ -302,7 +296,6 @@
         private System.Windows.Forms.TextBox txbTopic;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown nudRepetitions;
-        private System.Windows.Forms.SaveFileDialog svdSession;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;

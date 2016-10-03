@@ -53,6 +53,7 @@
     <Compile Include="Display.Designer.cs">
       <DependentUpon>Display.cs</DependentUpon>
     </Compile>
+    <Compile Include="TrialConfig.cs" />
     <Compile Include="GazeLogger.cs" />
     <Compile Include="Instruction.cs" />
     <Compile Include="LayoutItem.cs" />
