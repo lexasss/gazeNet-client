@@ -1,6 +1,8 @@
-#GazeNet client
-The application to share gaze data. Connects to the GazeNet server.
+# GazeNet client
 
-##Dependencies
-    * [ETU-Driver](http://www.sis.uta.fi/~csolsp/downloads.php?id=ETUDriver).
-    * [WebSocketSharp v1.0.3+](https://www.nuget.org/packages/WebSocketSharp) (install via NuGet)
+The application to share gaze data and display it as gaze pointers. Connects to the GazeNet server to exchange data with others.
+
+## Dependencies
+
+ * [ETU-Driver](http://www.sis.uta.fi/~csolsp/downloads.php?id=ETUDriver)
+ * [WebSocketSharp v1.0.3+](https://www.nuget.org/packages/WebSocketSharp)
