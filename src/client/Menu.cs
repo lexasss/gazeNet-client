@@ -26,6 +26,7 @@ namespace GazeNetClient
         #region Internal members
 
         private ToolStripMenuItem tsmiOptions;
+        private ToolStripMenuItem tsmiPluginOptions;
         private ToolStripMenuItem tsmiToggleServerConnection;
         private ToolStripMenuItem tsmiTogglePointerVisibility;
         private ToolStripMenuItem tsmiETUDOptions;
@@ -39,6 +40,7 @@ namespace GazeNetClient
         #region Events
 
         public event Action OnShowOptions = delegate { };
+        public event Action OnShowPluginOptions = delegate { };
         public event Action OnToggleServerConnection = delegate { };
         public event Action OnTogglePointerVisibility = delegate { };
         public event Action OnShowETUDOptions = delegate { };
@@ -60,6 +62,9 @@ namespace GazeNetClient
             tsmiOptions = new ToolStripMenuItem("Options");
             tsmiOptions.Click += new EventHandler((s, e) => OnShowOptions());
 
+            tsmiPluginOptions = new ToolStripMenuItem("Plugins");
+            tsmiPluginOptions.Click += new EventHandler((s, e) => OnShowPluginOptions());
+
             tsmiToggleServerConnection = new ToolStripMenuItem("Connect");
             tsmiToggleServerConnection.Click += new EventHandler((s, e) => OnToggleServerConnection());
 
@@ -80,6 +85,7 @@ namespace GazeNetClient
             cmsMenu = new ContextMenuStrip();
 
             cmsMenu.Items.Add(tsmiOptions);
+            cmsMenu.Items.Add(tsmiPluginOptions);
             cmsMenu.Items.Add(tsmiToggleServerConnection);
             cmsMenu.Items.Add(tsmiTogglePointerVisibility);
             cmsMenu.Items.Add("-");
@@ -91,7 +97,8 @@ namespace GazeNetClient
 
         public void update(State aState, bool aDisableAll)
         {
-            tsmiOptions.Enabled = !aDisableAll && !aState.IsShowingOptions;// && !aState.IsTracking;
+            tsmiOptions.Enabled = !aDisableAll && !aState.IsShowingOptions;
+            tsmiPluginOptions.Enabled = !aDisableAll && !aState.IsShowingOptions && !aState.IsTrackingGaze;
             tsmiToggleServerConnection.Enabled = !aDisableAll && (!aState.IsEyeTrackingRequired || aState.IsTrackerCalibrated);
             if (aDisableAll)
             {

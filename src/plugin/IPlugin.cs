@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace GazeNetClient.Plugin
 {
@@ -23,9 +24,16 @@ namespace GazeNetClient.Plugin
     {
         Dictionary<string, EventHandler> MenuItems { get; }
         string Name { get; }
+        string DisplayName { get; }
+        bool IsExclusive { get; }
+        bool Enabled { get; set; }
+        OptionsWidget Options { get; }
 
         event EventHandler<string> Log;
         event EventHandler<RequestArgs> Req;
+
+        void displayOptions();
+        void acceptOptions();
 
         void start();
         void finilize();

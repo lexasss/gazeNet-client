@@ -8,14 +8,14 @@ using GazeNetClient.Plugin;
 // Comment #1
 //
 // A very weird behaviour of ETU-Driver was observed:
-// when ETU-Driver tracking start/stops from the WebSocket,
+// when ETU-Driver tracking starts/stops from the WebSocket,
 // even if its execution is directed to the UI sync context,
-// then fome functionality inside ETU-Driver becomes asynchronous.
+// then some functionality inside ETU-Driver becomes asynchronous.
 // For example, when Mouse is used for data emultions and 
 // ETUDriver.stopTracking() is called this way, then stop() function 
-// in Mouse.dll stops the timer, deleted some objects and do other stuff, 
-// but timer callback execution is still running in parallel and cause exceptions
-// as a result of de-referencing null pointers.
+// in Mouse.dll stops the timer, deletes some objects and does other stuff, 
+// but timer callback execution is still running in parallel and cause run-time
+// errors as a result of de-referencing null pointers.
 // 
 // To overcome the problem, an additional direct ETU-Driver tracking toggling 
 // was executed when using the context menu. The problem remains for the cases 
@@ -57,10 +57,8 @@ namespace GazeNetClient
 
         private bool iExitAfterTrackingStopped = false;
         private bool iDisposed = false;
-        
-        private Plugin.Plugins iPlugins = new Plugin.Plugins(new IPlugin[] {
-            new Plugins.OinQs.OinQs()
-        });
+
+        private Plugin.Plugins iPlugins;
 
         #endregion
 
@@ -96,6 +94,7 @@ namespace GazeNetClient
 
             iPointers = new Pointer.Collection();
 
+            iPlugins = Plugin.Plugins.load();
             foreach (IPlugin plugin in iPlugins.Items)
             {
                 plugin.Log += Plugin_Log;
@@ -123,6 +122,7 @@ namespace GazeNetClient
             iMenu = new Menu();
             iMenu.addPlugins(iPlugins);
             iMenu.OnShowOptions += showOptions;
+            iMenu.OnShowPluginOptions += showPluginOptions;
             iMenu.OnToggleServerConnection += toggleConnection;
             iMenu.OnTogglePointerVisibility += toggleCursorVisibility;
             iMenu.OnShowETUDOptions += showETUDOptions;
@@ -163,6 +163,13 @@ namespace GazeNetClient
             bool acceptChanges = iOptions.ShowDialog() == DialogResult.OK;
             iOptions.save(acceptChanges);
 
+            UpdateMenu(false);
+        }
+
+        private void showPluginOptions()
+        {
+            UpdateMenu(true);
+            iPlugins.showOptions();
             UpdateMenu(false);
         }
 
@@ -396,7 +403,8 @@ namespace GazeNetClient
         {
             iUIContext.Send(new SendOrPostCallback((target) => {
                 IPlugin plugin = iPlugins[aArgs.payload.target];
-                plugin?.command(aArgs.payload.command, aArgs.payload.value);
+                if (plugin != null && plugin.Enabled)
+                    plugin.command(aArgs.payload.command, aArgs.payload.value);
             }), null);
         }
 

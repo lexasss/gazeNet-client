@@ -20,6 +20,7 @@ OutputBaseFilename={#App}_Setup
 SetupIconFile=..\src\client\icon.ico
 Compression=lzma
 SolidCompression=yes
+UninstallDisplayIcon={app}\GazeNetClient.exe
 WizardImageFile=compiler:WizModernImage-IS.bmp
 WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 
@@ -33,7 +34,7 @@ Source: "{#TargetPath}\websocket-sharp.xml"; DestDir: "{app}"; Flags: ignorevers
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\GazeNetClient.exe"
-Name: "{group}\{cm:UninstallProgram,{#Name}}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram,}"; Filename: "{uninstallexe}"
 
 [Code]
 

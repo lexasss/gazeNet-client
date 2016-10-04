@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,7 +47,19 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="ContainerConfig.cs" />
-    <Compile Include="Plugin.cs" />
+    <Compile Include="IPlugin.cs" />
+    <Compile Include="Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options.Designer.cs">
+      <DependentUpon>Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionsWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionsWidget.Designer.cs">
+      <DependentUpon>OptionsWidget.cs</DependentUpon>
+    </Compile>
     <Compile Include="Plugins.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -55,6 +68,14 @@
       <Project>{c58df713-6bb7-44e3-b0e2-c52694c85f56}</Project>
       <Name>gazeproc</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Options.resx">
+      <DependentUpon>Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsWidget.resx">
+      <DependentUpon>OptionsWidget.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,24 +1,25 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GazeNetClient.Plugin
 {
-    public class Plugins : IPlugin
+    public class Plugins
     {
-        public Dictionary<string, EventHandler> MenuItems { get { return null; } }
-        public string Name { get; } = "";
-        public IPlugin[] Items { get; private set; }
-        public event EventHandler<string> Log = delegate { };
-        public event EventHandler<RequestArgs> Req = delegate { };
+        private List<IPlugin> iItems = new List<IPlugin>(); 
+
+        public IPlugin[] Items { get { return iItems.ToArray(); } }
 
         public IPlugin this[string aName]
         {
             get
             {
                 if (string.IsNullOrEmpty(aName))
-                    return this;
+                    return null;
 
-                foreach (IPlugin plugin in Items)
+                foreach (IPlugin plugin in iItems)
                     if (plugin.Name == aName)
                         return plugin;
 
@@ -26,33 +27,102 @@ namespace GazeNetClient.Plugin
             }
         }
 
-        public Plugins(IPlugin[] aItems)
+        /// <summary>
+        /// Loads plugins ([NAMESPACE].Plugins.*.dll) from the specified folder
+        /// </summary>
+        /// <param name="aFolder">The folder to load plugins from. Can be absolute, or relative to the 
+        /// folder of the currently executing application (default). </param>
+        /// <returns></returns>
+        public static Plugins load(string aFolder = "")
         {
-            Items = aItems;
+            Plugins result = new Plugins();
+
+            string folder;
+            if (aFolder != null && aFolder.Length > 1 && aFolder[1] == Path.VolumeSeparatorChar)
+            {
+                folder = aFolder;
+            }
+            else
+            {
+                folder = System.Windows.Forms.Application.StartupPath;
+                if (!string.IsNullOrEmpty(aFolder))
+                {
+                    if (aFolder[0] != Path.DirectorySeparatorChar)
+                        folder += Path.DirectorySeparatorChar;
+                    folder += aFolder;
+                }
+            }
+
+            string pluginFileNamePattern = string.Format("{0}s.*.dll", typeof(Plugins).Namespace);
+            string[] fileNames = Directory.GetFiles(folder, pluginFileNamePattern);
+
+            foreach (string pluginFileName in fileNames)
+            {
+                string[] typeParts = Path.GetFileNameWithoutExtension(pluginFileName).Split('.');
+                string plugintTypeName = string.Join(".", typeParts) + "." + typeParts.Last<string>();
+                Type pluginType = Type.GetType(plugintTypeName);
+                if (pluginType == null)
+                {
+                    Assembly pluginAssembly = Assembly.LoadFrom(pluginFileName);
+                    pluginType = pluginAssembly.GetType(plugintTypeName);
+                }
+
+                if (pluginType != null)
+                {
+                    result.iItems.Add(Activator.CreateInstance(pluginType) as IPlugin);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Cannot load the plugin {0}", plugintTypeName);
+                }
+            }
+
+            return result;
         }
 
-        public void feed(Processor.GazePoint aSample)
+        public Plugins(IPlugin[] aItems = null)
         {
-            foreach (IPlugin plugin in Items)
-                plugin.feed(aSample);
+            if (aItems != null)
+                foreach (IPlugin plugin in aItems)
+                    iItems.Add(plugin);
+       }
+
+        public void start()
+        {
+            foreach (IPlugin plugin in iItems)
+                if (plugin.Enabled)
+                    plugin.start();
         }
 
         public void finilize()
         {
-            foreach (IPlugin plugin in Items)
-                plugin.finilize();
+            foreach (IPlugin plugin in iItems)
+                if (plugin.Enabled)
+                    plugin.finilize();
         }
 
-        public void start()
+        public void feed(Processor.GazePoint aSample)
         {
-            foreach (IPlugin plugin in Items)
-                plugin.start();
+            foreach (IPlugin plugin in iItems)
+                if (plugin.Enabled)
+                    plugin.feed(aSample);
         }
 
         public void command(string aCommand, string aValue)
         {
-            foreach (IPlugin plugin in Items)
-                plugin.command(aCommand, aValue);
+            foreach (IPlugin plugin in iItems)
+                if (plugin.Enabled)
+                    plugin.command(aCommand, aValue);
+        }
+
+        public void showOptions()
+        {
+            Options options = new Plugin.Options();
+            options.list(Items);
+            if (options.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                options.save();
+            }
         }
     }
 }

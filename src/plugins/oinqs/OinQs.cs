@@ -10,11 +10,10 @@ namespace GazeNetClient.Plugins.OinQs
     {
         #region Internal members
 
+        private Config iConfig;
         private Display iDisplay = new Display();
         private JavaScriptSerializer iJSON = new JavaScriptSerializer();
         private GazeLogger iGazeLogger = new GazeLogger();
-
-        private int iSessionCount = 0;
 
         #endregion
 
@@ -24,6 +23,14 @@ namespace GazeNetClient.Plugins.OinQs
 
         public Dictionary<string, EventHandler> MenuItems { get; } = null;
         public string Name { get; } = NAME;
+        public string DisplayName { get; } = "O-in-Qs";
+        public bool IsExclusive { get; } = true;
+        public Plugin.OptionsWidget Options { get; private set; }
+        public bool Enabled
+        {
+            get { return iConfig.Enabled; }
+            set { iConfig.Enabled = value; }
+        }
 
         public event EventHandler<string> Log = delegate { };
         public event EventHandler<Plugin.RequestArgs> Req = delegate { };
@@ -34,6 +41,17 @@ namespace GazeNetClient.Plugins.OinQs
 
         public OinQs()
         {
+            Console.WriteLine(IsExclusive);
+            iConfig = Utils.Storage<Config>.load();
+
+            Label lbl = new Label();
+            lbl.Text = "No options to display";
+            lbl.TextAlign = ContentAlignment.MiddleCenter;
+            lbl.Dock = DockStyle.Fill;
+
+            Options = new Plugin.OptionsWidget();
+            Options.Controls.Add(lbl);
+
             iDisplay.Visible = false;
 
             iDisplay.OnFound += Display_OnFound;
@@ -43,9 +61,19 @@ namespace GazeNetClient.Plugins.OinQs
             iDisplay.OnRequestSave += Display_OnRequestSave;
         }
 
-        public void feed(Processor.GazePoint aSample)
+        ~OinQs()
         {
-            iGazeLogger.feed(aSample);
+            Utils.Storage<Config>.save(iConfig);
+        }
+
+        public void displayOptions() { }
+
+        public void acceptOptions() { }
+
+        public void start()
+        {
+            iDisplay.clear();
+            iDisplay.Show();
         }
 
         public void finilize()
@@ -53,10 +81,9 @@ namespace GazeNetClient.Plugins.OinQs
             iDisplay.Hide();
         }
 
-        public void start()
+        public void feed(Processor.GazePoint aSample)
         {
-            iDisplay.clear();
-            iDisplay.Show();
+            iGazeLogger.feed(aSample);
         }
 
         public void command(string aCommand, string aValue)
