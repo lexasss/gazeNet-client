@@ -18,10 +18,11 @@ namespace GazeNetClient.Experiment.OinQs
 
         private const string INSTRUCTION_INITIAL = "Search for \"{0}\". Press {1} when found, or {2} if is not displayed.";
         private const string INSTRUCTION_CONTINUE = "Press {0} to continue.";
-        private const string INSTRUCTION_FEEDBACK_CORRECT = "Well done!";
-        private const string INSTRUCTION_FEEDBACK_INCORRECT = "The target {0} there.";
-        private const string INSTRUCTION_FEEDBACK_TARGET_PRESENCE_YES = "WAS";
-        private const string INSTRUCTION_FEEDBACK_TARGET_PRESENCE_NO = "WASN'T";
+        private const string INSTRUCTION_FEEDBACK = "Response: \"{0}\".   {1}.";
+        private const string INSTRUCTION_FEEDBACK_FOUND = "FOUND";
+        private const string INSTRUCTION_FEEDBACK_NOT_FOUND = "NOT FOUND";
+        private const string INSTRUCTION_FEEDBACK_CORRECT = "Correct";
+        private const string INSTRUCTION_FEEDBACK_INCORRECT = "NOT correct";
         private const string INSTRUCTION_TIMEOUT = "Timeout.";
         private const string INSTRUCTION_TIMEOUT_CONTINUATION = " Try to be faster.";
         private const string INSTRUCTION_FINISHED = "Finished. Thank you!";
@@ -158,11 +159,9 @@ namespace GazeNetClient.Experiment.OinQs
             }
             else
             {
-                instruction = iSession.isResultCorrect(aResult) ? 
-                    INSTRUCTION_FEEDBACK_CORRECT :
-                    string.Format(INSTRUCTION_FEEDBACK_INCORRECT, aResult == TrialResult.Found ?
-                        INSTRUCTION_FEEDBACK_TARGET_PRESENCE_NO :
-                        INSTRUCTION_FEEDBACK_TARGET_PRESENCE_YES);
+                instruction = string.Format(INSTRUCTION_FEEDBACK, aResult == TrialResult.Found ?
+                    INSTRUCTION_FEEDBACK_FOUND : INSTRUCTION_FEEDBACK_NOT_FOUND,
+                    iSession.isResultCorrect(aResult) ? INSTRUCTION_FEEDBACK_CORRECT : INSTRUCTION_FEEDBACK_INCORRECT);
             }
 
             int displayInterval = 0;

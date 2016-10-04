@@ -8,7 +8,7 @@ namespace GazeNetClient.Experiment.OinQs
     public static class LayoutGenerator
     {
         // Margins in degrees
-        private const double MARGIN_CENTER = 2;
+        private const double MARGIN_CENTER = 1.5;
         private const double MARGIN_BORDER = 1;
         private const double MARGIN_OTHERS = 1.5;
 

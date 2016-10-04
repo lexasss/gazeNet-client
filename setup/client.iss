@@ -1,20 +1,22 @@
 #define Name "GazeNet client"
-#define Host "GazeNetClient"
+#define App "GazeNetClient"
 #define Version "1.0.0"
 #define Publisher "University of Tampere"
-#define PublisherURL "http://www.sis.uta.fi/~csolsp/"
-#define TargetPath "..\bin\Debug\client"
+#define PublisherURL "http://gasp.sis.uta.fi/"
+#define BuildType "Release"
+
+#define TargetPath "..\bin\" + BuildType + "\client"
 
 [Setup]
 AppName={#Name}
 AppVersion={#Version}
 AppVerName={#Name} {#Version}"
 AppPublisher={#Publisher}
-DefaultDirName={pf}\{#Publisher}\{#Host}
-DefaultGroupName={#Publisher}\{#Host}
+DefaultDirName={pf}\{#Publisher}\{#App}
+DefaultGroupName={#Publisher}\{#App}
 LicenseFile=eula.txt
-OutputDir=bin\Debug
-OutputBaseFilename={#Host}_Setup
+OutputDir=bin\{#BuildType}
+OutputBaseFilename={#App}_Setup
 SetupIconFile=..\src\client\icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -23,6 +25,7 @@ WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 
 [Files]
 Source: "{#TargetPath}\GazeNetClient.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#TargetPath}\*.cur"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\websocket-sharp.xml"; DestDir: "{app}"; Flags: ignoreversion
 

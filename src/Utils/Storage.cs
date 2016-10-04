@@ -78,7 +78,6 @@ namespace GazeNetClient.Utils
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                Console.WriteLine(fileName);
                 aAction(fileName);
                 return true;
             }
