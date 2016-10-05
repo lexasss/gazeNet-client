@@ -43,13 +43,8 @@ namespace GazeNetClient.Plugins.OinQs
         {
             iConfig = Utils.Storage<Config>.load();
 
-            Label lbl = new Label();
-            lbl.Text = "No options to display";
-            lbl.TextAlign = ContentAlignment.MiddleCenter;
-            lbl.Dock = DockStyle.Fill;
-
             Options = new Plugin.OptionsWidget();
-            Options.Controls.Add(lbl);
+            Options.makeEmpty();
 
             iDisplay.Visible = false;
 
@@ -80,9 +75,10 @@ namespace GazeNetClient.Plugins.OinQs
             iDisplay.Hide();
         }
 
-        public void feed(Processor.GazePoint aSample)
+        public Processor.GazePoint feed(Processor.GazePoint aSample)
         {
             iGazeLogger.feed(aSample);
+            return aSample;
         }
 
         public void command(string aCommand, string aValue)

@@ -140,10 +140,6 @@
       <Project>{c58df713-6bb7-44e3-b0e2-c52694c85f56}</Project>
       <Name>gazeproc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\plugins\oinqs\plug_oinqs.csproj">
-      <Project>{4f11789f-af07-445a-bfbe-54c9330e5f70}</Project>
-      <Name>plug_oinqs</Name>
-    </ProjectReference>
     <ProjectReference Include="..\plugin\plugin.csproj">
       <Project>{a91aa17b-16ab-4628-8cc9-61824e4ab54b}</Project>
       <Name>plugin</Name>

@@ -443,8 +443,8 @@ namespace GazeNetClient
 
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazePoint aArgs)
         {
-            iWebSocketClient.send(new WebSocket.GazeEvent(aArgs.Location));
-            iPlugins.feed(aArgs);
+            Processor.GazePoint pt = iPlugins.feed(aArgs);
+            iWebSocketClient.send(new WebSocket.GazeEvent(pt.Location));
         }
 
         private void Shortcut_TrackingNext()

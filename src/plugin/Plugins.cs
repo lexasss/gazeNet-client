@@ -101,11 +101,13 @@ namespace GazeNetClient.Plugin
                     plugin.finilize();
         }
 
-        public void feed(Processor.GazePoint aSample)
+        public Processor.GazePoint feed(Processor.GazePoint aSample)
         {
+            Processor.GazePoint gp = aSample;
             foreach (IPlugin plugin in iItems)
                 if (plugin.Enabled)
-                    plugin.feed(aSample);
+                    gp = plugin.feed(gp);
+            return gp;
         }
 
         public void command(string aCommand, string aValue)
@@ -117,7 +119,7 @@ namespace GazeNetClient.Plugin
 
         public void showOptions()
         {
-            Options options = new Plugin.Options();
+            Options options = new Options();
             options.list(Items);
             if (options.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {

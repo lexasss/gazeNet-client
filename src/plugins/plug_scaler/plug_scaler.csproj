@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A91AA17B-16AB-4628-8CC9-61824E4AB54B}</ProjectGuid>
+    <ProjectGuid>{ACEAAED8-1841-4C65-A03E-678A46456A2F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GazeNetClient.Plugin</RootNamespace>
-    <AssemblyName>GazeNetClient.Plugin</AssemblyName>
+    <RootNamespace>GazeNetClient.Plugins.Scaler</RootNamespace>
+    <AssemblyName>GazeNetClient.Plugins.Scaler</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,37 +45,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="ContainerConfig.cs" />
-    <Compile Include="IPlugin.cs" />
     <Compile Include="Options.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Options.Designer.cs">
       <DependentUpon>Options.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionsWidget.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="OptionsWidget.Designer.cs">
-      <DependentUpon>OptionsWidget.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Plugins.cs" />
+    <Compile Include="Scaler.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\gazeproc\gazeproc.csproj">
+    <ProjectReference Include="..\..\gazeproc\gazeproc.csproj">
       <Project>{c58df713-6bb7-44e3-b0e2-c52694c85f56}</Project>
       <Name>gazeproc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugin\plugin.csproj">
+      <Project>{a91aa17b-16ab-4628-8cc9-61824e4ab54b}</Project>
+      <Name>plugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\utils\utils.csproj">
+      <Project>{f1f24fa6-7698-43d6-832c-b5048de63218}</Project>
+      <Name>utils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Options.resx">
       <DependentUpon>Options.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OptionsWidget.resx">
-      <DependentUpon>OptionsWidget.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace GazeNetClient.Plugin
@@ -16,7 +9,20 @@ namespace GazeNetClient.Plugin
         {
             InitializeComponent();
 
-            this.Dock = DockStyle.Fill;
+            if (!this.DesignMode)
+                this.Dock = DockStyle.Fill;
+        }
+
+        public void makeEmpty()
+        {
+            Controls.Clear();
+
+            Label lbl = new Label();
+            lbl.Text = "No options to display";
+            lbl.TextAlign = ContentAlignment.MiddleCenter;
+            lbl.Dock = DockStyle.Fill;
+
+            Controls.Add(lbl);
         }
     }
 }

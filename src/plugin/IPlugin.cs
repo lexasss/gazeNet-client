@@ -35,9 +35,10 @@ namespace GazeNetClient.Plugin
         void displayOptions();
         void acceptOptions();
 
+        void command(string aCommand, string aValue);
+
         void start();
         void finilize();
-        void feed(Processor.GazePoint aSample);
-        void command(string aCommand, string aValue);
+        Processor.GazePoint feed(Processor.GazePoint aSample);
     }
 }
