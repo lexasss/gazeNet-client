@@ -41,7 +41,6 @@ namespace GazeNetClient.Plugins.OinQs
 
         public OinQs()
         {
-            Console.WriteLine(IsExclusive);
             iConfig = Utils.Storage<Config>.load();
 
             Label lbl = new Label();

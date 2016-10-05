@@ -14,8 +14,8 @@ namespace GazeNetClient.WebSocket
         private bool iDisposed = false;
         private bool iNeedsRestart = false;
 
-        private string iHost = "localhost";
-        private ushort iPort = 8080;
+        private string iHost = "gazenet.sis.uta.fi";
+        private ushort iPort = 80;
         private Config iConfig = new Config();
 
         #endregion

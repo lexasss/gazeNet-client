@@ -25,7 +25,7 @@ namespace GazeNetClient.Plugins.OinQs
         {
             InitializeComponent();
 
-            iEmptyCursor = new Cursor("EmptyCursor.cur");
+            iEmptyCursor = new Cursor(GetType(), "EmptyCursor.cur");
         }
 
         public void clear()

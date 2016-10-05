@@ -26,7 +26,6 @@ WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 
 [Files]
 Source: "{#TargetPath}\GazeNetClient.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#TargetPath}\*.cur"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\websocket-sharp.xml"; DestDir: "{app}"; Flags: ignoreversion
 

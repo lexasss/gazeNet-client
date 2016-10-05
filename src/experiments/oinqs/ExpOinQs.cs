@@ -56,6 +56,8 @@ namespace GazeNetClient.Experiment.OinQs
             iReplyTimeout.Interval = 1000 * iConfig.Timeout;
             iReplyTimeout.Tick += ReplyTimeout_Tick;
 
+            txbServer.Text = iWebSocketClient.Host;
+            nudPort.Value = iWebSocketClient.Port;
             txbTopic.Text = iWebSocketClient.Config.Topics;
             chkPointerVisibility.Checked = iConfig.IsPointerVisible;
             nudRepetitions.Value = iConfig.Repetitions;
@@ -276,6 +278,16 @@ namespace GazeNetClient.Experiment.OinQs
         {
             iSession = new Session(iConfig);
             iWebSocketClient.start();
+        }
+
+        private void txbServer_TextChanged(object sender, EventArgs e)
+        {
+            iWebSocketClient.Host = txbServer.Text;
+        }
+
+        private void nudPort_ValueChanged(object sender, EventArgs e)
+        {
+            iWebSocketClient.Port = (ushort)nudPort.Value;
         }
 
         private void txbTopic_TextChanged(object sender, EventArgs e)
