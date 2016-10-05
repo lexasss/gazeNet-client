@@ -395,7 +395,9 @@ namespace GazeNetClient
         {
             //iPointers.feed(aArgs);
             iUIContext.Send(new SendOrPostCallback((target) => {
-                iPointers.movePointer(aArgs.from, aArgs.payload.Location);
+                PointF gazePoint = aArgs.payload.Location;
+                if (iPlugins.feedReceivedPoint(aArgs.from, ref gazePoint))
+                    iPointers.movePointer(aArgs.from, gazePoint);
             }), null);
         }
 
@@ -443,7 +445,7 @@ namespace GazeNetClient
 
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazePoint aArgs)
         {
-            Processor.GazePoint pt = iPlugins.feed(aArgs);
+            Processor.GazePoint pt = iPlugins.feedOwnPoint(aArgs);
             iWebSocketClient.send(new WebSocket.GazeEvent(pt.Location));
         }
 

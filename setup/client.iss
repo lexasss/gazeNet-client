@@ -6,7 +6,6 @@
 #define BuildType "Debug"
 
 #define TargetPath "..\bin\" + BuildType + "\client"
-#define PluginsPath "..\bin\" + BuildType
 
 [Setup]
 AppName={#Name}
@@ -29,7 +28,6 @@ WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 Source: "{#TargetPath}\GazeNetClient.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\websocket-sharp.xml"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PluginsPath}\GazeNetClient.Plugins.*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]
 

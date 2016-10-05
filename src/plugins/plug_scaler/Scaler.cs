@@ -51,6 +51,7 @@ namespace GazeNetClient.Plugins.Scaler
 
         public void displayOptions()
         {
+            iOptions.cmbAppliesTo.SelectedIndex = (int)iConfig.ScalingTarget;
             iOptions.nudLeft.Value = iConfig.Left;
             iOptions.nudRight.Value = iConfig.Right;
             iOptions.nudTop.Value = iConfig.Top;
@@ -59,17 +60,23 @@ namespace GazeNetClient.Plugins.Scaler
 
         public void acceptOptions()
         {
+            iConfig.ScalingTarget = (ScalingTarget)iOptions.cmbAppliesTo.SelectedIndex;
             iConfig.Left = (int)iOptions.nudLeft.Value;
             iConfig.Right = (int)iOptions.nudRight.Value;
             iConfig.Top = (int)iOptions.nudTop.Value;
             iConfig.Bottom = (int)iOptions.nudBottom.Value;
         }
 
-        public Processor.GazePoint feed(Processor.GazePoint aSample)
+        public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
             float x = iDisplaySize.Left + iConfig.Left + iConfig.Width * (aSample.X / iDisplaySize.Width);
             float y = iDisplaySize.Top + iConfig.Top + iConfig.Height * (aSample.Y / iDisplaySize.Height);
             return new Processor.GazePoint(aSample.Timestamp, new PointF(x, y));
+        }
+
+        public bool feedReceivedPoint(string aFrom, ref PointF aPoint)
+        {
+            return true;
         }
     }
 }

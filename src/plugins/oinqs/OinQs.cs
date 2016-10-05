@@ -75,10 +75,15 @@ namespace GazeNetClient.Plugins.OinQs
             iDisplay.Hide();
         }
 
-        public Processor.GazePoint feed(Processor.GazePoint aSample)
+        public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
             iGazeLogger.feed(aSample);
             return aSample;
+        }
+
+        public bool feedReceivedPoint(string aFrom, ref PointF aPoint)
+        {
+            return true;
         }
 
         public void command(string aCommand, string aValue)

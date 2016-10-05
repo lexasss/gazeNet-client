@@ -86,6 +86,7 @@ namespace GazeNetClient
 
             cmsMenu.Items.Add(tsmiOptions);
             cmsMenu.Items.Add(tsmiPluginOptions);
+            cmsMenu.Items.Add("-");
             cmsMenu.Items.Add(tsmiToggleServerConnection);
             cmsMenu.Items.Add(tsmiTogglePointerVisibility);
             cmsMenu.Items.Add("-");
@@ -119,19 +120,20 @@ namespace GazeNetClient
             tssETUDSeparator.Visible = aState.IsEyeTrackingRequired;
         }
 
-        public void addPlugins(Plugin.Plugins aPlugins)
+        public void addPlugins(Plugins aPlugins)
         {
-            foreach (Plugin.IPlugin p in aPlugins.Items)
+            foreach (IPlugin plugin in aPlugins.Items)
             {
-                IDictionary<string, EventHandler> items = p.MenuItems;
+                IDictionary<string, EventHandler> items = plugin.MenuItems;
                 if (items?.Count > 0)
                 {
                     cmsMenu.Items.Insert(0, new ToolStripSeparator());
+                    int index = 0;
                     foreach (KeyValuePair<string, EventHandler> k in items)
                     {
                         ToolStripMenuItem item = new ToolStripMenuItem(k.Key);
                         item.Click += k.Value;
-                        cmsMenu.Items.Insert(0, item);
+                        cmsMenu.Items.Insert(index++, item);
                     }
                 }
             }

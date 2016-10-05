@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Drawing;
 
 namespace GazeNetClient.Plugin
 {
@@ -39,6 +39,8 @@ namespace GazeNetClient.Plugin
 
         void start();
         void finilize();
-        Processor.GazePoint feed(Processor.GazePoint aSample);
+
+        Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample);
+        bool feedReceivedPoint(string aFrom, ref PointF aLocation);
     }
 }

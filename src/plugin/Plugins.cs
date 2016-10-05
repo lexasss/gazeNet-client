@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace GazeNetClient.Plugin
@@ -101,13 +102,26 @@ namespace GazeNetClient.Plugin
                     plugin.finilize();
         }
 
-        public Processor.GazePoint feed(Processor.GazePoint aSample)
+        public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
             Processor.GazePoint gp = aSample;
             foreach (IPlugin plugin in iItems)
                 if (plugin.Enabled)
-                    gp = plugin.feed(gp);
+                    gp = plugin.feedOwnPoint(gp);
             return gp;
+        }
+
+        public bool feedReceivedPoint(string aFrom, ref PointF aPoint)
+        {
+            bool result = true;
+            foreach (IPlugin plugin in iItems)
+                if (plugin.Enabled)
+                    if (!plugin.feedReceivedPoint(aFrom, ref aPoint))
+                    {
+                        result = false;
+                        break;
+                    }
+            return result;
         }
 
         public void command(string aCommand, string aValue)

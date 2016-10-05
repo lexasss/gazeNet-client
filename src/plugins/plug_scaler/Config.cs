@@ -1,7 +1,15 @@
 ﻿namespace GazeNetClient.Plugins.Scaler
 {
+    public enum ScalingTarget
+    {
+        Own,
+        Recevied
+    }
+
     public class Config : Plugin.Config
     {
+        public ScalingTarget ScalingTarget { get; set; } = ScalingTarget.Own;
+
         public int Left { get; set; } = 0;
         public int Top { get; set; } = 0;
         public int Right { get; set; } = 640;

@@ -15,6 +15,11 @@ namespace GazeNetClient.Plugins.Scaler
         public Options()
         {
             InitializeComponent();
+
+            foreach (string scalingTarget in Enum.GetNames(typeof(ScalingTarget)))
+            {
+                cmbAppliesTo.Items.Add(scalingTarget.ToLower());
+            }
         }
     }
 }
