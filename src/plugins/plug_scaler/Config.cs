@@ -1,11 +1,17 @@
-﻿namespace GazeNetClient.Plugins.Scaler
+﻿using System;
+using System.Xml.Serialization;
+
+namespace GazeNetClient.Plugins.Scaler
 {
-    public enum ScalingTarget
+    [Serializable]
+    public enum ScalingTarget : int
     {
         Own,
         Recevied
     }
 
+    [Serializable]
+    [XmlType(Namespace = "GazeNetClient.Plugins", TypeName = "ScalerConfig")]
     public class Config : Plugin.Config
     {
         public ScalingTarget ScalingTarget { get; set; } = ScalingTarget.Own;

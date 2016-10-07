@@ -77,6 +77,8 @@ namespace GazeNetClient.Experiment.OinQs
 
         private void StartSession()
         {
+            tsslProgress.Text = "Started";
+
             string payload;
 
             string instruction = 
@@ -118,6 +120,8 @@ namespace GazeNetClient.Experiment.OinQs
                 return;
             }
 
+            tsslProgress.Text = string.Format("{0}/{1} started", iSession.TrialIndex + 1, iSession.TrialCount);
+
             payload = iJSON.Serialize(items);
             iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.ADD_RANGE, payload));
 
@@ -127,7 +131,7 @@ namespace GazeNetClient.Experiment.OinQs
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
             });
 
-            Utils.DelayedAction.Execute(3000, () =>
+            Utils.DelayedAction.Execute(2000, () =>
             {
                 iSession.startTrial();
                 iReplyTimeout.Start();
@@ -145,8 +149,14 @@ namespace GazeNetClient.Experiment.OinQs
 
             if (sessionFinished)
             {
+                tsslProgress.Text = "Finished";
+
                 iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.FINISHED, ""));
                 iWebSocketClient.stop();
+            }
+            else
+            {
+                tsslProgress.Text = string.Format("{0}/{1} done", iSession.TrialIndex + 1, iSession.TrialCount);
             }
         }
 
@@ -183,6 +193,7 @@ namespace GazeNetClient.Experiment.OinQs
                     instruction = string.Format(INSTRUCTION_CONTINUE, KEY_CONTINUE);
                     payload = iJSON.Serialize(new Plugins.OinQs.Instruction(instruction, 0));
                     iWebSocketClient.send(new Plugin.Command(Plugins.OinQs.OinQs.NAME, Plugins.OinQs.Command.INSTRUCTION, payload));
+                    tsslProgress.Text = string.Format("{0}/{1} waiting to start", iSession.TrialIndex + 2, iSession.TrialCount);
                 });
             }
         }

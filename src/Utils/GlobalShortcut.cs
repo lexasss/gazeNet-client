@@ -12,6 +12,7 @@ namespace GazeNetClient.Utils
         private static WinAPI.LowLevelKeyboardProc iProc = HookCallback;
         private static IntPtr iHookID = IntPtr.Zero;
         private static List<Shortcut> iShortcuts = new List<Shortcut>();
+        private static List<int> iPressedKeys = new List<int>();
 
         #endregion
 
@@ -71,16 +72,31 @@ namespace GazeNetClient.Utils
 
         private static IntPtr HookCallback(int aCode, IntPtr aWParam, IntPtr aLParam)
         {
-            if (aCode >= 0 && (uint)aWParam == WinAPI.WM.KEYDOWN)
+            if (aCode >= 0)
             {
-                int vkCode = Marshal.ReadInt32(aLParam);
-                lock (iShortcuts)
+                bool isKeyDown = (uint)aWParam == WinAPI.WM.KEYDOWN;
+                bool isKeyUp = (uint)aWParam == WinAPI.WM.KEYUP;
+                if (isKeyDown || isKeyUp)
                 {
-                    foreach (Shortcut shortcut in iShortcuts)
+                    int vkCode = Marshal.ReadInt32(aLParam);
+
+                    bool canContinue = isKeyUp || (isKeyDown && !iPressedKeys.Contains(vkCode));
+                    if (canContinue)
                     {
-                        if (shortcut.isPressed(vkCode))
+                        if (isKeyDown)
+                            iPressedKeys.Add(vkCode);
+                        else
+                            iPressedKeys.Remove(vkCode);
+
+                        lock (iShortcuts)
                         {
-                            shortcut.Callback();
+                            foreach (Shortcut shortcut in iShortcuts)
+                            {
+                                if (shortcut.isPressed(vkCode, (uint)aWParam == WinAPI.WM.KEYUP))
+                                {
+                                    shortcut.Callback();
+                                }
+                            }
                         }
                     }
                 }

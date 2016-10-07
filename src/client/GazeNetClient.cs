@@ -48,6 +48,7 @@ namespace GazeNetClient
         private AppDomain iETUDriverAppDomain = null;
         private Processor.GazeParser iGazeParser = null;
         private Pointer.Collection iPointers = null;
+        private Pointer.Pointer iOwnPointer = null;
         private Menu iMenu = null;
         private Options iOptions = null;
         private NotifyIcon iTrayIcon = null;
@@ -110,6 +111,10 @@ namespace GazeNetClient
             iETUDriver.OnCalibrated += ETUDriver_OnCalibrated;
             iETUDriver.OnDataEvent += ETUDriver_OnDataEvent;
 
+            iOwnPointer = new Pointer.Pointer(0);
+            iOwnPointer.Appearance = Pointer.Style.DotsAnim;
+            iOwnPointer.Opacity = 1.0;
+
             iGazeParser = new Processor.GazeParser();
             iGazeParser.OnNewGazePoint += GazeParser_OnNewGazePoint;
 
@@ -124,7 +129,7 @@ namespace GazeNetClient
             iMenu.OnShowOptions += showOptions;
             iMenu.OnShowPluginOptions += showPluginOptions;
             iMenu.OnToggleServerConnection += toggleConnection;
-            iMenu.OnTogglePointerVisibility += toggleCursorVisibility;
+            iMenu.OnTogglePointerVisibility += togglePointersVisibility;
             iMenu.OnShowETUDOptions += showETUDOptions;
             iMenu.OnCalibrateTracker += calibrate;
             iMenu.OnExit += Menu_Exit;
@@ -137,7 +142,8 @@ namespace GazeNetClient
             iTrayIcon.Text = "GazeNet client";
             iTrayIcon.Visible = true;
 
-            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(toggleCursorVisibility), Keys.Pause));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(togglePointersVisibility), Keys.Pause));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("OwnPointer", new Action(toggleOwnPointerVisibility), Keys.Q, true));
             Utils.GlobalShortcut.add(new Utils.Shortcut("Tracking", new Action(Shortcut_TrackingNext), Keys.PrintScreen, Keys.Control));
             Utils.GlobalShortcut.init();
 
@@ -194,10 +200,19 @@ namespace GazeNetClient
                 iWebSocketClient.stop();
         }
 
-        public void toggleCursorVisibility()
+        public void togglePointersVisibility()
         {
             iPointers.Visible = !iPointers.Visible;
             UpdateMenu(false);
+        }
+
+        public void toggleOwnPointerVisibility()
+        {
+            if (!iOwnPointer.Visible)
+                iOwnPointer.show();
+            else
+                iOwnPointer.hide();
+            Console.WriteLine("Own pointer visible: {0}", iOwnPointer.Visible);
         }
 
         public void showETUDOptions()
@@ -228,6 +243,7 @@ namespace GazeNetClient
                 // Free any other managed objects here.
                 iGazeParser.Dispose();
                 iPointers.Dispose();
+                iOwnPointer.Dispose();
 
                 if (iWebSocketClient != null)
                 {
@@ -424,7 +440,7 @@ namespace GazeNetClient
                     {
                         ContainerConfig config = (aArgs as SetContainerConfigRequestArgs).Config;
                         if (config.PointerVisisble != iPointers.Visible)
-                            toggleCursorVisibility();
+                            togglePointersVisibility();
                         iPointers.scale(Utils.Sizing.getScale(config.ScreenSize, config.Distance));
                     }
                     break;
@@ -447,6 +463,11 @@ namespace GazeNetClient
         {
             Processor.GazePoint pt = iPlugins.feedOwnPoint(aArgs);
             iWebSocketClient.send(new WebSocket.GazeEvent(pt.Location));
+
+            if (iOwnPointer.Visible)
+            {
+                iOwnPointer.moveTo(aArgs.Location);
+            }
         }
 
         private void Shortcut_TrackingNext()

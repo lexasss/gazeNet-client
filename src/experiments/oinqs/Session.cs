@@ -11,13 +11,14 @@ namespace GazeNetClient.Experiment.OinQs
 
         private List<TrialCondition> iTrialConditions;
         private Plugins.OinQs.LayoutItem[] iCurrentItems;
-        private int iTrialIndex = -1;
 
         private List<Trial> iTrials = new List<Trial>();
         private DateTime iTrialStart;
 
         public bool Active { get; private set; } = false;
-        public TrialCondition TrialCondition { get { return iTrialIndex < 0 ? null : iTrialConditions[iTrialIndex]; } }
+        public TrialCondition TrialCondition { get { return TrialIndex < 0 ? null : iTrialConditions[TrialIndex]; } }
+        public int TrialIndex { get; private set; } = -1;
+        public int TrialCount { get { return iTrialConditions.Count; } }
 
         public Session(Config aConfig)
         {
@@ -27,7 +28,7 @@ namespace GazeNetClient.Experiment.OinQs
 
         public Plugins.OinQs.LayoutItem[] createTrial()
         {
-            iTrialIndex++;
+            TrialIndex++;
 
             iCurrentItems = LayoutGenerator.create(TrialCondition);
 
@@ -43,7 +44,7 @@ namespace GazeNetClient.Experiment.OinQs
         public bool finishTrial(string aSender, TrialResult aResult)
         {
             int time = (int)(DateTime.Now - iTrialStart).TotalMilliseconds;
-            int orientation = iTrialConditions[iTrialIndex].Orientation;
+            int orientation = iTrialConditions[TrialIndex].Orientation;
             Trial trial = new Trial(iCurrentItems, orientation, aSender, aResult, time);
             iTrials.Add(trial);
 
@@ -60,13 +61,13 @@ namespace GazeNetClient.Experiment.OinQs
                     writer.WriteLine(log.ToString());
             }
 
-            iTrialIndex = -1;
+            TrialIndex = -1;
             iTrials.Clear();
         }
 
         public bool isResultCorrect(TrialResult aResult)
         {
-            return iTrialConditions[iTrialIndex].TargetPresence ?
+            return iTrialConditions[TrialIndex].TargetPresence ?
                 aResult == TrialResult.Found :
                 aResult == TrialResult.NotFound;
         }

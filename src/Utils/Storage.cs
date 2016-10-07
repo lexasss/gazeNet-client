@@ -107,9 +107,9 @@ namespace GazeNetClient.Utils
                 serializer.Serialize(writer, aObject);
                 writer.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.WriteLine(String.Format("Error on saving the object of {0} type: {1}", type.ToString(), e.Message), "ObjectStorage");
+                PrintException(ex, "SAVING", type.ToString());
             }
         }
 
@@ -126,9 +126,9 @@ namespace GazeNetClient.Utils
                 result = (T)serializer.Deserialize(fs);
                 fs.Close();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.WriteLine(String.Format("Error on loading the object of {0} type: {1}", type.ToString(), e.Message), "ObjectStorage");
+                PrintException(ex, "LOADING", type.ToString());
                 result = (T)Activator.CreateInstance(typeof(T));
             }
 
@@ -142,6 +142,16 @@ namespace GazeNetClient.Utils
             return Storage.Folder + aTypeName.Replace('+', '.');
             //string[] parts = aTypeName.ToString().Split('.', '+');
             //return parts[parts.Length - 1];
+        }
+
+        private static void PrintException(Exception aException, string  aOperation, string aType)
+        {
+            string msg = string.Format("Exception: '{0}' for type '{1}': {2}", aOperation, aType, aException.Message);
+            if (aException.InnerException != null)
+            {
+                msg += "\nInner: " + aException.InnerException.Message;
+            }
+            Debug.WriteLine(msg, "ObjectStorage");
         }
     }
 }

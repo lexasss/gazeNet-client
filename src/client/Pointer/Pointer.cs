@@ -59,6 +59,11 @@ namespace GazeNetClient.Pointer
             }
         }
 
+        public bool Visible
+        {
+            get { return iWidget.Visible; }
+        }
+
         public long FadingInterval { get; set; }
 
         public long NoDataVisibilityInterval { get; set; }

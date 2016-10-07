@@ -37,31 +37,34 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.chkPointerVisibility = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.nudPort = new System.Windows.Forms.NumericUpDown();
+            this.txbServer = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.nudDistance = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.nudScreenSizeHeight = new System.Windows.Forms.NumericUpDown();
             this.nudScreenSizeWidth = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txbServer = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.nudPort = new System.Windows.Forms.NumericUpDown();
+            this.stsStatus = new System.Windows.Forms.StatusStrip();
+            this.tsslProgress = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.nudRepetitions)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPort)).BeginInit();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDistance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeWidth)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudPort)).BeginInit();
+            this.stsStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
             // 
             this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.Location = new System.Drawing.Point(12, 298);
+            this.btnStart.Location = new System.Drawing.Point(12, 302);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(232, 23);
             this.btnStart.TabIndex = 0;
@@ -158,6 +161,57 @@
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Connection";
+            // 
+            // nudPort
+            // 
+            this.nudPort.Location = new System.Drawing.Point(116, 45);
+            this.nudPort.Maximum = new decimal(new int[] {
+            65355,
+            0,
+            0,
+            0});
+            this.nudPort.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudPort.Name = "nudPort";
+            this.nudPort.Size = new System.Drawing.Size(104, 20);
+            this.nudPort.TabIndex = 3;
+            this.nudPort.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudPort.ValueChanged += new System.EventHandler(this.nudPort_ValueChanged);
+            // 
+            // txbServer
+            // 
+            this.txbServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txbServer.Location = new System.Drawing.Point(116, 19);
+            this.txbServer.Name = "txbServer";
+            this.txbServer.Size = new System.Drawing.Size(104, 20);
+            this.txbServer.TabIndex = 2;
+            this.txbServer.TextChanged += new System.EventHandler(this.txbServer_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 22);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(38, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Server";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 48);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(26, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Port";
             // 
             // groupBox3
             // 
@@ -269,62 +323,27 @@
             this.label5.TabIndex = 1;
             this.label5.Text = "Screen size, mm";
             // 
-            // label2
+            // stsStatus
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 22);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Server";
+            this.stsStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsslProgress});
+            this.stsStatus.Location = new System.Drawing.Point(0, 328);
+            this.stsStatus.Name = "stsStatus";
+            this.stsStatus.Size = new System.Drawing.Size(256, 22);
+            this.stsStatus.TabIndex = 7;
+            this.stsStatus.Text = "statusStrip1";
             // 
-            // txbServer
+            // tsslProgress
             // 
-            this.txbServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbServer.Location = new System.Drawing.Point(116, 19);
-            this.txbServer.Name = "txbServer";
-            this.txbServer.Size = new System.Drawing.Size(104, 20);
-            this.txbServer.TabIndex = 2;
-            this.txbServer.TextChanged += new System.EventHandler(this.txbServer_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 48);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(26, 13);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "Port";
-            // 
-            // nudPort
-            // 
-            this.nudPort.Location = new System.Drawing.Point(116, 45);
-            this.nudPort.Maximum = new decimal(new int[] {
-            65355,
-            0,
-            0,
-            0});
-            this.nudPort.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudPort.Name = "nudPort";
-            this.nudPort.Size = new System.Drawing.Size(104, 20);
-            this.nudPort.TabIndex = 3;
-            this.nudPort.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudPort.ValueChanged += new System.EventHandler(this.nudPort_ValueChanged);
+            this.tsslProgress.Name = "tsslProgress";
+            this.tsslProgress.Size = new System.Drawing.Size(0, 17);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(256, 333);
+            this.ClientSize = new System.Drawing.Size(256, 350);
+            this.Controls.Add(this.stsStatus);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -340,13 +359,16 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudPort)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudDistance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudScreenSizeWidth)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nudPort)).EndInit();
+            this.stsStatus.ResumeLayout(false);
+            this.stsStatus.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -370,6 +392,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nudPort;
+        private System.Windows.Forms.StatusStrip stsStatus;
+        private System.Windows.Forms.ToolStripStatusLabel tsslProgress;
     }
 }
 

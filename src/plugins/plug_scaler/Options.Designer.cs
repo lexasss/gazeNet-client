@@ -172,7 +172,7 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label1);
             this.Name = "Options";
-            this.Size = new System.Drawing.Size(994, 609);
+            this.Size = new System.Drawing.Size(260, 320);
             ((System.ComponentModel.ISupportInitialize)(this.nudLeft)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudRight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTop)).EndInit();
