@@ -30,9 +30,16 @@ namespace GazeNetClient
 
         public void setImage(Bitmap aBitmap, int aColorIndex)
         {
-            int hueRotationAngle = (int)(HUE_STEP * aColorIndex);
-            float darkness = (hueRotationAngle / 360) % 4 == 3 ? DARKNESS : 0.0f;
-            pcbImage.Image = TransformImage(aBitmap, hueRotationAngle % 360, darkness);
+            if (aColorIndex >= 0)
+            {
+                int hueRotationAngle = (int)(HUE_STEP * aColorIndex);
+                float darkness = (hueRotationAngle / 360) % 4 == 3 ? DARKNESS : 0.0f;
+                pcbImage.Image = TransformImage(aBitmap, hueRotationAngle % 360, darkness);
+            }
+            else
+            {
+                pcbImage.Image = aBitmap;
+            }
         }
 
         private Bitmap TransformImage(Bitmap aBitmap, int aHueRotationAngle, float aDarkness)

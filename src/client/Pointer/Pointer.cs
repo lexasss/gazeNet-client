@@ -9,6 +9,7 @@ namespace GazeNetClient.Pointer
         #region Internal members
 
         private bool iDisposed = false;
+        private bool iSaveSettings;
 
         private PointerWidget iWidget;
         private Style iAppearance;
@@ -79,9 +80,10 @@ namespace GazeNetClient.Pointer
 
         #region Public methods
 
-        public Pointer(int aColorIndex)
+        public Pointer(int aColorIndex, bool aSaveSettings = true)
         {
             iColorIndex = aColorIndex;
+            iSaveSettings = aSaveSettings;
 
             iWidget = new PointerWidget();
 
@@ -186,8 +188,11 @@ namespace GazeNetClient.Pointer
 
             if (aDisposing)
             {
-                Settings settings = new Settings(this);
-                Utils.Storage<Settings>.save(settings);
+                if (iSaveSettings)
+                {
+                    Settings settings = new Settings(this);
+                    Utils.Storage<Settings>.save(settings);
+                }
             }
 
             iDisposed = true;

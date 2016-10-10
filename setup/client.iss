@@ -3,7 +3,7 @@
 #define Version "1.0.0"
 #define Publisher "University of Tampere"
 #define PublisherURL "http://gasp.sis.uta.fi/"
-#define BuildType "Debug"
+#define BuildType "Release"
 
 #define TargetPath "..\bin\" + BuildType + "\client"
 

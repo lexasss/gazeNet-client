@@ -54,6 +54,7 @@
             this.txbUserName = new System.Windows.Forms.TextBox();
             this.txbServerHost = new System.Windows.Forms.TextBox();
             this.tbpPointer = new System.Windows.Forms.TabPage();
+            this.pcbPointer = new System.Windows.Forms.PictureBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label7 = new System.Windows.Forms.Label();
             this.nudFilterFixationThreshold = new System.Windows.Forms.NumericUpDown();
@@ -70,13 +71,13 @@
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
             this.imlIcons = new System.Windows.Forms.ImageList(this.components);
-            this.pcbPointer = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tbpConnect.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudServerPort)).BeginInit();
             this.tbpPointer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pcbPointer)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudFilterFixationThreshold)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudFilterWindowSize)).BeginInit();
@@ -85,7 +86,6 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerNoDataVisibilityDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerFadingInterval)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pcbPointer)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -113,7 +113,6 @@
             this.trbPointerOpacity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.trbPointerOpacity.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.trbPointerOpacity.Location = new System.Drawing.Point(75, 33);
-            this.trbPointerOpacity.Maximum = 9;
             this.trbPointerOpacity.Minimum = 1;
             this.trbPointerOpacity.Name = "trbPointerOpacity";
             this.trbPointerOpacity.Size = new System.Drawing.Size(90, 45);
@@ -369,6 +368,15 @@
             this.tbpPointer.TabIndex = 0;
             this.tbpPointer.Text = "Pointer";
             this.tbpPointer.UseVisualStyleBackColor = true;
+            // 
+            // pcbPointer
+            // 
+            this.pcbPointer.Location = new System.Drawing.Point(171, 6);
+            this.pcbPointer.Name = "pcbPointer";
+            this.pcbPointer.Size = new System.Drawing.Size(33, 21);
+            this.pcbPointer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pcbPointer.TabIndex = 10;
+            this.pcbPointer.TabStop = false;
             // 
             // tabPage2
             // 
@@ -633,15 +641,6 @@
             this.imlIcons.Images.SetKeyName(1, "connected");
             this.imlIcons.Images.SetKeyName(2, "connected-as-observer");
             // 
-            // pcbPointer
-            // 
-            this.pcbPointer.Location = new System.Drawing.Point(171, 6);
-            this.pcbPointer.Name = "pcbPointer";
-            this.pcbPointer.Size = new System.Drawing.Size(33, 21);
-            this.pcbPointer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pcbPointer.TabIndex = 10;
-            this.pcbPointer.TabStop = false;
-            // 
             // Options
             // 
             this.AcceptButton = this.btnOK;
@@ -665,6 +664,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudServerPort)).EndInit();
             this.tbpPointer.ResumeLayout(false);
             this.tbpPointer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pcbPointer)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudFilterFixationThreshold)).EndInit();
@@ -675,7 +675,6 @@
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerNoDataVisibilityDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPointerFadingInterval)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pcbPointer)).EndInit();
             this.ResumeLayout(false);
 
         }
