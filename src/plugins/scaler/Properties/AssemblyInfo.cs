@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OinQs plugin")]
+[assembly: AssemblyTitle("Scaler plugin")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("University of Tampere")]
-[assembly: AssemblyProduct("OinQs plugin")]
+[assembly: AssemblyProduct("Scaler plugin")]
 [assembly: AssemblyCopyright("Copyright © University of Tampere 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4f11789f-af07-445a-bfbe-54c9330e5f70")]
+[assembly: Guid("aceaaed8-1841-4c65-a03e-678a46456a2f")]
 
 // Version information for an assembly consists of the following four values:
 //

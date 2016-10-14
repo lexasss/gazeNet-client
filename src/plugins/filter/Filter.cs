@@ -5,16 +5,16 @@ using System.Text;
 using System.Windows.Forms;
 using GazeNetClient.Plugin;
 
-namespace GazeNetClient.Plugins.Scaler
+namespace GazeNetClient.Plugins.Filter
 {
-    public partial class Scaler : IPlugin
+    public partial class Filter : IPlugin
     {
         private Config iConfig;
         private Options iOptions;
         private Rectangle iDisplaySize;
 
-        public string Name { get; } = "scaler";
-        public string DisplayName { get; } = "Gaze area scaler";
+        public string Name { get; } = "filter";
+        public string DisplayName { get; } = "Name filter";
         public bool IsExclusive { get; } = false;
         public Dictionary<string, EventHandler> MenuItems { get; } = null;
         public OptionsWidget Options { get { return iOptions; } }
@@ -28,14 +28,14 @@ namespace GazeNetClient.Plugins.Scaler
         public event EventHandler<string> Log = delegate { };
         public event EventHandler<RequestArgs> Req = delegate { };
 
-        public Scaler()
+        public Filter()
         {
             iConfig = Utils.Storage<Config>.load();
 
             iOptions = new Options();
         }
 
-        ~Scaler()
+        ~Filter()
         {
             Utils.Storage<Config>.save(iConfig);
         }
@@ -51,32 +51,35 @@ namespace GazeNetClient.Plugins.Scaler
 
         public void displayOptions()
         {
-            iOptions.cmbAppliesTo.SelectedIndex = (int)iConfig.ScalingTarget;
-            iOptions.nudLeft.Value = iConfig.Left;
-            iOptions.nudRight.Value = iConfig.Right;
-            iOptions.nudTop.Value = iConfig.Top;
-            iOptions.nudBottom.Value = iConfig.Bottom;
+            iOptions.lsbNames.Items.Clear();
+            iOptions.lsbNames.Items.AddRange(iConfig.Names.ToArray());
+
+            iOptions.cmbAction.SelectedIndex = (int)iConfig.Action;
         }
 
         public void acceptOptions()
         {
-            iConfig.ScalingTarget = (ScalingTarget)iOptions.cmbAppliesTo.SelectedIndex;
-            iConfig.Left = (int)iOptions.nudLeft.Value;
-            iConfig.Right = (int)iOptions.nudRight.Value;
-            iConfig.Top = (int)iOptions.nudTop.Value;
-            iConfig.Bottom = (int)iOptions.nudBottom.Value;
+            iConfig.Names.Clear();
+            foreach (object item in iOptions.lsbNames.Items)
+            {
+                iConfig.Names.Add((string)item);
+            }
+            iConfig.Action = (Action)iOptions.cmbAction.SelectedIndex;
         }
 
         public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
-            float x = iDisplaySize.Left + iConfig.Left + iConfig.Width * (aSample.X / iDisplaySize.Width);
-            float y = iDisplaySize.Top + iConfig.Top + iConfig.Height * (aSample.Y / iDisplaySize.Height);
-            return new Processor.GazePoint(aSample.Timestamp, new PointF(x, y));
+            return aSample;
         }
 
         public bool feedReceivedPoint(string aFrom, ref PointF aPoint)
         {
-            return true;
+            if (iConfig.Action == Action.Pass)
+                return iConfig.Names.Contains(aFrom);
+            else if (iConfig.Action == Action.Block)
+                return !iConfig.Names.Contains(aFrom);
+            else
+                throw new NotImplementedException();
         }
     }
 }
