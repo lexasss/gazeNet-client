@@ -74,14 +74,11 @@ namespace GazeNetClient
             }
         }
 
-        private const int WM_NCHITTEST = 0x84;
-        private const int HT_CAPTION = 0x2;
-
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
-            if (m.Msg == WM_NCHITTEST)
-                m.Result = (IntPtr)(HT_CAPTION);
+            if (m.Msg == Utils.WinAPI.WM.NCHITTEST)
+                m.Result = (IntPtr)(Utils.WinAPI.HT.CAPTION);
         }
 
         protected override Size SizeFromClientSize(Size clientSize)

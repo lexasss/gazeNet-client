@@ -42,8 +42,10 @@
             this.trbPointerSize = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpConnect = new System.Windows.Forms.TabPage();
+            this.chkAutoRestartOnDisconnection = new System.Windows.Forms.CheckBox();
             this.cmbRole = new System.Windows.Forms.ComboBox();
             this.nudServerPort = new System.Windows.Forms.NumericUpDown();
+            this.Port = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -69,8 +71,6 @@
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
             this.imlIcons = new System.Windows.Forms.ImageList(this.components);
-            this.Port = new System.Windows.Forms.Label();
-            this.chkAutoRestartOnDisconnection = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -144,7 +144,7 @@
             // 
             this.btnOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(32, 184);
+            this.btnOK.Location = new System.Drawing.Point(42, 184);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 5;
@@ -155,7 +155,7 @@
             // 
             this.btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(114, 184);
+            this.btnCancel.Location = new System.Drawing.Point(124, 184);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 6;
@@ -231,6 +231,16 @@
             this.tbpConnect.Text = "Connection";
             this.tbpConnect.UseVisualStyleBackColor = true;
             // 
+            // chkAutoRestartOnDisconnection
+            // 
+            this.chkAutoRestartOnDisconnection.AutoSize = true;
+            this.chkAutoRestartOnDisconnection.Location = new System.Drawing.Point(9, 32);
+            this.chkAutoRestartOnDisconnection.Name = "chkAutoRestartOnDisconnection";
+            this.chkAutoRestartOnDisconnection.Size = new System.Drawing.Size(205, 17);
+            this.chkAutoRestartOnDisconnection.TabIndex = 5;
+            this.chkAutoRestartOnDisconnection.Text = "Auto-restart tracking on disconnection";
+            this.chkAutoRestartOnDisconnection.UseVisualStyleBackColor = true;
+            // 
             // cmbRole
             // 
             this.cmbRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -267,6 +277,15 @@
             0,
             0,
             0});
+            // 
+            // Port
+            // 
+            this.Port.AutoSize = true;
+            this.Port.Location = new System.Drawing.Point(145, 9);
+            this.Port.Name = "Port";
+            this.Port.Size = new System.Drawing.Size(10, 13);
+            this.Port.TabIndex = 1;
+            this.Port.Text = ":";
             // 
             // label11
             // 
@@ -328,7 +347,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txbServerHost.Location = new System.Drawing.Point(50, 6);
             this.txbServerHost.Name = "txbServerHost";
-            this.txbServerHost.Size = new System.Drawing.Size(81, 20);
+            this.txbServerHost.Size = new System.Drawing.Size(97, 20);
             this.txbServerHost.TabIndex = 0;
             this.txbServerHost.Text = "localhost";
             // 
@@ -622,25 +641,6 @@
             this.imlIcons.Images.SetKeyName(0, "initial");
             this.imlIcons.Images.SetKeyName(1, "connected");
             this.imlIcons.Images.SetKeyName(2, "connected-as-observer");
-            // 
-            // Port
-            // 
-            this.Port.AutoSize = true;
-            this.Port.Location = new System.Drawing.Point(137, 9);
-            this.Port.Name = "Port";
-            this.Port.Size = new System.Drawing.Size(10, 13);
-            this.Port.TabIndex = 1;
-            this.Port.Text = ":";
-            // 
-            // chkAutoRestartOnDisconnection
-            // 
-            this.chkAutoRestartOnDisconnection.AutoSize = true;
-            this.chkAutoRestartOnDisconnection.Location = new System.Drawing.Point(9, 32);
-            this.chkAutoRestartOnDisconnection.Name = "chkAutoRestartOnDisconnection";
-            this.chkAutoRestartOnDisconnection.Size = new System.Drawing.Size(205, 17);
-            this.chkAutoRestartOnDisconnection.TabIndex = 5;
-            this.chkAutoRestartOnDisconnection.Text = "Auto-restart tracking on disconnection";
-            this.chkAutoRestartOnDisconnection.UseVisualStyleBackColor = true;
             // 
             // Options
             // 

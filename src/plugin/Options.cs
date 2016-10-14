@@ -69,6 +69,9 @@ namespace GazeNetClient.Plugin
                 }
             }
 
+            if (e.Item.Checked)
+                e.Item.Selected = true;
+
             iIsCheckControlAllowed = true;
         }
 
