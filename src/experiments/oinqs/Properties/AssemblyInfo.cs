@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("exp_oinqs")]
+[assembly: AssemblyTitle("O-in-Qs experiment")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("University of Tampere")]
-[assembly: AssemblyProduct("exp_oinqs")]
+[assembly: AssemblyProduct("O-in-Qs experiment")]
 [assembly: AssemblyCopyright("Copyright © University of Tampere 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -50,6 +50,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Toolbar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolbar.Designer.cs">
+      <DependentUpon>Toolbar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UIActions.cs" />
     <Compile Include="AutoStarter.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Pointer\Collection.cs" />
@@ -87,6 +94,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Toolbar.resx">
+      <DependentUpon>Toolbar.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -103,6 +113,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="img\menu\up-arrow.png" />
+    <None Include="img\menu\telephone.png" />
+    <None Include="img\menu\technology.png" />
+    <None Include="img\menu\shapes.png" />
+    <None Include="img\menu\placeholder.png" />
+    <None Include="img\menu\organization.png" />
+    <None Include="img\menu\logout.png" />
+    <None Include="img\menu\levels.png" />
+    <None Include="img\menu\etudriver.png" />
+    <None Include="img\menu\down-arrow.png" />
     <None Include="img\pointerSimple.png" />
     <None Include="img\pointerSpotDark.png" />
     <None Include="img\pointerSpotLight.png" />

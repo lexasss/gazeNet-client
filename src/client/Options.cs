@@ -42,10 +42,12 @@ namespace GazeNetClient
             {
                 txbServerHost.Text = iWebSocketClient.Host;
                 nudServerPort.Value = iWebSocketClient.Port;
-                lblStatus.Text = iWebSocketClient.Connected ? "online" : "offline";
+                //lblStatus.Text = iWebSocketClient.Connected ? "online" : "offline";
                 txbUserName.Text = iWebSocketClient.Config.UserName;
                 txbTopic.Text = iWebSocketClient.Config.Topics;
                 cmbRole.SelectedIndex = (int)iWebSocketClient.Config.Role - 1;
+
+                chkAutoRestartOnDisconnection.Checked = iWebSocketClient.Config.AutoRestartOnDisconnection;
             }
 
             iPointers.pushSettings();
@@ -99,6 +101,8 @@ namespace GazeNetClient
                     {
                         iWebSocketClient.restart();
                     }
+
+                    iWebSocketClient.Config.AutoRestartOnDisconnection = chkAutoRestartOnDisconnection.Checked;
                 }
             }
         }

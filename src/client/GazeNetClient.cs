@@ -49,9 +49,11 @@ namespace GazeNetClient
         private Processor.GazeParser iGazeParser = null;
         private Pointer.Collection iPointers = null;
         private Pointer.Pointer iOwnPointer = null;
+        private UIActions iUIActions = null;
         private Menu iMenu = null;
-        private Options iOptions = null;
+        private Toolbar iToolbar = null;
         private NotifyIcon iTrayIcon = null;
+        private Options iOptions = null;
 
         private WebSocket.Client iWebSocketClient = null;
         private SynchronizationContext iUIContext;
@@ -124,23 +126,23 @@ namespace GazeNetClient
             iWebSocketClient.OnSample += WebSocketClient_OnSample;
             iWebSocketClient.OnCommand += WebSocketClient_OnCommand;
 
-            iMenu = new Menu();
-            iMenu.addPlugins(iPlugins);
-            iMenu.OnShowOptions += showOptions;
-            iMenu.OnShowPluginOptions += showPluginOptions;
-            iMenu.OnToggleServerConnection += toggleConnection;
-            iMenu.OnTogglePointerVisibility += togglePointersVisibility;
-            iMenu.OnShowETUDOptions += showETUDOptions;
-            iMenu.OnCalibrateTracker += calibrate;
-            iMenu.OnExit += Menu_Exit;
-
             iOptions = new Options();
 
+            iUIActions = UIActions.create(this);
+
+            iToolbar = new Toolbar(iUIActions);
+            iToolbar.addPlugins(iPlugins.Items);
+            iToolbar.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["initial"]).GetHicon());
+            iToolbar.Show();
+
+            iMenu = new Menu(iUIActions);
+            iMenu.addPlugins(iPlugins.Items);
+
             iTrayIcon = new NotifyIcon();
-            iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["initial"]).GetHicon());
+            iTrayIcon.Icon = iToolbar.Icon;
             iTrayIcon.ContextMenuStrip = iMenu.Strip;
-            iTrayIcon.Text = "GazeNet client";
-            iTrayIcon.Visible = true;
+            iTrayIcon.Text = "GazeNet";
+            //iTrayIcon.Visible = true;
 
             Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(togglePointersVisibility), Keys.Pause));
             Utils.GlobalShortcut.add(new Utils.Shortcut("OwnPointer", new Action(toggleOwnPointerVisibility), Keys.PageUp, true));
@@ -162,7 +164,7 @@ namespace GazeNetClient
             GC.SuppressFinalize(this);
         }
 
-        private void showOptions()
+        public void showOptions()
         {
             UpdateMenu(true);
             iOptions.load(iPointers, iGazeParser.Filter, AutoStarter, iWebSocketClient);
@@ -172,7 +174,7 @@ namespace GazeNetClient
             UpdateMenu(false);
         }
 
-        private void showPluginOptions()
+        public void showPluginOptions()
         {
             UpdateMenu(true);
             iPlugins.showOptions();
@@ -226,6 +228,31 @@ namespace GazeNetClient
             UpdateMenu(true);
             iETUDriver.calibrate();
             UpdateMenu(false);
+        }
+
+        public void showToolbar()
+        {
+            iTrayIcon.Visible = false;
+            iToolbar.Show();
+        }
+
+        public void hideToolbar()
+        {
+            iToolbar.Hide();
+            iTrayIcon.Visible = true;
+        }
+
+        public void exit()
+        {
+            if (iETUDriver?.Active != 0)
+            {
+                iExitAfterTrackingStopped = true;
+                iETUDriver.stopTracking();
+            }
+            else
+            {
+                Exit();
+            }
         }
 
         #endregion
@@ -286,20 +313,22 @@ namespace GazeNetClient
 
         private void UpdateMenu(bool aIsShowingDialog, bool aConnecting = false)
         {
-            Menu.State trackerState = new Menu.State();
+            InternalState internalState = new InternalState();
             if (!aConnecting)
             {
-                trackerState.IsShowingOptions = aIsShowingDialog;
-                trackerState.IsEyeTrackingRequired = iWebSocketClient?.Config.Role.HasFlag(WebSocket.ClientRole.Source) == true;
-                trackerState.IsServerConnected = iWebSocketClient?.Connected == true;
-                trackerState.IsPointerVisible = iPointers.Visible;
-                trackerState.HasTrackingDevices = iETUDriver?.DeviceCount > 0;
-                trackerState.IsTrackerConnected = iETUDriver?.Ready != 0;
-                trackerState.IsTrackerCalibrated = iETUDriver?.Calibrated != 0;
-                trackerState.IsTrackingGaze = iETUDriver?.Active != 0;
+                internalState.IsShowingOptions = aIsShowingDialog;
+                internalState.IsEyeTrackingRequired = iWebSocketClient?.Config.Role.HasFlag(WebSocket.ClientRole.Source) == true;
+                internalState.IsServerConnected = iWebSocketClient?.Connected == true;
+                internalState.IsPointerVisible = iPointers.Visible;
+                internalState.HasTrackingDevices = iETUDriver?.DeviceCount > 0;
+                internalState.IsTrackerConnected = iETUDriver?.Ready != 0;
+                internalState.IsTrackerCalibrated = iETUDriver?.Calibrated != 0;
+                internalState.IsTrackingGaze = iETUDriver?.Active != 0;
             }
 
-            iMenu.update(trackerState, aConnecting);
+            iUIActions.update(internalState, aConnecting);
+            iMenu.update();
+            iToolbar.update();
 
             if (iWebSocketClient != null)
             {
@@ -308,12 +337,14 @@ namespace GazeNetClient
                 {
                     iconName += "-as-observer";
                 }
-                iTrayIcon.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons[iconName]).GetHicon());
+                iToolbar.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons[iconName]).GetHicon());
+                iTrayIcon.Icon = iToolbar.Icon;
             }
         }
 
         private void Exit()
         {
+            iToolbar.Close();
             iTrayIcon.Visible = false;
             Application.Exit();
         }
@@ -361,15 +392,7 @@ namespace GazeNetClient
 
         private void Menu_Exit()
         {
-            if (iETUDriver?.Active != 0)
-            {
-                iExitAfterTrackingStopped = true;
-                iETUDriver.stopTracking();
-            }
-            else
-            {
-                Exit();
-            }
+            exit();
         }
 
         private void WebSocketClient_OnConnected(object sender, EventArgs e)
@@ -388,7 +411,7 @@ namespace GazeNetClient
 
         private void WebSocketClient_OnClosed(object sender, EventArgs e)
         {
-            bool showToolTip = iUIContext != SynchronizationContext.Current;
+            bool connectionFailure = iUIContext != SynchronizationContext.Current;
             iUIContext.Send(new SendOrPostCallback((target) => {
                 if ((iWebSocketClient.Config.Role & WebSocket.ClientRole.Source) > 0)
                 {
@@ -399,9 +422,16 @@ namespace GazeNetClient
                     UpdateMenu(false);
                 }
 
-                if (showToolTip)
+                if (connectionFailure)
                 {
-                    iTrayIcon.ShowBalloonTip(4000, "GazeNet client", "Disconnected from the server", ToolTipIcon.Warning);
+                    if (iTrayIcon.Visible)
+                    {
+                        iTrayIcon.ShowBalloonTip(4000, iTrayIcon.Text, "Disconnected from the server", ToolTipIcon.Warning);
+                    }
+                    if (iWebSocketClient.Config.AutoRestartOnDisconnection)
+                    {
+                        Utils.DelayedAction.Execute(3000, new Action(() => toggleConnection()));
+                    }
                 }
             }), null);
         }

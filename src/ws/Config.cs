@@ -66,6 +66,8 @@ namespace GazeNetClient.WebSocket
             }
         }
 
+        public bool AutoRestartOnDisconnection { get; set; } = true;
+
         public Config() { }
 
         public override string ToString()

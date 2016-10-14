@@ -5,47 +5,12 @@ using GazeNetClient.Plugin;
 
 namespace GazeNetClient
 {
-    public class Menu
+    internal class Menu
     {
-        #region Declarations
-
-        public struct State
-        {
-            public bool IsShowingOptions;
-            public bool IsEyeTrackingRequired;
-            public bool IsServerConnected;
-            public bool IsPointerVisible;
-            public bool HasTrackingDevices;
-            public bool IsTrackerConnected;
-            public bool IsTrackerCalibrated;
-            public bool IsTrackingGaze;
-        }
-
-        #endregion
-
         #region Internal members
 
-        private ToolStripMenuItem tsmiOptions;
-        private ToolStripMenuItem tsmiPluginOptions;
-        private ToolStripMenuItem tsmiToggleServerConnection;
-        private ToolStripMenuItem tsmiTogglePointerVisibility;
-        private ToolStripMenuItem tsmiETUDOptions;
-        private ToolStripMenuItem tsmiETUDCalibrate;
-        private ToolStripSeparator tssETUDSeparator;
-        private ToolStripMenuItem tsmiExit;
         private ContextMenuStrip cmsMenu;
-
-        #endregion
-
-        #region Events
-
-        public event Action OnShowOptions = delegate { };
-        public event Action OnShowPluginOptions = delegate { };
-        public event Action OnToggleServerConnection = delegate { };
-        public event Action OnTogglePointerVisibility = delegate { };
-        public event Action OnShowETUDOptions = delegate { };
-        public event Action OnCalibrateTracker = delegate { };
-        public event Action OnExit = delegate { };
+        private UIActions iActions;
 
         #endregion
 
@@ -57,72 +22,48 @@ namespace GazeNetClient
 
         #region Public methods
 
-        public Menu()
+        public Menu(UIActions aActions)
         {
-            tsmiOptions = new ToolStripMenuItem("Options");
-            tsmiOptions.Click += new EventHandler((s, e) => OnShowOptions());
-
-            tsmiPluginOptions = new ToolStripMenuItem("Plugins");
-            tsmiPluginOptions.Click += new EventHandler((s, e) => OnShowPluginOptions());
-
-            tsmiToggleServerConnection = new ToolStripMenuItem("Connect");
-            tsmiToggleServerConnection.Click += new EventHandler((s, e) => OnToggleServerConnection());
-
-            tsmiTogglePointerVisibility = new ToolStripMenuItem("Show pointers");
-            tsmiTogglePointerVisibility.Click += new EventHandler((s, e) => OnTogglePointerVisibility());
-
-            tsmiETUDOptions = new ToolStripMenuItem("ETU-Driver");
-            tsmiETUDOptions.Click += new EventHandler((s, e) => OnShowETUDOptions());
-
-            tsmiETUDCalibrate = new ToolStripMenuItem("Calibrate");
-            tsmiETUDCalibrate.Click += new EventHandler((s, e) => OnCalibrateTracker());
-
-            tssETUDSeparator = new ToolStripSeparator();
-
-            tsmiExit = new ToolStripMenuItem("Exit");
-            tsmiExit.Click += new EventHandler((s, e) => OnExit());
-
             cmsMenu = new ContextMenuStrip();
 
-            cmsMenu.Items.Add(tsmiOptions);
-            cmsMenu.Items.Add(tsmiPluginOptions);
-            cmsMenu.Items.Add("-");
-            cmsMenu.Items.Add(tsmiToggleServerConnection);
-            cmsMenu.Items.Add(tsmiTogglePointerVisibility);
-            cmsMenu.Items.Add("-");
-            cmsMenu.Items.Add(tsmiETUDOptions);
-            cmsMenu.Items.Add(tsmiETUDCalibrate);
-            cmsMenu.Items.Add(tssETUDSeparator);
-            cmsMenu.Items.Add(tsmiExit);
+            iActions = aActions;
+            foreach (KeyValuePair<string, UIAction> actionItem in iActions.Items)
+            {
+                UIAction action = actionItem.Value;
+                if (!action.Set.HasFlag(UIActionSet.Menu))
+                    continue;
+
+                ToolStripItem item = action.Action != null ? 
+                    (ToolStripItem)new ToolStripMenuItem(action.Text) :
+                    (ToolStripItem)new ToolStripSeparator();
+
+                item.Tag = action;
+                item.Click += new EventHandler((s, e) => action?.Action());
+
+                cmsMenu.Items.Add(item);
+            }
         }
 
-        public void update(State aState, bool aDisableAll)
+        public void update()
         {
-            tsmiOptions.Enabled = !aDisableAll && !aState.IsShowingOptions;
-            tsmiPluginOptions.Enabled = !aDisableAll && !aState.IsShowingOptions && !aState.IsTrackingGaze;
-            tsmiToggleServerConnection.Enabled = !aDisableAll && (!aState.IsEyeTrackingRequired || aState.IsTrackerCalibrated);
-            if (aDisableAll)
+            foreach (ToolStripItem item in cmsMenu.Items)
             {
-                tsmiToggleServerConnection.Text = "Connecting...";
+                UIAction action = (UIAction)item.Tag;
+                item.Text = action.Text;
+                //item.Image = action.Image;
+                item.Enabled = action.Enabled;
+                item.Visible = action.Visible;
+                ToolStripMenuItem menuItem = item as ToolStripMenuItem;
+                if (menuItem != null)
+                {
+                    menuItem.Checked = action.Checked;
+                }
             }
-            else
-            {
-                tsmiToggleServerConnection.Text = aState.IsServerConnected ? "Disconnect" : "Connect";
-            }
-            tsmiTogglePointerVisibility.Enabled = !aDisableAll;
-            tsmiTogglePointerVisibility.Text = aState.IsPointerVisible ? "Hide pointers" : "Show pointers";
-            tsmiETUDOptions.Enabled = !aDisableAll && !aState.IsShowingOptions && aState.HasTrackingDevices && !aState.IsTrackingGaze;
-            tsmiETUDCalibrate.Enabled = !aDisableAll && !aState.IsShowingOptions && aState.IsTrackerConnected && !aState.IsTrackingGaze;
-            tsmiExit.Enabled = !aState.IsShowingOptions;
-
-            tsmiETUDOptions.Visible = aState.IsEyeTrackingRequired;
-            tsmiETUDCalibrate.Visible = aState.IsEyeTrackingRequired;
-            tssETUDSeparator.Visible = aState.IsEyeTrackingRequired;
         }
 
-        public void addPlugins(Plugins aPlugins)
+        public void addPlugins(IPlugin[] aPlugins)
         {
-            foreach (IPlugin plugin in aPlugins.Items)
+            foreach (IPlugin plugin in aPlugins)
             {
                 IDictionary<string, EventHandler> items = plugin.MenuItems;
                 if (items?.Count > 0)

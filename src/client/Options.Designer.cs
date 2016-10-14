@@ -43,9 +43,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpConnect = new System.Windows.Forms.TabPage();
             this.cmbRole = new System.Windows.Forms.ComboBox();
-            this.lblStatus = new System.Windows.Forms.Label();
             this.nudServerPort = new System.Windows.Forms.NumericUpDown();
-            this.Port = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -71,6 +69,8 @@
             this.nudPointerFadingInterval = new System.Windows.Forms.NumericUpDown();
             this.chkAutoStarterEnabled = new System.Windows.Forms.CheckBox();
             this.imlIcons = new System.Windows.Forms.ImageList(this.components);
+            this.Port = new System.Windows.Forms.Label();
+            this.chkAutoRestartOnDisconnection = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerOpacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trbPointerSize)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -212,8 +212,8 @@
             // 
             // tbpConnect
             // 
+            this.tbpConnect.Controls.Add(this.chkAutoRestartOnDisconnection);
             this.tbpConnect.Controls.Add(this.cmbRole);
-            this.tbpConnect.Controls.Add(this.lblStatus);
             this.tbpConnect.Controls.Add(this.nudServerPort);
             this.tbpConnect.Controls.Add(this.Port);
             this.tbpConnect.Controls.Add(this.label11);
@@ -239,25 +239,16 @@
             "observer",
             "source",
             "both"});
-            this.cmbRole.Location = new System.Drawing.Point(72, 111);
+            this.cmbRole.Location = new System.Drawing.Point(50, 111);
             this.cmbRole.Name = "cmbRole";
-            this.cmbRole.Size = new System.Drawing.Size(132, 21);
+            this.cmbRole.Size = new System.Drawing.Size(154, 21);
             this.cmbRole.TabIndex = 4;
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(142, 35);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(51, 13);
-            this.lblStatus.TabIndex = 3;
-            this.lblStatus.Text = "unknown";
             // 
             // nudServerPort
             // 
             this.nudServerPort.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.nudServerPort.Location = new System.Drawing.Point(72, 33);
+            this.nudServerPort.Location = new System.Drawing.Point(153, 7);
             this.nudServerPort.Maximum = new decimal(new int[] {
             65355,
             0,
@@ -269,22 +260,13 @@
             0,
             0});
             this.nudServerPort.Name = "nudServerPort";
-            this.nudServerPort.Size = new System.Drawing.Size(64, 20);
+            this.nudServerPort.Size = new System.Drawing.Size(51, 20);
             this.nudServerPort.TabIndex = 1;
             this.nudServerPort.Value = new decimal(new int[] {
-            80,
+            30000,
             0,
             0,
             0});
-            // 
-            // Port
-            // 
-            this.Port.AutoSize = true;
-            this.Port.Location = new System.Drawing.Point(6, 35);
-            this.Port.Name = "Port";
-            this.Port.Size = new System.Drawing.Size(26, 13);
-            this.Port.TabIndex = 1;
-            this.Port.Text = "Port";
             // 
             // label11
             // 
@@ -326,27 +308,27 @@
             // 
             this.txbTopic.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbTopic.Location = new System.Drawing.Point(72, 85);
+            this.txbTopic.Location = new System.Drawing.Point(50, 85);
             this.txbTopic.Name = "txbTopic";
-            this.txbTopic.Size = new System.Drawing.Size(132, 20);
+            this.txbTopic.Size = new System.Drawing.Size(154, 20);
             this.txbTopic.TabIndex = 3;
             // 
             // txbUserName
             // 
             this.txbUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbUserName.Location = new System.Drawing.Point(72, 59);
+            this.txbUserName.Location = new System.Drawing.Point(50, 59);
             this.txbUserName.Name = "txbUserName";
-            this.txbUserName.Size = new System.Drawing.Size(132, 20);
+            this.txbUserName.Size = new System.Drawing.Size(154, 20);
             this.txbUserName.TabIndex = 2;
             // 
             // txbServerHost
             // 
             this.txbServerHost.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbServerHost.Location = new System.Drawing.Point(72, 6);
+            this.txbServerHost.Location = new System.Drawing.Point(50, 6);
             this.txbServerHost.Name = "txbServerHost";
-            this.txbServerHost.Size = new System.Drawing.Size(132, 20);
+            this.txbServerHost.Size = new System.Drawing.Size(81, 20);
             this.txbServerHost.TabIndex = 0;
             this.txbServerHost.Text = "localhost";
             // 
@@ -641,6 +623,25 @@
             this.imlIcons.Images.SetKeyName(1, "connected");
             this.imlIcons.Images.SetKeyName(2, "connected-as-observer");
             // 
+            // Port
+            // 
+            this.Port.AutoSize = true;
+            this.Port.Location = new System.Drawing.Point(137, 9);
+            this.Port.Name = "Port";
+            this.Port.Size = new System.Drawing.Size(10, 13);
+            this.Port.TabIndex = 1;
+            this.Port.Text = ":";
+            // 
+            // chkAutoRestartOnDisconnection
+            // 
+            this.chkAutoRestartOnDisconnection.AutoSize = true;
+            this.chkAutoRestartOnDisconnection.Location = new System.Drawing.Point(9, 32);
+            this.chkAutoRestartOnDisconnection.Name = "chkAutoRestartOnDisconnection";
+            this.chkAutoRestartOnDisconnection.Size = new System.Drawing.Size(205, 17);
+            this.chkAutoRestartOnDisconnection.TabIndex = 5;
+            this.chkAutoRestartOnDisconnection.Text = "Auto-restart tracking on disconnection";
+            this.chkAutoRestartOnDisconnection.UseVisualStyleBackColor = true;
+            // 
             // Options
             // 
             this.AcceptButton = this.btnOK;
@@ -710,10 +711,8 @@
         private System.Windows.Forms.NumericUpDown nudPointerNoDataVisibilityDuration;
         private System.Windows.Forms.TabPage tbpConnect;
         private System.Windows.Forms.NumericUpDown nudServerPort;
-        private System.Windows.Forms.Label Port;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txbServerHost;
-        private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.ImageList imlIcons;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
@@ -722,6 +721,8 @@
         private System.Windows.Forms.ComboBox cmbRole;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.PictureBox pcbPointer;
+        private System.Windows.Forms.CheckBox chkAutoRestartOnDisconnection;
+        private System.Windows.Forms.Label Port;
     }
 }
 
