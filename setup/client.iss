@@ -1,11 +1,11 @@
 #define Name "GazeNet client"
 #define App "GazeNetClient"
-#define Version "1.0.0"
 #define Publisher "University of Tampere"
 #define PublisherURL "http://gasp.sis.uta.fi/"
 #define BuildType "Release"
 
 #define TargetPath "..\bin\" + BuildType + "\client"
+#define Version "built on " + GetFileDateTimeString(TargetPath + "\GazeNetClient.exe", 'yyyy.dd.mm', '.', ':');
 
 [Setup]
 AppName={#Name}

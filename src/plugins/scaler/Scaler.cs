@@ -52,16 +52,12 @@ namespace GazeNetClient.Plugins.Scaler
         public void displayOptions()
         {
             iOptions.chkOwn.Checked = iConfig.OwnEnabled;
-            iOptions.nudOwnLeft.Value = iConfig.Own.Left;
-            iOptions.nudOwnRight.Value = iConfig.Own.Right;
-            iOptions.nudOwnTop.Value = iConfig.Own.Top;
-            iOptions.nudOwnBottom.Value = iConfig.Own.Bottom;
+            iOptions.OwnHorizontalRange.set(iConfig.Own.Left, iConfig.Own.Right);
+            iOptions.OwnVerticalRange.set(iConfig.Own.Top, iConfig.Own.Bottom);
 
             iOptions.chkReceived.Checked = iConfig.ReceivedEnabled;
-            iOptions.nudReceivedLeft.Value = iConfig.Received.Left;
-            iOptions.nudReceivedRight.Value = iConfig.Received.Right;
-            iOptions.nudReceivedTop.Value = iConfig.Received.Top;
-            iOptions.nudReceivedBottom.Value = iConfig.Received.Bottom;
+            iOptions.ReceivedHorizontalRange.set(iConfig.Received.Left, iConfig.Received.Right);
+            iOptions.ReceivedVerticalRange.set(iConfig.Received.Top, iConfig.Received.Bottom);
 
             iOptions.updateVisibility();
         }
@@ -69,13 +65,11 @@ namespace GazeNetClient.Plugins.Scaler
         public void acceptOptions()
         {
             iConfig.OwnEnabled = iOptions.chkOwn.Checked;
-            iConfig.Own = new Rectangle((int)iOptions.nudOwnLeft.Value, (int)iOptions.nudOwnTop.Value, 
-                (int)(iOptions.nudOwnRight.Value - iOptions.nudOwnLeft.Value),
-                (int)(iOptions.nudOwnBottom.Value - iOptions.nudOwnTop.Value));
+            iConfig.Own = new Rectangle(iOptions.OwnHorizontalRange.From, iOptions.OwnVerticalRange.From, 
+                iOptions.OwnHorizontalRange.Value, iOptions.OwnVerticalRange.Value);
             iConfig.ReceivedEnabled = iOptions.chkReceived.Checked;
-            iConfig.Received = new Rectangle((int)iOptions.nudReceivedLeft.Value, (int)iOptions.nudReceivedTop.Value,
-                (int)(iOptions.nudReceivedRight.Value - iOptions.nudReceivedLeft.Value),
-                (int)(iOptions.nudReceivedBottom.Value - iOptions.nudReceivedTop.Value));
+            iConfig.Received = new Rectangle(iOptions.ReceivedHorizontalRange.From, iOptions.ReceivedVerticalRange.From,
+                iOptions.ReceivedHorizontalRange.Value, iOptions.ReceivedVerticalRange.Value);
         }
 
         public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
