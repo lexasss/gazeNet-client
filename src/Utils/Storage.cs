@@ -90,7 +90,7 @@ namespace GazeNetClient.Utils
     {
         private static string sOptionsFileExtension = ".xml";
 
-        public static void save(object aObject)
+        public static void save(object aObject, string aFileName = "")
         {
             if (aObject == null)
             {
@@ -98,8 +98,8 @@ namespace GazeNetClient.Utils
             }
 
             Type type = typeof(T);
-            string fileName = GetFilePath(type.ToString()) + sOptionsFileExtension;
-            
+            string fileName = GetFileName(type, aFileName);
+
             try
             {
                 XmlSerializer serializer = new XmlSerializer(type);
@@ -117,7 +117,8 @@ namespace GazeNetClient.Utils
         {
             T result = default(T);
             Type type = typeof(T);
-            string fileName = string.IsNullOrEmpty(aFileName) ? GetFilePath(type.ToString()) + sOptionsFileExtension : aFileName;
+
+            string fileName = GetFileName(type, aFileName);
 
             try
             {
@@ -137,12 +138,31 @@ namespace GazeNetClient.Utils
 
         private Storage() { }
 
-        private static string GetFilePath(string aTypeName)
+        private static string GetFileName(Type aType, string aFileName)
         {
-            return Storage.Folder + aTypeName.Replace('+', '.');
+            string fileName;
+            if (string.IsNullOrEmpty(aFileName))
+            {
+                fileName = Storage.Folder + aType.ToString().Replace('+', '.') + sOptionsFileExtension;
+            }
+            else if (aFileName.Contains(":\\"))
+            {
+                fileName = aFileName;
+            }
+            else
+            {
+                fileName = Storage.Folder + aFileName + sOptionsFileExtension;
+            }
+
+            return fileName;
+        }
+
+       // private static string GetFilePath(string aTypeName)
+        //{
+         //   return Storage.Folder + aTypeName.Replace('+', '.');
             //string[] parts = aTypeName.ToString().Split('.', '+');
             //return parts[parts.Length - 1];
-        }
+        //}
 
         private static void PrintException(Exception aException, string  aOperation, string aType)
         {

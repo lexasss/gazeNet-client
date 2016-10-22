@@ -22,7 +22,11 @@ namespace GazeNetClient.Plugin
 
     public interface IPlugin
     {
-        Dictionary<string, EventHandler> MenuItems { get; }
+        // Items requirements:
+        //      must be enabled; they will be disabled automatically when gaze data flow starts
+        //      images 24x24
+        Dictionary<string, Utils.UIAction> MenuItems { get; }
+
         string Name { get; }
         string DisplayName { get; }
         bool IsExclusive { get; }

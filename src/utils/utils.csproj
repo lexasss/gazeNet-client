@@ -71,6 +71,7 @@
     <Compile Include="Sizing.cs" />
     <Compile Include="Shortcut.cs" />
     <Compile Include="Storage.cs" />
+    <Compile Include="UIAction.cs" />
     <Compile Include="WinAPI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

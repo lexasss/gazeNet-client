@@ -87,6 +87,10 @@
       <Project>{c58df713-6bb7-44e3-b0e2-c52694c85f56}</Project>
       <Name>gazeproc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\utils\utils.csproj">
+      <Project>{f1f24fa6-7698-43d6-832c-b5048de63218}</Project>
+      <Name>utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Options.resx">

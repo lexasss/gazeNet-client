@@ -16,7 +16,7 @@ namespace GazeNetClient.Plugins.Filter
         public string Name { get; } = "filter";
         public string DisplayName { get; } = "Name filter";
         public bool IsExclusive { get; } = false;
-        public Dictionary<string, EventHandler> MenuItems { get; } = null;
+        public Dictionary<string, Utils.UIAction> MenuItems { get; } = null; // new Dictionary<string, Utils.UIAction>();
         public OptionsWidget Options { get { return iOptions; } }
 
         public bool Enabled
@@ -33,6 +33,18 @@ namespace GazeNetClient.Plugins.Filter
             iConfig = Utils.Storage<Config>.load();
 
             iOptions = new Options();
+            /*
+            Bitmap bmp1 = new Bitmap(24, 24);
+            Graphics g1 = Graphics.FromImage(bmp1);
+            g1.FillRectangle(Brushes.Azure, new RectangleF(new Point(0, 0), bmp1.Size));
+
+            Bitmap bmp2 = new Bitmap(24, 24);
+            Graphics g2 = Graphics.FromImage(bmp2);
+            g2.FillRectangle(Brushes.BurlyWood, new RectangleF(new Point(0, 0), bmp2.Size));
+
+            MenuItems.Add("1", new Utils.UIAction("Filter item 1", new System.Action(() => { MessageBox.Show("Hello 1"); }), bmp1));
+            MenuItems.Add("2", new Utils.UIAction("Filter item 2", new System.Action(() => { MessageBox.Show("Hello 2"); }), bmp2));
+            */
         }
 
         ~Filter()

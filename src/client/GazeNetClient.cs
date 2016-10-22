@@ -113,9 +113,9 @@ namespace GazeNetClient
             iETUDriver.OnCalibrated += ETUDriver_OnCalibrated;
             iETUDriver.OnDataEvent += ETUDriver_OnDataEvent;
 
-            iOwnPointer = new Pointer.Pointer(-1, false);
-            iOwnPointer.Appearance = Pointer.Style.DotsAnim;
-            iOwnPointer.Opacity = 1.0;
+            iOwnPointer = new Pointer.Pointer(4, false);
+            iOwnPointer.Appearance = Pointer.Style.Simple;
+            iOwnPointer.Opacity = 0.5;
 
             iGazeParser = new Processor.GazeParser();
             iGazeParser.OnNewGazePoint += GazeParser_OnNewGazePoint;
@@ -130,7 +130,7 @@ namespace GazeNetClient
 
             iUIActions = UIActions.create(this);
 
-            iToolbar = new Toolbar(iUIActions);
+            iToolbar = new Toolbar(this, iUIActions);
             iToolbar.addPlugins(iPlugins.Items);
             iToolbar.Icon = Icon.FromHandle(new Bitmap(iOptions.Icons["initial"]).GetHicon());
             iToolbar.Show();
@@ -144,9 +144,9 @@ namespace GazeNetClient
             iTrayIcon.Text = "GazeNet";
             //iTrayIcon.Visible = true;
 
-            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(togglePointersVisibility), Keys.Pause));
-            Utils.GlobalShortcut.add(new Utils.Shortcut("OwnPointer", new Action(toggleOwnPointerVisibility), Keys.PageUp, true));
-            Utils.GlobalShortcut.add(new Utils.Shortcut("Tracking", new Action(Shortcut_TrackingNext), Keys.PrintScreen, Keys.Control));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("Pointer", new Action(togglePointersVisibility), Keys.F1, Keys.Control, Keys.Shift));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("OwnPointer", new Action(toggleOwnPointerVisibility), Keys.F12, true));
+            Utils.GlobalShortcut.add(new Utils.Shortcut("Tracking", new Action(Shortcut_TrackingNext), Keys.Oemtilde, Keys.Control));
             Utils.GlobalShortcut.init();
 
             UpdateMenu(false);
@@ -214,6 +214,7 @@ namespace GazeNetClient
                 iOwnPointer.show();
             else
                 iOwnPointer.hide();
+            UpdateMenu(false);
         }
 
         public void showETUDOptions()
@@ -236,7 +237,7 @@ namespace GazeNetClient
             iToolbar.Show();
         }
 
-        public void hideToolbar()
+        public void hideToolbarToTray()
         {
             iToolbar.Hide();
             iTrayIcon.Visible = true;
@@ -319,7 +320,8 @@ namespace GazeNetClient
                 internalState.IsShowingOptions = aIsShowingDialog;
                 internalState.IsEyeTrackingRequired = iWebSocketClient?.Config.Role.HasFlag(WebSocket.ClientRole.Source) == true;
                 internalState.IsServerConnected = iWebSocketClient?.Connected == true;
-                internalState.IsPointerVisible = iPointers.Visible;
+                internalState.ArePointersVisible = iPointers.Visible;
+                internalState.IsOwnPointerVisible = iOwnPointer.Visible;
                 internalState.HasTrackingDevices = iETUDriver?.DeviceCount > 0;
                 internalState.IsTrackerConnected = iETUDriver?.Ready != 0;
                 internalState.IsTrackerCalibrated = iETUDriver?.Calibrated != 0;
@@ -327,6 +329,7 @@ namespace GazeNetClient
             }
 
             iUIActions.update(internalState, aConnecting);
+            iPlugins.enableMenuItems(!internalState.IsServerConnected && !aConnecting);
             iMenu.update();
             iToolbar.update();
 

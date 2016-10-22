@@ -21,7 +21,7 @@ namespace GazeNetClient.Plugins.OinQs
 
         public const string NAME = "oinqs";
 
-        public Dictionary<string, EventHandler> MenuItems { get; } = null;
+        public Dictionary<string, Utils.UIAction> MenuItems { get; } = null;
         public string Name { get; } = NAME;
         public string DisplayName { get; } = "O-in-Qs";
         public bool IsExclusive { get; } = true;

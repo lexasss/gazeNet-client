@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using GazeNetClient.Plugin;
 
@@ -16,7 +15,7 @@ namespace GazeNetClient.Plugins.Scaler
         public string Name { get; } = "scaler";
         public string DisplayName { get; } = "Gaze area scaler";
         public bool IsExclusive { get; } = false;
-        public Dictionary<string, EventHandler> MenuItems { get; } = null;
+        public Dictionary<string, Utils.UIAction> MenuItems { get; } = null;
         public OptionsWidget Options { get { return iOptions; } }
 
         public bool Enabled

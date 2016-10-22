@@ -27,20 +27,9 @@ namespace GazeNetClient
             cmsMenu = new ContextMenuStrip();
 
             iActions = aActions;
-            foreach (KeyValuePair<string, UIAction> actionItem in iActions.Items)
+            foreach (KeyValuePair<string, Utils.UIAction> actionItem in iActions.Items)
             {
-                UIAction action = actionItem.Value;
-                if (!action.Set.HasFlag(UIActionSet.Menu))
-                    continue;
-
-                ToolStripItem item = action.Action != null ? 
-                    (ToolStripItem)new ToolStripMenuItem(action.Text) :
-                    (ToolStripItem)new ToolStripSeparator();
-
-                item.Tag = action;
-                item.Click += new EventHandler((s, e) => action?.Action());
-
-                cmsMenu.Items.Add(item);
+                AddItem(actionItem.Value);
             }
         }
 
@@ -48,7 +37,7 @@ namespace GazeNetClient
         {
             foreach (ToolStripItem item in cmsMenu.Items)
             {
-                UIAction action = (UIAction)item.Tag;
+                Utils.UIAction action = (Utils.UIAction)item.Tag;
                 item.Text = action.Text;
                 //item.Image = action.Image;
                 item.Enabled = action.Enabled;
@@ -65,19 +54,35 @@ namespace GazeNetClient
         {
             foreach (IPlugin plugin in aPlugins)
             {
-                IDictionary<string, EventHandler> items = plugin.MenuItems;
+                IDictionary<string, Utils.UIAction> items = plugin.MenuItems;
                 if (items?.Count > 0)
                 {
-                    cmsMenu.Items.Insert(0, new ToolStripSeparator());
                     int index = 0;
-                    foreach (KeyValuePair<string, EventHandler> k in items)
+                    AddItem(new Utils.UIAction("-"), index);
+                    foreach (KeyValuePair<string, Utils.UIAction> actionItem in items)
                     {
-                        ToolStripMenuItem item = new ToolStripMenuItem(k.Key);
-                        item.Click += k.Value;
-                        cmsMenu.Items.Insert(index++, item);
+                        AddItem(actionItem.Value, index++);
                     }
                 }
             }
+        }
+
+        private void AddItem(Utils.UIAction aAction, int aIndex = -1)
+        {
+            if (!aAction.Set.HasFlag(Utils.UIActionSet.Menu))
+                return;
+
+            ToolStripItem item = aAction.Action != null ?
+                (ToolStripItem)new ToolStripMenuItem(aAction.Text) :
+                (ToolStripItem)new ToolStripSeparator();
+
+            item.Tag = aAction;
+            item.Click += new EventHandler((s, e) => aAction?.Action());
+
+            if (aIndex < 0)
+                cmsMenu.Items.Add(item);
+            else
+                cmsMenu.Items.Insert(aIndex, item);
         }
 
         #endregion

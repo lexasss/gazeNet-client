@@ -153,6 +153,16 @@ namespace GazeNetClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap actionPointers {
+            get {
+                object obj = ResourceManager.GetObject("actionPointers", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap actionShowToolbar {
             get {
                 object obj = ResourceManager.GetObject("actionShowToolbar", resourceCulture);

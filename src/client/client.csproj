@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="img\menu\placeholders.png" />
     <None Include="img\menu\up-arrow.png" />
     <None Include="img\menu\telephone.png" />
     <None Include="img\menu\technology.png" />
