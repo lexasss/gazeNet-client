@@ -498,7 +498,7 @@ namespace GazeNetClient
 
             if (iOwnPointer.Visible)
             {
-                iOwnPointer.moveTo(aArgs.Location);
+                iOwnPointer.moveTo(pt.Location);
             }
         }
 

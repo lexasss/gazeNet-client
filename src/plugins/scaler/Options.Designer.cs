@@ -41,6 +41,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.gpbReceived = new System.Windows.Forms.GroupBox();
+            this.cmbReceived = new System.Windows.Forms.ComboBox();
             this.chkReceived = new System.Windows.Forms.CheckBox();
             this.nudReceivedBottom = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
@@ -224,6 +225,7 @@
             // 
             // gpbReceived
             // 
+            this.gpbReceived.Controls.Add(this.cmbReceived);
             this.gpbReceived.Controls.Add(this.chkReceived);
             this.gpbReceived.Controls.Add(this.nudReceivedBottom);
             this.gpbReceived.Controls.Add(this.label12);
@@ -237,10 +239,27 @@
             this.gpbReceived.Controls.Add(this.label7);
             this.gpbReceived.Location = new System.Drawing.Point(3, 90);
             this.gpbReceived.Name = "gpbReceived";
-            this.gpbReceived.Size = new System.Drawing.Size(250, 81);
+            this.gpbReceived.Size = new System.Drawing.Size(250, 106);
             this.gpbReceived.TabIndex = 3;
             this.gpbReceived.TabStop = false;
             this.gpbReceived.Text = "groupBox1";
+            // 
+            // cmbReceived
+            // 
+            this.cmbReceived.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.cmbReceived.DropDownHeight = 200;
+            this.cmbReceived.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbReceived.FormattingEnabled = true;
+            this.cmbReceived.IntegralHeight = false;
+            this.cmbReceived.ItemHeight = 15;
+            this.cmbReceived.Location = new System.Drawing.Point(9, 23);
+            this.cmbReceived.Name = "cmbReceived";
+            this.cmbReceived.Size = new System.Drawing.Size(229, 21);
+            this.cmbReceived.TabIndex = 6;
+            this.cmbReceived.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cmbReceived_DrawItem);
+            this.cmbReceived.DropDown += new System.EventHandler(this.cmbReceived_DropDown);
+            this.cmbReceived.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.cmbReceived_MeasureItem);
+            this.cmbReceived.SelectedIndexChanged += new System.EventHandler(this.cmbReceived_SelectedIndexChanged);
             // 
             // chkReceived
             // 
@@ -255,7 +274,7 @@
             // 
             // nudReceivedBottom
             // 
-            this.nudReceivedBottom.Location = new System.Drawing.Point(186, 49);
+            this.nudReceivedBottom.Location = new System.Drawing.Point(186, 73);
             this.nudReceivedBottom.Maximum = new decimal(new int[] {
             7000,
             0,
@@ -273,7 +292,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(164, 51);
+            this.label12.Location = new System.Drawing.Point(164, 75);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(16, 13);
             this.label12.TabIndex = 0;
@@ -282,7 +301,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(164, 25);
+            this.label11.Location = new System.Drawing.Point(164, 49);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(16, 13);
             this.label11.TabIndex = 0;
@@ -291,7 +310,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 25);
+            this.label5.Location = new System.Drawing.Point(6, 49);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 0;
@@ -300,7 +319,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 51);
+            this.label6.Location = new System.Drawing.Point(6, 75);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(42, 13);
             this.label6.TabIndex = 0;
@@ -308,7 +327,7 @@
             // 
             // nudReceivedLeft
             // 
-            this.nudReceivedLeft.Location = new System.Drawing.Point(106, 23);
+            this.nudReceivedLeft.Location = new System.Drawing.Point(106, 47);
             this.nudReceivedLeft.Maximum = new decimal(new int[] {
             7000,
             0,
@@ -325,7 +344,7 @@
             // 
             // nudReceivedTop
             // 
-            this.nudReceivedTop.Location = new System.Drawing.Point(106, 49);
+            this.nudReceivedTop.Location = new System.Drawing.Point(106, 73);
             this.nudReceivedTop.Maximum = new decimal(new int[] {
             7000,
             0,
@@ -342,7 +361,7 @@
             // 
             // nudReceivedRight
             // 
-            this.nudReceivedRight.Location = new System.Drawing.Point(186, 23);
+            this.nudReceivedRight.Location = new System.Drawing.Point(186, 47);
             this.nudReceivedRight.Maximum = new decimal(new int[] {
             7000,
             0,
@@ -360,7 +379,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(73, 51);
+            this.label8.Location = new System.Drawing.Point(73, 75);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(27, 13);
             this.label8.TabIndex = 0;
@@ -369,7 +388,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(73, 25);
+            this.label7.Location = new System.Drawing.Point(73, 49);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(27, 13);
             this.label7.TabIndex = 0;
@@ -425,5 +444,6 @@
         private System.Windows.Forms.NumericUpDown nudReceivedLeft;
         private System.Windows.Forms.NumericUpDown nudReceivedTop;
         private System.Windows.Forms.NumericUpDown nudReceivedRight;
+        private System.Windows.Forms.ComboBox cmbReceived;
     }
 }

@@ -11,6 +11,7 @@ namespace GazeNetClient.Plugins.Scaler
         private Config iConfig;
         private Options iOptions;
         private Rectangle iDisplaySize;
+        private IntPtr iWindowToScaleReceivedDataTo = IntPtr.Zero;
 
         public string Name { get; } = "scaler";
         public string DisplayName { get; } = "Gaze area scaler";
@@ -32,6 +33,9 @@ namespace GazeNetClient.Plugins.Scaler
             iConfig = Utils.Storage<Config>.load();
 
             iOptions = new Options();
+
+            iOptions.Window = iConfig.Window;
+            iWindowToScaleReceivedDataTo = iOptions.WindowPtr;
         }
 
         ~Scaler()
@@ -58,6 +62,8 @@ namespace GazeNetClient.Plugins.Scaler
             iOptions.ReceivedHorizontalRange.set(iConfig.Received.Left, iConfig.Received.Right);
             iOptions.ReceivedVerticalRange.set(iConfig.Received.Top, iConfig.Received.Bottom);
 
+            iOptions.Window = iConfig.Window;
+
             iOptions.updateVisibility();
         }
 
@@ -67,16 +73,37 @@ namespace GazeNetClient.Plugins.Scaler
             iConfig.Own = new Rectangle(iOptions.OwnHorizontalRange.From, iOptions.OwnVerticalRange.From, 
                 iOptions.OwnHorizontalRange.Value, iOptions.OwnVerticalRange.Value);
             iConfig.ReceivedEnabled = iOptions.chkReceived.Checked;
-            iConfig.Received = new Rectangle(iOptions.ReceivedHorizontalRange.From, iOptions.ReceivedVerticalRange.From,
-                iOptions.ReceivedHorizontalRange.Value, iOptions.ReceivedVerticalRange.Value);
+            iConfig.Window = iOptions.Window;
+            if (string.IsNullOrEmpty(iConfig.Window))
+            {
+                iConfig.Received = new Rectangle(iOptions.ReceivedHorizontalRange.From, iOptions.ReceivedVerticalRange.From,
+                    iOptions.ReceivedHorizontalRange.Value, iOptions.ReceivedVerticalRange.Value);
+            }
+
+            iWindowToScaleReceivedDataTo = iOptions.WindowPtr;
         }
 
         public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
             if (iConfig.OwnEnabled)
             {
-                float x = iDisplaySize.Left + iConfig.Own.Left + iConfig.Own.Width * (aSample.X / iDisplaySize.Width);
-                float y = iDisplaySize.Top + iConfig.Own.Top + iConfig.Own.Height * (aSample.Y / iDisplaySize.Height);
+                Rectangle rect = iConfig.Own;
+                /*
+                if (iWindowToScaleReceivedDataTo != IntPtr.Zero)
+                {
+                    if (!Utils.WinAPI.IsWindow(iWindowToScaleReceivedDataTo))
+                        return aSample;
+
+                    Utils.WinAPI.RECT winRect;
+                    if (!Utils.WinAPI.GetWindowRect(iWindowToScaleReceivedDataTo, out winRect))
+                        return aSample;
+
+                    rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
+                }
+                */
+                float x = iDisplaySize.Left + rect.Left + rect.Width * (aSample.X / iDisplaySize.Width);
+                float y = iDisplaySize.Top + rect.Top + rect.Height * (aSample.Y / iDisplaySize.Height);
+
                 return new Processor.GazePoint(aSample.Timestamp, new PointF((int)x, (int)y));
             }
 
@@ -87,8 +114,23 @@ namespace GazeNetClient.Plugins.Scaler
         {
             if (iConfig.ReceivedEnabled)
             {
-                float x = iDisplaySize.Left + iConfig.Received.Left + iConfig.Received.Width * (aPoint.X / iDisplaySize.Width);
-                float y = iDisplaySize.Top + iConfig.Received.Top + iConfig.Received.Height * (aPoint.Y / iDisplaySize.Height);
+                Rectangle rect = iConfig.Received;
+
+                if (iWindowToScaleReceivedDataTo != IntPtr.Zero)
+                {
+                    if (!Utils.WinAPI.IsWindow(iWindowToScaleReceivedDataTo))
+                        return false;
+
+                    Utils.WinAPI.RECT winRect;
+                    if (!Utils.WinAPI.GetWindowRect(iWindowToScaleReceivedDataTo, out winRect))
+                        return false;
+
+                    rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
+                }
+
+
+                float x = iDisplaySize.Left + rect.Left + rect.Width * (aPoint.X / iDisplaySize.Width);
+                float y = iDisplaySize.Top + rect.Top + rect.Height * (aPoint.Y / iDisplaySize.Height);
                 aPoint = new PointF((int)x, (int)y);
             }
 

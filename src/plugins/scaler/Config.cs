@@ -12,5 +12,6 @@ namespace GazeNetClient.Plugins.Scaler
         public Rectangle Own { get; set; } = new Rectangle(0, 0, 640, 480);
         public bool ReceivedEnabled { get; set; } = false;
         public Rectangle Received { get; set; } = new Rectangle(0, 0, 640, 480);
+        public string Window { get; set; } = "";
     }
 }
