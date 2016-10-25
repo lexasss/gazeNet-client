@@ -494,11 +494,11 @@ namespace GazeNetClient
         private void GazeParser_OnNewGazePoint(object aSender, Processor.GazePoint aArgs)
         {
             Processor.GazePoint pt = iPlugins.feedOwnPoint(aArgs);
-            iWebSocketClient.send(new WebSocket.GazeEvent(pt.Location));
+            iWebSocketClient.send(new WebSocket.GazeEvent(pt.LocationF));
 
             if (iOwnPointer.Visible)
             {
-                iOwnPointer.moveTo(pt.Location);
+                iOwnPointer.moveTo(pt.LocationF);
             }
         }
 

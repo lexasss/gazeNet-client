@@ -7,7 +7,8 @@ namespace GazeNetClient.Processor
         public long Timestamp { get; private set; }
         public float X { get; private set; }
         public float Y { get; private set; }
-        public PointF Location { get { return new PointF(X, Y); } }
+        public PointF LocationF { get { return new PointF(X, Y); } }
+        public Point Location { get { return new Point((int)X, (int)Y); } }
 
         public GazePoint(long aTimestamp, PointF aPoint) : this(aTimestamp, aPoint.X, aPoint.Y) { }
 

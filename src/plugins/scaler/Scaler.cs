@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using GazeNetClient.Plugin;
+using GazeNetClient.Utils;
 
 namespace GazeNetClient.Plugins.Scaler
 {
@@ -30,17 +31,16 @@ namespace GazeNetClient.Plugins.Scaler
 
         public Scaler()
         {
-            iConfig = Utils.Storage<Config>.load();
+            iConfig = Storage<Config>.load();
 
             iOptions = new Options();
 
-            iOptions.Window = iConfig.Window;
-            iWindowToScaleReceivedDataTo = iOptions.WindowPtr;
+            iWindowToScaleReceivedDataTo = Plugins.Scaler.Options.windowTitleToHandle(iConfig.Window);
         }
 
         ~Scaler()
         {
-            Utils.Storage<Config>.save(iConfig);
+            Storage<Config>.save(iConfig);
         }
 
         public void command(string aCommand, string aValue) { }
@@ -88,14 +88,17 @@ namespace GazeNetClient.Plugins.Scaler
             if (iConfig.OwnEnabled)
             {
                 Rectangle rect = iConfig.Own;
-                /*
+                /* for testing
                 if (iWindowToScaleReceivedDataTo != IntPtr.Zero)
                 {
-                    if (!Utils.WinAPI.IsWindow(iWindowToScaleReceivedDataTo))
+                    if (!WinAPI.IsWindow(iWindowToScaleReceivedDataTo))
                         return aSample;
 
-                    Utils.WinAPI.RECT winRect;
-                    if (!Utils.WinAPI.GetWindowRect(iWindowToScaleReceivedDataTo, out winRect))
+                    if (GetTopLevelWindowAt(aSample.Location) != iWindowToScaleReceivedDataTo)
+                        return new Processor.GazePoint(aSample.Timestamp, new PointF(0, 0));
+
+                    WinAPI.RECT winRect;
+                    if (!WinAPI.GetWindowRect(iWindowToScaleReceivedDataTo, out winRect))
                         return aSample;
 
                     rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
@@ -118,11 +121,14 @@ namespace GazeNetClient.Plugins.Scaler
 
                 if (iWindowToScaleReceivedDataTo != IntPtr.Zero)
                 {
-                    if (!Utils.WinAPI.IsWindow(iWindowToScaleReceivedDataTo))
+                    if (!WinAPI.IsWindow(iWindowToScaleReceivedDataTo))
                         return false;
 
-                    Utils.WinAPI.RECT winRect;
-                    if (!Utils.WinAPI.GetWindowRect(iWindowToScaleReceivedDataTo, out winRect))
+                    if (GetTopLevelWindowAt(new Point((int)aPoint.X, (int)aPoint.Y)) != iWindowToScaleReceivedDataTo)
+                        return false;
+
+                    WinAPI.RECT winRect;
+                    if (!WinAPI.GetWindowRect(iWindowToScaleReceivedDataTo, out winRect))
                         return false;
 
                     rect = new Rectangle(winRect.Left, winRect.Top, winRect.Right - winRect.Left, winRect.Bottom - winRect.Top);
@@ -135,6 +141,43 @@ namespace GazeNetClient.Plugins.Scaler
             }
 
             return true;
+        }
+
+        private IntPtr GetTopLevelWindowAt(Point aLocation)
+        {
+            IntPtr wnd = WinAPI.WindowFromPoint(aLocation);
+            if (wnd == IntPtr.Zero)
+                return IntPtr.Zero;
+
+            IntPtr parent;
+            while ((parent = WinAPI.GetParent(wnd)) != IntPtr.Zero)
+            {
+                wnd = parent;
+            }
+
+            return wnd;
+        }
+
+        public bool IsOverlappedAt(IntPtr aWindow, int aX, int aY)
+        {
+            if (!WinAPI.IsWindowVisible(aWindow))
+                return false;
+
+            IntPtr wnd = aWindow;
+            HashSet<IntPtr> visited = new HashSet<IntPtr> { wnd };
+
+            WinAPI.RECT thisRect;
+            WinAPI.GetWindowRect(wnd, out thisRect);
+
+            while ((wnd = WinAPI.GetWindow(wnd, WinAPI.GW.HWNDPREV)) != IntPtr.Zero && !visited.Contains(wnd))
+            {
+                visited.Add(wnd);
+                WinAPI.RECT testRect, intersection;
+                if (WinAPI.IsWindowVisible(wnd) && WinAPI.GetWindowRect(wnd, out testRect) && WinAPI.IntersectRect(out intersection, ref thisRect, ref testRect))
+                    return true;
+            }
+
+            return false;
         }
     }
 }

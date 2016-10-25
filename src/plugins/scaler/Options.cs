@@ -88,6 +88,23 @@ namespace GazeNetClient.Plugins.Scaler
             UpdateVisibility();
         }
 
+        public static IntPtr windowTitleToHandle(string aTitle)
+        {
+            IntPtr result = IntPtr.Zero;
+
+            List<WinData> windows = EnumTopLevelWindows();
+            foreach (WinData window in windows)
+            {
+                if (window.Title == aTitle)
+                {
+                    result = window.Handle;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
         private void UpdateVisibility()
         {
             SetGroupEnabling(chkOwn.Parent, new IsConditionMet[] { ctrl => ctrl == chkOwn || chkOwn.Checked });
@@ -134,7 +151,7 @@ namespace GazeNetClient.Plugins.Scaler
             SetGroupEnabling(chkReceived.Parent, new IsConditionMet[] { ctrl => ctrl == aCheckBox || aCheckBox.Checked });
         }
 
-        private List<WinData> EnumTopLevelWindows()
+        private static List<WinData> EnumTopLevelWindows()
         {
             List<WinData> windows = new List<WinData>();
             GCHandle handles = GCHandle.Alloc(windows);

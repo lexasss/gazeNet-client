@@ -509,6 +509,19 @@ namespace GazeNetClient.Utils
                 INFORMATION = ASTERISK;
         }
 
+        public static class GW
+        {
+            public static readonly uint
+                HWNDFIRST = 0,
+                HWNDLAST = 1,
+                HWNDNEXT = 2,
+                HWNDPREV = 3,
+                OWNER = 4,
+                CHILD = 5,
+                ENABLEDPOPUP = 6,
+                MAX = 6;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
@@ -628,9 +641,12 @@ namespace GazeNetClient.Utils
 
         #endregion
 
-        #region Enumerating top-level windows
+        #region Windows
 
         public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetWindowText(IntPtr hWnd, System.Text.StringBuilder strText, int maxCount);
@@ -650,14 +666,24 @@ namespace GazeNetClient.Utils
         [DllImport("user32.dll")]
         public static extern bool IsIconic(IntPtr hWnd);
 
-        #endregion
-
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool GetWindowInfo(IntPtr hWnd, out WINDOWINFO pwi);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(System.Drawing.Point p);
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr GetParent(IntPtr hWnd);
+
+        #endregion
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IntersectRect([Out] out RECT lprcDst, [In] ref RECT lprcSrc1, [In] ref RECT lprcSrc2);
 
         public static IntPtr GetClassLongPtr(IntPtr hWnd, int nIndex)
         {
