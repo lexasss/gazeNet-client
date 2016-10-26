@@ -167,7 +167,10 @@ namespace GazeNetClient
         public void showOptions()
         {
             UpdateMenu(true);
+
+            iOptions.ShowInTaskbar = iTrayIcon.Visible;
             iOptions.load(iPointers, iGazeParser.Filter, AutoStarter, iWebSocketClient);
+
             bool acceptChanges = iOptions.ShowDialog() == DialogResult.OK;
             iOptions.save(acceptChanges);
 
@@ -177,7 +180,7 @@ namespace GazeNetClient
         public void showPluginOptions()
         {
             UpdateMenu(true);
-            iPlugins.showOptions();
+            iPlugins.showOptions(iTrayIcon.Visible);
             UpdateMenu(false);
         }
 

@@ -139,9 +139,10 @@ namespace GazeNetClient.Plugin
                     plugin.command(aCommand, aValue);
         }
 
-        public void showOptions()
+        public void showOptions(bool aShowInTaskbar)
         {
             Options options = new Options();
+            options.ShowInTaskbar = aShowInTaskbar;
             options.list(Items);
             if (options.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
