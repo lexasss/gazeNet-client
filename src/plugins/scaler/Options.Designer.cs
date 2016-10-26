@@ -247,7 +247,7 @@
             // cmbReceived
             // 
             this.cmbReceived.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.cmbReceived.DropDownHeight = 200;
+            this.cmbReceived.DropDownHeight = 300;
             this.cmbReceived.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbReceived.FormattingEnabled = true;
             this.cmbReceived.IntegralHeight = false;

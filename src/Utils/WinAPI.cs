@@ -522,6 +522,26 @@ namespace GazeNetClient.Utils
                 MAX = 6;
         }
 
+        public static class ICON
+        {
+            public static readonly int
+                SMALL = 0,
+                BIG = 1,
+                SMALL2 = 2;
+        }
+
+        public static class GWL
+        {
+            public static readonly int 
+                WNDPROC = -4,
+                HINSTANCE = -6,
+                HWNDPARENT = -8,
+                STYLE = -16,
+                EXSTYLE = -20,
+                USERDATA = -21,
+                ID = -12;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
@@ -679,6 +699,9 @@ namespace GazeNetClient.Utils
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         public static extern IntPtr GetParent(IntPtr hWnd);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+
         #endregion
 
         [DllImport("user32.dll")]
@@ -690,7 +713,7 @@ namespace GazeNetClient.Utils
             if (IntPtr.Size > 4)
                 return GetClassLongPtr64(hWnd, nIndex);
             else
-                return new IntPtr(GetClassLongPtr32(hWnd, nIndex));
+                return new IntPtr(GetClassLongPtr32(hWnd, nIndex)); // this mey throw an exception!
         }
 
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]

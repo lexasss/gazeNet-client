@@ -9,6 +9,10 @@ namespace GazeNetClient.Plugins.Scaler
 {
     public partial class Options : Plugin.OptionsWidget
     {
+        private static int WINDOWS_LIST_PADDING = 2;
+        private static int WINDOWS_LIST_ICON_SIZE = 32;
+        private static int WINDOWS_LIST_SCROLLBAR_WIDTH = 16;
+
         private delegate bool IsConditionMet(Control aControl);
 
         private List<WinData> iWindows = new List<WinData>();
@@ -17,9 +21,9 @@ namespace GazeNetClient.Plugins.Scaler
         {
             public readonly IntPtr Handle;
             public readonly string Title;
-            public readonly IntPtr Icon;
+            public readonly Icon Icon;
 
-            public WinData(IntPtr aHandle, string aTitle, IntPtr aIcon)
+            public WinData(IntPtr aHandle, string aTitle, Icon aIcon)
             {
                 Handle = aHandle;
                 Title = aTitle;
@@ -123,7 +127,9 @@ namespace GazeNetClient.Plugins.Scaler
             iWindows.Clear();
 
             cmbReceived.Items.Clear();
-            cmbReceived.Items.Add(new WinData(IntPtr.Zero, "fixed area", IntPtr.Zero));
+
+            IntPtr fixedAreaHIcon = Properties.Resources.fixedArea.GetHicon();
+            cmbReceived.Items.Add(new WinData(IntPtr.Zero, "fixed area", Icon.FromHandle(fixedAreaHIcon)));
 
             iWindows = EnumTopLevelWindows();
             foreach (WinData window in iWindows)
@@ -184,14 +190,26 @@ namespace GazeNetClient.Plugins.Scaler
                     GCHandle handles = (GCHandle)lParam;
                     List<WinData> windows = (handles.Target as List<WinData>);
 
-                    WinAPI.WINDOWINFO wi;
-                    if (WinAPI.GetWindowInfo(hWnd, out wi))
+                    IntPtr hIcon;
+                    hIcon = WinAPI.SendMessage(hWnd, WinAPI.WM.GETICON, (IntPtr)WinAPI.ICON.BIG, IntPtr.Zero);
+                    if (hIcon == IntPtr.Zero)
                     {
-                        IntPtr icon = WinAPI.GetClassLongPtr(hWnd, WinAPI.GCL.HICON);
-                        windows.Add(new WinData(hWnd, title, icon));
+                        try { hIcon = WinAPI.GetClassLongPtr(hWnd, WinAPI.GCL.HICON); }
+                        catch (Exception) { }
                     }
-                    else
-                        windows.Add(new WinData(hWnd, title, IntPtr.Zero));
+                    if (hIcon == IntPtr.Zero)
+                    {
+                        IntPtr hInstance = WinAPI.GetClassLongPtr(hWnd, WinAPI.GWL.HINSTANCE);
+                        hIcon = WinAPI.LoadIcon(hInstance, (IntPtr)1);
+                    }
+
+                    Icon icon;
+                    if (hIcon != IntPtr.Zero)
+                        icon = Icon.FromHandle(hIcon);
+                    else 
+                        icon = Icon.FromHandle(WinAPI.LoadIcon(IntPtr.Zero, (IntPtr)WinAPI.IDI.WINLOGO));
+
+                    windows.Add(new WinData(hWnd, title, icon));
                 }
             }
 
@@ -228,21 +246,19 @@ namespace GazeNetClient.Plugins.Scaler
 
             e.DrawBackground();
 
-            if (!e.State.HasFlag(DrawItemState.ComboBoxEdit))
+            Rectangle rect = e.Bounds;
+
+            if (!e.State.HasFlag(DrawItemState.ComboBoxEdit) && winData.Icon != null)
             {
-                Icon icon;
-                if (winData.Icon != IntPtr.Zero)
-                    icon = Icon.FromHandle(winData.Icon);
-                else
-                    icon = Icon.FromHandle(WinAPI.LoadIcon(IntPtr.Zero, (IntPtr)WinAPI.IDI.WINLOGO));
-                e.Graphics.DrawIcon(icon, 2, e.Bounds.Top + 2);
+                e.Graphics.DrawIcon(winData.Icon, rect.Left + WINDOWS_LIST_PADDING, rect.Top + WINDOWS_LIST_PADDING);
             }
 
-            Rectangle rect = e.Bounds;
-            rect.Width -= 16;
-
             if (!e.State.HasFlag(DrawItemState.ComboBoxEdit))
-                rect.X += 36;
+            {
+                rect.Y += WINDOWS_LIST_PADDING;
+                rect.X += WINDOWS_LIST_ICON_SIZE + 2 * WINDOWS_LIST_PADDING;
+                rect.Width -= WINDOWS_LIST_ICON_SIZE + 3 * WINDOWS_LIST_PADDING;
+            }
 
             e.Graphics.DrawString(winData.Title, e.Font, new SolidBrush(e.ForeColor), rect);
         }
@@ -253,8 +269,10 @@ namespace GazeNetClient.Plugins.Scaler
                 return;
 
             WinData winData = (WinData)cmbReceived.Items[e.Index];
-            SizeF textSize = e.Graphics.MeasureString(winData.Title, cmbReceived.Font, cmbReceived.Width - 36);
-            e.ItemHeight = Math.Max((int)textSize.Height, 36);
+            int textMaxWidth = cmbReceived.Width - WINDOWS_LIST_ICON_SIZE - WINDOWS_LIST_SCROLLBAR_WIDTH - 3 * WINDOWS_LIST_PADDING;
+            SizeF textSize = e.Graphics.MeasureString(winData.Title, cmbReceived.Font, textMaxWidth);
+            e.ItemHeight = Math.Max((int)textSize.Height, WINDOWS_LIST_ICON_SIZE) + 2 * WINDOWS_LIST_PADDING;
+            e.ItemWidth = cmbReceived.Width;
         }
 
         private void cmbReceived_DropDown(object sender, EventArgs e)
