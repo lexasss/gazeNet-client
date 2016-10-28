@@ -13,8 +13,6 @@ namespace GazeNetClient.Plugins.Scaler
         private static int WINDOWS_LIST_ICON_SIZE = 32;
         private static int WINDOWS_LIST_SCROLLBAR_WIDTH = 16;
 
-        private delegate bool IsConditionMet(Control aControl);
-
         private List<WinData> iWindows = new List<WinData>();
 
         private struct WinData
@@ -111,8 +109,8 @@ namespace GazeNetClient.Plugins.Scaler
 
         private void UpdateVisibility()
         {
-            SetGroupEnabling(chkOwn.Parent, new IsConditionMet[] { ctrl => ctrl == chkOwn || chkOwn.Checked });
-            SetGroupEnabling(chkReceived.Parent, new IsConditionMet[] {
+            UI.setGroupEnabling(chkOwn.Parent, new UI.IsConditionMet[] { ctrl => ctrl == chkOwn || chkOwn.Checked });
+            UI.setGroupEnabling(chkReceived.Parent, new UI.IsConditionMet[] {
                 ctrl =>
                     ctrl == chkReceived ||
                     (ctrl == cmbReceived && chkReceived.Checked) ||
@@ -127,7 +125,7 @@ namespace GazeNetClient.Plugins.Scaler
             iWindows.Clear();
 
             cmbReceived.Items.Clear();
-
+            
             IntPtr fixedAreaHIcon = Properties.Resources.fixedArea.GetHicon();
             cmbReceived.Items.Add(new WinData(IntPtr.Zero, "fixed area", Icon.FromHandle(fixedAreaHIcon)));
 
@@ -140,21 +138,9 @@ namespace GazeNetClient.Plugins.Scaler
             Window = currentWindow;
         }
 
-        private void SetGroupEnabling(Control aContainer, IsConditionMet[] aConditions)
-        {
-            foreach (Control ctrl in aContainer.Controls)
-            {
-                bool enabled = true;
-                foreach (IsConditionMet condition in aConditions)
-                    enabled = enabled && condition(ctrl);
-
-                ctrl.Enabled = enabled;
-            }
-        }
-
         private void SetReceivedGroupEnabling(CheckBox aCheckBox)
         {
-            SetGroupEnabling(chkReceived.Parent, new IsConditionMet[] { ctrl => ctrl == aCheckBox || aCheckBox.Checked });
+            UI.setGroupEnabling(chkReceived.Parent, new UI.IsConditionMet[] { ctrl => ctrl == aCheckBox || aCheckBox.Checked });
         }
 
         private static List<WinData> EnumTopLevelWindows()

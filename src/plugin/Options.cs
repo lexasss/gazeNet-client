@@ -30,8 +30,8 @@ namespace GazeNetClient.Plugin
             foreach (ListViewItem lvi in lsvPlugins.Items)
             {
                 IPlugin plugin = (IPlugin)lvi.Tag;
-                plugin.Enabled = lvi.Checked;
                 plugin.acceptOptions();
+                plugin.Enabled = lvi.Checked;
             }
         }
 
