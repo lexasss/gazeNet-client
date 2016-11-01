@@ -318,8 +318,8 @@ namespace GazeNetClient
         private void UpdateMenu(bool aIsShowingDialog, bool aConnecting = false)
         {
             InternalState internalState = new InternalState();
-            if (!aConnecting)
-            {
+            //if (!aConnecting)
+            //{
                 internalState.IsShowingOptions = aIsShowingDialog;
                 internalState.IsEyeTrackingRequired = iWebSocketClient?.Config.Role.HasFlag(WebSocket.ClientRole.Source) == true;
                 internalState.IsServerConnected = iWebSocketClient?.Connected == true;
@@ -329,10 +329,11 @@ namespace GazeNetClient
                 internalState.IsTrackerConnected = iETUDriver?.Ready != 0;
                 internalState.IsTrackerCalibrated = iETUDriver?.Calibrated != 0;
                 internalState.IsTrackingGaze = iETUDriver?.Active != 0;
-            }
+            //}
+            internalState.IsConnecting = aConnecting;
 
-            iUIActions.update(internalState, aConnecting);
-            iPlugins.enableMenuItems(!internalState.IsServerConnected && !aConnecting);
+            iUIActions.update(internalState);
+            iPlugins.updateMenuItems(internalState);
             iMenu.update();
             iToolbar.update();
 

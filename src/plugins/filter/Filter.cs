@@ -79,6 +79,8 @@ namespace GazeNetClient.Plugins.Filter
             iConfig.Action = (Action)iOptions.cmbAction.SelectedIndex;
         }
 
+        public void updateMenuItems(InternalState aInternalState) { }
+
         public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
             return aSample;

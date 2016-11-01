@@ -542,6 +542,36 @@ namespace GazeNetClient.Utils
                 ID = -12;
         }
 
+        public static class HWND
+        {
+            public static readonly IntPtr
+                NOTOPMOST = new IntPtr(-2),
+                TOPMOST = new IntPtr(-1),
+                TOP = new IntPtr(0),
+                BOTTOM = new IntPtr(1),
+                BROADCAST = new IntPtr(0xffff);
+        }
+
+        public static class SWP
+        {
+            public static readonly uint
+                NOSIZE = 0x0001,
+                NOMOVE = 0x0002,
+                NOZORDER = 0x0004,
+                NOREDRAW = 0x0008,
+                NOACTIVATE = 0x0010,
+                DRAWFRAME = 0x0020,
+                FRAMECHANGED = 0x0020,
+                SHOWWINDOW = 0x0040,
+                HIDEWINDOW = 0x0080,
+                NOCOPYBITS = 0x0100,
+                NOOWNERZORDER = 0x0200,
+                NOREPOSITION = 0x0200,
+                NOSENDCHANGING = 0x0400,
+                DEFERERASE = 0x2000,
+                ASYNCWINDOWPOS = 0x4000;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
@@ -572,36 +602,6 @@ namespace GazeNetClient.Utils
         }
 
         #region Window position
-
-        public static class HWND
-        {
-            public static readonly IntPtr
-                NOTOPMOST = new IntPtr(-2),
-                TOPMOST = new IntPtr(-1),
-                TOP = new IntPtr(0),
-                BOTTOM = new IntPtr(1),
-                BROADCAST = new IntPtr(0xffff);
-        }
-
-        public static class SWP
-        {
-            public static readonly uint
-                NOSIZE = 0x0001,
-                NOMOVE = 0x0002,
-                NOZORDER = 0x0004,
-                NOREDRAW = 0x0008,
-                NOACTIVATE = 0x0010,
-                DRAWFRAME = 0x0020,
-                FRAMECHANGED = 0x0020,
-                SHOWWINDOW = 0x0040,
-                HIDEWINDOW = 0x0080,
-                NOCOPYBITS = 0x0100,
-                NOOWNERZORDER = 0x0200,
-                NOREPOSITION = 0x0200,
-                NOSENDCHANGING = 0x0400,
-                DEFERERASE = 0x2000,
-                ASYNCWINDOWPOS = 0x4000;
-        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct WINDOWPOS
@@ -690,8 +690,15 @@ namespace GazeNetClient.Utils
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool GetWindowInfo(IntPtr hWnd, out WINDOWINFO pwi);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 
         [DllImport("user32.dll")]
         public static extern IntPtr WindowFromPoint(System.Drawing.Point p);

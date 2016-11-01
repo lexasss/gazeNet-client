@@ -12,6 +12,8 @@ namespace GazeNetClient.Plugins.VNC
 
         private void UpdateVisibility()
         {
+            chkServerEnabled.Enabled = !lblUVNCNotFound.Visible;
+
             UI.setGroupEnabling(gpbViewers, new UI.IsConditionMet[] {
                 ctrl => {
                     if (lblUVNCNotFound.Visible)

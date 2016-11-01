@@ -102,12 +102,10 @@ namespace GazeNetClient.Plugin
                     plugin.finilize();
         }
 
-        public void enableMenuItems(bool aEnabled)
+        public void updateMenuItems(InternalState aInternalState)
         {
             foreach (IPlugin plugin in iItems)
-                if (plugin.MenuItems != null)
-                    foreach (Utils.UIAction actionItem in plugin.MenuItems.Values)
-                        actionItem.Enabled = aEnabled;
+                plugin.updateMenuItems(aInternalState);
         }
 
         public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)

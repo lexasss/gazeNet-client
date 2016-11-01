@@ -38,6 +38,7 @@ namespace GazeNetClient.Plugin
 
         void displayOptions();
         void acceptOptions();
+        void updateMenuItems(InternalState aInternalState);
 
         void command(string aCommand, string aValue);
 

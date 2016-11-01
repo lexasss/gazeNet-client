@@ -5,19 +5,6 @@ using GazeNetClient.Utils;
 
 namespace GazeNetClient
 {
-    public struct InternalState
-    {
-        public bool IsShowingOptions;
-        public bool IsEyeTrackingRequired;
-        public bool IsServerConnected;
-        public bool ArePointersVisible;
-        public bool IsOwnPointerVisible;
-        public bool HasTrackingDevices;
-        public bool IsTrackerConnected;
-        public bool IsTrackerCalibrated;
-        public bool IsTrackingGaze;
-    }
-
     internal class UIActions
     {
         public Dictionary<string, UIAction> Items { get; } = new Dictionary<string, UIAction>();
@@ -43,12 +30,12 @@ namespace GazeNetClient
             return actions;
         }
 
-        public void update(InternalState aState, bool aIsConnecting)
+        public void update(InternalState aState)
         {
-            Items["Options"].Enabled = !aIsConnecting && !aState.IsShowingOptions;
-            Items["Plugins"].Enabled = !aIsConnecting && !aState.IsShowingOptions && !aState.IsTrackingGaze;
-            Items["Connection"].Enabled = !aIsConnecting && (!aState.IsEyeTrackingRequired || aState.IsTrackerCalibrated);
-            if (aIsConnecting)
+            Items["Options"].Enabled = !aState.IsConnecting && !aState.IsShowingOptions;
+            Items["Plugins"].Enabled = !aState.IsConnecting && !aState.IsShowingOptions && !aState.IsTrackingGaze;
+            Items["Connection"].Enabled = !aState.IsConnecting && (!aState.IsEyeTrackingRequired || aState.IsTrackerCalibrated);
+            if (aState.IsConnecting)
             {
                 //Items["Connection"].Text = "Connecting...";
             }
@@ -56,12 +43,12 @@ namespace GazeNetClient
             {
                 Items["Connection"].UseAltView = aState.IsServerConnected;
             }
-            Items["Pointers"].Enabled = !aIsConnecting;
+            Items["Pointers"].Enabled = !aState.IsConnecting;
             Items["Pointers"].UseAltView = aState.ArePointersVisible;
-            Items["OwnPointer"].Enabled = !aIsConnecting;
+            Items["OwnPointer"].Enabled = !aState.IsConnecting;
             Items["OwnPointer"].UseAltView = aState.IsOwnPointerVisible;
-            Items["ETUDOptions"].Enabled = !aIsConnecting && !aState.IsShowingOptions && aState.HasTrackingDevices && !aState.IsTrackingGaze;
-            Items["ETUDCalibrate"].Enabled = !aIsConnecting && !aState.IsShowingOptions && aState.IsTrackerConnected && !aState.IsTrackingGaze;
+            Items["ETUDOptions"].Enabled = !aState.IsConnecting && !aState.IsShowingOptions && aState.HasTrackingDevices && !aState.IsTrackingGaze;
+            Items["ETUDCalibrate"].Enabled = !aState.IsConnecting && !aState.IsShowingOptions && aState.IsTrackerConnected && !aState.IsTrackingGaze;
             Items["Exit"].Enabled = !aState.IsShowingOptions;
 
             Items["ETUDOptions"].Visible = aState.IsEyeTrackingRequired;

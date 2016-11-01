@@ -83,6 +83,8 @@ namespace GazeNetClient.Plugins.Scaler
             iWindowToScaleReceivedDataTo = iOptions.WindowPtr;
         }
 
+        public void updateMenuItems(InternalState aInternalState) { }
+
         public Processor.GazePoint feedOwnPoint(Processor.GazePoint aSample)
         {
             if (iConfig.OwnEnabled)

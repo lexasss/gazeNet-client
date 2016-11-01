@@ -64,6 +64,8 @@ namespace GazeNetClient.Plugins.OinQs
 
         public void acceptOptions() { }
 
+        public void updateMenuItems(InternalState aInternalState) { }
+
         public void start()
         {
             iDisplay.clear();

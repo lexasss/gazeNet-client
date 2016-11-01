@@ -38,9 +38,7 @@
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.gpbViewers = new System.Windows.Forms.GroupBox();
-            this.chkDisableClipboard = new System.Windows.Forms.CheckBox();
-            this.chkSharedServer = new System.Windows.Forms.CheckBox();
-            this.chkAutoScaling = new System.Windows.Forms.CheckBox();
+            this.chkLaunchViewerOnStart = new System.Windows.Forms.CheckBox();
             this.chkViewOnly = new System.Windows.Forms.CheckBox();
             this.chkViewersEnabled = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -80,11 +78,13 @@
             this.lsvViewers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colIP,
             this.colName});
-            this.lsvViewers.Location = new System.Drawing.Point(3, 19);
+            this.lsvViewers.FullRowSelect = true;
+            this.lsvViewers.Location = new System.Drawing.Point(6, 19);
             this.lsvViewers.MultiSelect = false;
             this.lsvViewers.Name = "lsvViewers";
-            this.lsvViewers.Size = new System.Drawing.Size(252, 133);
-            this.lsvViewers.TabIndex = 13;
+            this.lsvViewers.ShowGroups = false;
+            this.lsvViewers.Size = new System.Drawing.Size(249, 133);
+            this.lsvViewers.TabIndex = 9;
             this.lsvViewers.UseCompatibleStateImageBehavior = false;
             this.lsvViewers.View = System.Windows.Forms.View.Details;
             this.lsvViewers.SelectedIndexChanged += new System.EventHandler(this.lsvViewers_SelectedIndexChanged);
@@ -97,7 +97,7 @@
             // colName
             // 
             this.colName.Text = "Name";
-            this.colName.Width = 110;
+            this.colName.Width = 108;
             // 
             // txbName
             // 
@@ -105,7 +105,7 @@
             this.txbName.Location = new System.Drawing.Point(172, 158);
             this.txbName.Name = "txbName";
             this.txbName.Size = new System.Drawing.Size(83, 20);
-            this.txbName.TabIndex = 7;
+            this.txbName.TabIndex = 1;
             this.txbName.TextChanged += new System.EventHandler(this.NewViewerData_TextChanged);
             // 
             // txbIP
@@ -114,7 +114,7 @@
             this.txbIP.Location = new System.Drawing.Point(23, 158);
             this.txbIP.Name = "txbIP";
             this.txbIP.Size = new System.Drawing.Size(102, 20);
-            this.txbIP.TabIndex = 7;
+            this.txbIP.TabIndex = 0;
             this.txbIP.TextChanged += new System.EventHandler(this.NewViewerData_TextChanged);
             // 
             // btnRemove
@@ -124,7 +124,7 @@
             this.btnRemove.Location = new System.Drawing.Point(131, 184);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(124, 23);
-            this.btnRemove.TabIndex = 5;
+            this.btnRemove.TabIndex = 3;
             this.btnRemove.Text = "Remove";
             this.btnRemove.UseVisualStyleBackColor = true;
             this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
@@ -136,7 +136,7 @@
             this.btnAdd.Location = new System.Drawing.Point(3, 184);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(122, 23);
-            this.btnAdd.TabIndex = 6;
+            this.btnAdd.TabIndex = 2;
             this.btnAdd.Text = "Add";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
@@ -144,12 +144,10 @@
             // gpbViewers
             // 
             this.gpbViewers.Controls.Add(this.label5);
-            this.gpbViewers.Controls.Add(this.chkDisableClipboard);
+            this.gpbViewers.Controls.Add(this.chkLaunchViewerOnStart);
             this.gpbViewers.Controls.Add(this.label4);
-            this.gpbViewers.Controls.Add(this.chkSharedServer);
             this.gpbViewers.Controls.Add(this.lsvViewers);
             this.gpbViewers.Controls.Add(this.txbName);
-            this.gpbViewers.Controls.Add(this.chkAutoScaling);
             this.gpbViewers.Controls.Add(this.txbIP);
             this.gpbViewers.Controls.Add(this.chkViewOnly);
             this.gpbViewers.Controls.Add(this.btnRemove);
@@ -161,35 +159,15 @@
             this.gpbViewers.TabIndex = 5;
             this.gpbViewers.TabStop = false;
             // 
-            // chkDisableClipboard
+            // chkLaunchViewerOnStart
             // 
-            this.chkDisableClipboard.AutoSize = true;
-            this.chkDisableClipboard.Location = new System.Drawing.Point(123, 236);
-            this.chkDisableClipboard.Name = "chkDisableClipboard";
-            this.chkDisableClipboard.Size = new System.Drawing.Size(111, 17);
-            this.chkDisableClipboard.TabIndex = 9;
-            this.chkDisableClipboard.Text = "disabled clipboard";
-            this.chkDisableClipboard.UseVisualStyleBackColor = true;
-            // 
-            // chkSharedServer
-            // 
-            this.chkSharedServer.AutoSize = true;
-            this.chkSharedServer.Location = new System.Drawing.Point(123, 213);
-            this.chkSharedServer.Name = "chkSharedServer";
-            this.chkSharedServer.Size = new System.Drawing.Size(90, 17);
-            this.chkSharedServer.TabIndex = 9;
-            this.chkSharedServer.Text = "shared server";
-            this.chkSharedServer.UseVisualStyleBackColor = true;
-            // 
-            // chkAutoScaling
-            // 
-            this.chkAutoScaling.AutoSize = true;
-            this.chkAutoScaling.Location = new System.Drawing.Point(5, 236);
-            this.chkAutoScaling.Name = "chkAutoScaling";
-            this.chkAutoScaling.Size = new System.Drawing.Size(80, 17);
-            this.chkAutoScaling.TabIndex = 9;
-            this.chkAutoScaling.Text = "autoscaling";
-            this.chkAutoScaling.UseVisualStyleBackColor = true;
+            this.chkLaunchViewerOnStart.AutoSize = true;
+            this.chkLaunchViewerOnStart.Location = new System.Drawing.Point(6, 236);
+            this.chkLaunchViewerOnStart.Name = "chkLaunchViewerOnStart";
+            this.chkLaunchViewerOnStart.Size = new System.Drawing.Size(214, 17);
+            this.chkLaunchViewerOnStart.TabIndex = 5;
+            this.chkLaunchViewerOnStart.Text = "launch the viewrs upon connection only";
+            this.chkLaunchViewerOnStart.UseVisualStyleBackColor = true;
             // 
             // chkViewOnly
             // 
@@ -197,7 +175,7 @@
             this.chkViewOnly.Location = new System.Drawing.Point(6, 213);
             this.chkViewOnly.Name = "chkViewOnly";
             this.chkViewOnly.Size = new System.Drawing.Size(70, 17);
-            this.chkViewOnly.TabIndex = 9;
+            this.chkViewOnly.TabIndex = 4;
             this.chkViewOnly.Text = "view only";
             this.chkViewOnly.UseVisualStyleBackColor = true;
             // 
@@ -207,7 +185,7 @@
             this.chkViewersEnabled.Location = new System.Drawing.Point(6, 0);
             this.chkViewersEnabled.Name = "chkViewersEnabled";
             this.chkViewersEnabled.Size = new System.Drawing.Size(87, 17);
-            this.chkViewersEnabled.TabIndex = 0;
+            this.chkViewersEnabled.TabIndex = 8;
             this.chkViewersEnabled.Text = "Start viewers";
             this.chkViewersEnabled.UseVisualStyleBackColor = true;
             this.chkViewersEnabled.CheckedChanged += new System.EventHandler(this.chkViewersEnabled_CheckedChanged);
@@ -227,7 +205,7 @@
             this.txbUVNCInstallationFolder.Name = "txbUVNCInstallationFolder";
             this.txbUVNCInstallationFolder.ReadOnly = true;
             this.txbUVNCInstallationFolder.Size = new System.Drawing.Size(221, 20);
-            this.txbUVNCInstallationFolder.TabIndex = 10;
+            this.txbUVNCInstallationFolder.TabIndex = 2;
             this.txbUVNCInstallationFolder.Text = ":";
             this.txbUVNCInstallationFolder.TextChanged += new System.EventHandler(this.txbUVNCInstallationFolder_TextChanged);
             // 
@@ -248,7 +226,7 @@
             this.btnBrowseUVNCFolder.Location = new System.Drawing.Point(230, 16);
             this.btnBrowseUVNCFolder.Name = "btnBrowseUVNCFolder";
             this.btnBrowseUVNCFolder.Size = new System.Drawing.Size(28, 23);
-            this.btnBrowseUVNCFolder.TabIndex = 12;
+            this.btnBrowseUVNCFolder.TabIndex = 3;
             this.btnBrowseUVNCFolder.Text = "...";
             this.btnBrowseUVNCFolder.UseVisualStyleBackColor = true;
             this.btnBrowseUVNCFolder.Click += new System.EventHandler(this.btnBrowseUVNCFolder_Click);
@@ -265,7 +243,7 @@
             this.chkServerEnabled.Location = new System.Drawing.Point(6, 44);
             this.chkServerEnabled.Name = "chkServerEnabled";
             this.chkServerEnabled.Size = new System.Drawing.Size(80, 17);
-            this.chkServerEnabled.TabIndex = 15;
+            this.chkServerEnabled.TabIndex = 4;
             this.chkServerEnabled.Text = "Start server";
             this.chkServerEnabled.UseVisualStyleBackColor = true;
             // 
@@ -305,9 +283,7 @@
         internal System.Windows.Forms.CheckBox chkViewersEnabled;
         internal System.Windows.Forms.TextBox txbUVNCInstallationFolder;
         internal System.Windows.Forms.CheckBox chkViewOnly;
-        internal System.Windows.Forms.CheckBox chkAutoScaling;
-        internal System.Windows.Forms.CheckBox chkSharedServer;
-        internal System.Windows.Forms.CheckBox chkDisableClipboard;
+        internal System.Windows.Forms.CheckBox chkLaunchViewerOnStart;
         internal System.Windows.Forms.ListView lsvViewers;
         internal System.Windows.Forms.CheckBox chkServerEnabled;
     }

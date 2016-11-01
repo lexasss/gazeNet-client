@@ -2,7 +2,7 @@
 #define App "GazeNetClient"
 #define Publisher "University of Tampere"
 #define PublisherURL "http://gasp.sis.uta.fi/"
-#define BuildType "Release"
+#define BuildType "Debug"
 
 #define TargetPath "..\bin\" + BuildType + "\client"
 #define Version "built on " + GetFileDateTimeString(TargetPath + "\GazeNetClient.exe", 'yyyy.dd.mm', '.', ':');
@@ -27,6 +27,7 @@ WizardSmallImageFile=compiler:WizModernSmallImage-IS.bmp
 [Files]
 Source: "{#TargetPath}\GazeNetClient.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#TargetPath}\*.vnc"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#TargetPath}\websocket-sharp.xml"; DestDir: "{app}"; Flags: ignoreversion
 
 [Dirs]

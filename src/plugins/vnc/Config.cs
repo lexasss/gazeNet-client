@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -9,8 +10,14 @@ namespace GazeNetClient.Plugins.VNC
     {
         public string IP { get; set; }
         public string Name { get; set; }
+
+        [XmlIgnore]
+        public Process Process { get; set; } = null;
+        [XmlIgnore]
+        public bool Resize { get; set; } = false;
+
         public Viewer() { }
-        public Viewer(string aIP, string aName) { IP = aIP; Name = aName; }
+        public Viewer(string aIP, string aName, bool aResize = false) { IP = aIP; Name = aName; Resize = aResize; }
     }
 
     [Serializable]
@@ -27,15 +34,12 @@ namespace GazeNetClient.Plugins.VNC
         public static readonly string PASSWORD = "gasp";
         [XmlIgnore]
         public static readonly string UVNC_CONFIG = "options.vnc";
+        [XmlIgnore]
+        public static readonly uint UVNC_RECONNECT_DELAY = 5;
 
         public static bool isVNCInstalledInto(string aFolder)
         {
             return System.IO.File.Exists(aFolder + UVNC_SERVER + ".exe");
-        }
-
-        public static bool isVNCProcess(string aProcessName)
-        {
-            return aProcessName == UVNC_SERVER || aProcessName == UVNC_VIEWER;
         }
 
         public string ServerFileName { get { return UVNCInstallationFolder + UVNC_SERVER + ".exe"; } }
@@ -49,8 +53,6 @@ namespace GazeNetClient.Plugins.VNC
         public bool ViewersEnabled { get; set; } = true;
         public List<Viewer> Viewers { get; set; } = new List<Viewer>();
         public bool ViewOnly { get; set; } = true;
-        public bool AutoScaling { get; set; } = true;
-        public bool SharedServer { get; set; } = true;
-        public bool DisableClipboard { get; set; } = true;
+        public bool LaunchViewersOnStart { get; set; } = true;
     }
 }
